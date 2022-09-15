@@ -1,0 +1,62 @@
+metadata:
+  name: "Test 2"
+  path_to_functions: 'functions.py'
+  path_to_properties: 'properties.csv'
+
+variables:
+  probability:
+    value: 0.5
+  capacity:
+    type: resource
+    init_amount: 2
+    max_amount: 10
+    refill_amount: 1
+    refill_duration: 1
+  property_dist:
+    type: property
+    distribution: normal
+    mean: 1
+    std: 1
+  property_file:
+    type: property
+    column: y_hat
+  total_duration_in_sim:
+    type: property
+    column: los
+  time_left_in_sim:
+    type: simulation
+  time_already_in_sim:
+    type: simulation
+
+states:
+  start:
+    label: Patient Admit
+    type: start
+    duration: 1
+    utilities: -1
+    transitions:
+      - dest: send_nurse
+        label: Send Nurse
+  send_nurse:
+    label: Assign nurse to give ACP
+    utilities: -1
+    transitions:
+      - dest: no_acp
+        if: capacity < 1
+      - dest: complete_acp
+  complete_acp:
+    label: ACP completed
+    type: end
+    utilities:
+      - value: -30
+        if: True
+      - value: -15
+        if: False
+  no_acp:
+    label: Don't deliver ACP
+    type: end
+    utilities:
+      - value: -10
+        if: False
+      - value: -3
+        if: True

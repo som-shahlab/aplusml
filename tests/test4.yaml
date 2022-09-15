@@ -1,0 +1,20 @@
+metadata:
+  name: "Test 2"
+
+states:
+  start:
+    label: Patient Admit
+    type: start
+    transitions:
+      - dest: send_nurse
+        label: Send Nurse
+  send_nurse:
+    label: Assign nurse to give ACP
+    duration: 1
+    transitions:
+      - dest: no_acp
+        label: No ACP
+  no_acp:
+    label: Don't deliver ACP
+    type: end
+    duration: 2

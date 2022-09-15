@@ -1,0 +1,147 @@
+metadata:
+  name: "Test 2"
+
+variables:
+  patient_reject_rate:
+    value: 0.2
+  outpatient_rescue_rate:
+    value: 0.3
+  capacity:
+    type: resource
+    init_amount: 2
+    max_amount: 10
+    refill_amount: 0
+    refill_duration: 10
+  property:
+    type: property
+    distribution: normal
+    mean: 1
+    std: 1
+  property2:
+    type: property
+    distribution: normal
+    mean: 1
+    std: 1
+  property_threshold:
+    value: 0.5
+  total_duration_in_sim:
+    type: property
+    column: los
+  time_left_in_sim:
+    type: simulation
+  time_already_in_sim:
+    type: simulation
+
+states:
+  start:
+    type: start
+    transitions:
+    # Test 'prob'
+      - dest: bin1
+        # 0.2
+        prob: patient_reject_rate
+      - dest: bin2
+        # 0.3
+        prob: outpatient_rescue_rate
+      - dest: bin3
+        # 0.1
+        prob: 0.1
+      - dest: bin4
+        # 0.4
+  bin1:
+    transitions:
+      - dest: test_if_true
+  bin2:
+    transitions:
+      - dest: test_if_true
+  bin3:
+    transitions:
+      - dest: test_if_true
+  bin4:
+    transitions:
+      - dest: test_if_true
+  test_if_true:
+    # Test 'if' TRUE
+    transitions:
+      - dest: test_capacity
+        if: true
+      - dest: no_acp
+  test_capacity:
+    # Test 'if' + 'resource'
+    transitions:
+      - dest: no_capacity
+        if: capacity + 1 < 1
+      - dest: test_property
+  test_property:
+    # Test 'if' + 'property' (multiple vars)
+    transitions:
+      - dest: property_threshold1
+        if: property < property_threshold
+      - dest: property_threshold2
+  property_threshold1:
+    duration: 1
+    transitions:
+      - dest: sim_time
+  property_threshold2:
+    duration: 1
+    transitions:
+      - dest: sim_time
+  sim_time:
+    # Test 'if' + 'simulation' (multiple vars)
+    transitions:
+      - dest: sim1
+        if: total_duration_in_sim > 8 or time_left_in_sim < 2
+      - dest: sim2
+  sim1:
+    transitions:
+      - dest: outpatient_rescue
+  sim2:
+    transitions:
+      - dest: outpatient_rescue
+  outpatient_rescue:
+    # Test 'if' + 'resource' + 'property' (multiple vars)
+    transitions:
+      - dest: s1
+        if: property < capacity
+        resource_deltas:
+          capacity: -1
+      - dest: s2
+  s1:
+    transitions:
+      - dest: if_and_prob
+  s2:
+    transitions:
+      - dest: if_and_prob
+  if_and_prob:
+    # Test 'if' + 'prob'
+    transitions:
+      - dest: a1
+        if: False
+      - dest: a2
+        if: property2 < 1
+      - dest: a3
+        prob: 0.45
+      - dest: a4
+        prob: 0.5
+      - dest: a5
+  a1:
+    transitions:
+      - dest: complete_acp
+  a2:
+    transitions:
+      - dest: complete_acp
+  a3:
+    transitions:
+      - dest: complete_acp
+  a4:
+    transitions:
+      - dest: complete_acp
+  a5:
+    transitions:
+      - dest: complete_acp
+  complete_acp:
+    type: end
+  no_capacity:
+    type: end
+  no_acp:
+    type: end

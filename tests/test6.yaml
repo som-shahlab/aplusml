@@ -1,0 +1,58 @@
+metadata:
+  name: "Test 6"
+
+variables:
+  property:
+    type: property
+    column: los
+  utility_val1:
+    value: -1
+  utility_val2:
+    value: -2
+
+states:
+  start:
+    label: Patient Admit
+    type: start
+    utilities: utility_val1
+    transitions:
+      - dest: send_nurse
+        label: Send Nurse
+        utilities:
+          - value: 2
+            unit: A
+            if: property >= 1
+          - value: 11
+            unit: B
+            if: true
+          - value: 3
+  send_nurse:
+    label: Assign nurse to give ACP
+    duration: 1
+    utilities:
+      - value: 4
+        unit: A
+        if: false
+      - value: 5
+        unit: B
+      - value: utility_val2 + utility_val1
+        unit: B
+        if: true
+      - value: 9
+        unit: C
+        if: (property * 3) % 2 == 0
+    transitions:
+      - dest: no_acp
+        label: No ACP
+        utilities: 6
+  no_acp:
+    label: Don't deliver ACP
+    type: end
+    duration: 2
+    utilities:
+      - value: 8
+        unit: B
+      - value: 7
+        unit: A
+      - value: 12
+        if: true
