@@ -1,0 +1,125 @@
+metadata:
+  name: "ACP - Jung et al. 2021 Replication"
+  path_to_properties: "input/ken_data_for_days.csv"
+  properties_col_for_patient_id: "id"
+  patient_sort_preference_property:
+    variable: patient_id
+    is_ascending: False
+
+variables:
+  outpatient_rescue_rate:
+    value: 0.5
+  patient_reject_rate:
+    value: 0.2
+  model_threshold:
+    value: 0.25
+  nurse_capacity:
+    type: resource
+    init_amount: 5
+    max_amount: 5
+    refill_amount: 5
+    refill_duration: 1
+  model_prediction:
+    type: property
+    column: y_hat
+  total_duration_in_sim:
+    type: property
+    column: los
+  patient_id:
+    type: property
+    column: id
+  nonce_accept:
+    type: property
+    column: nonce_accept
+  nonce_rescue:
+    type: property
+    column: nonce_rescue
+  nonce_timeout_0:
+    type: property
+    column: nonce_timeout_0
+  nonce_timeout_1:
+    type: property
+    column: nonce_timeout_1
+  nonce_timeout_2:
+    type: property
+    column: nonce_timeout_2
+  nonce_timeout_3:
+    type: property
+    column: nonce_timeout_3
+  nonce_timeout_4:
+    type: property
+    column: nonce_timeout_4
+  nonce_timeout_100:
+    type: property
+    column: nonce_timeout_100
+  ground_truth:
+    type: property
+    column: y
+  time_left_in_sim:
+    type: simulation
+  time_already_in_sim:
+    type: simulation
+  utility_false_negative:
+    value: -37.085
+  utility_true_positive:
+    value: -28.6
+  utility_false_positive:
+    value: -14.97
+  utility_true_negative:
+    value: -11.65
+
+states:
+  start:
+    label: Patient Admit
+    type: start
+    transitions:
+      - dest: model_prediction
+        label: Make model prediction
+  model_prediction:
+    label: Model Prediction
+    transitions:
+      - dest: no_acp
+        if: model_prediction < model_threshold
+      - dest: reject_filter
+  reject_filter:
+    label: Patient decides on ACP
+    transitions:
+      - dest: no_acp
+        if: nonce_accept > 1 - patient_reject_rate
+      - dest: capacity_constraint
+  capacity_constraint:
+    label: Assign nurse to give ACP
+    transitions:
+      - dest: timeout_func
+        if: nurse_capacity > 0
+        resource_deltas:
+          nurse_capacity: -1
+      - dest: outpatient_rescue
+  timeout_func:
+    label: Start ACP treatment
+    transitions:
+      - dest: complete_acp
+        if: nonce_timeout_0 <= total_duration_in_sim
+      - dest: outpatient_rescue
+  outpatient_rescue:
+    label: Outpatient Rescue
+    transitions:
+      - dest: complete_acp
+        if: nonce_rescue <= outpatient_rescue_rate
+      - dest: no_acp
+  complete_acp:
+    label: ACP completed
+    type: end
+    utilities:
+      - value: utility_true_positive
+        if: ground_truth == 1
+      - value: utility_false_positive
+        if: ground_truth == 0
+  no_acp:
+    label: Don't deliver ACP
+    type: end
+    utilities:
+      - value: utility_false_negative
+        if: ground_truth == 1
+      - value: utility_true_negative
+        if: ground_truth == 0

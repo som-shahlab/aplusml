@@ -1,0 +1,183 @@
+metadata:
+  name: "PAD (Doctor)"
+  path_to_properties: "input/pad/properties.csv"
+  patient_sort_preference_property:
+    variable: random_resource_priority
+    is_ascending: False
+
+variables:
+  # Model
+  model_threshold:
+    value: 0.5
+  # ABI test
+  abi_test_threshold:
+    value: 0.9 # If abi_test_pred < X, then patient tested positive for PAD
+  abi_test_specialist_recommend_surgery_threshold:
+    value: 0.45 # If abi_test_pred < X, then a specialist will recommend surgery for this patient
+  abi_test_untreated_needs_surgery_threshold:
+    value: 0.55 # If abi_test_pred < X, then this patient will eventually need surgery for their PAD if they aren't immediately put on medication/surgery
+  abi_test_pred:
+    type: property
+    column: abi_test_pred
+  abi_test_treat_immediately_threshold:
+    value: 0.8 # If abi_test_pred > X, then doctor can treat PAD with medication
+  # Transition probs
+  prob_pad_alert_is_read:
+    value: 0.8
+  prob_doctor_orders_abi:
+    value: 0.95
+  prob_specialist_follow_up_completed:
+    value: 0.8
+  # Specialist
+  schedule_specialist_appt_time_out: 
+    value: 30 # Wait 30 days to find time with specialist, then give up
+  specialist_days_in_office:
+    value: [1, 3, 5] # Specialist can only see patients on a MWF
+  specialist_capacity:
+    type: resource
+    init_amount: 2
+    max_amount: 2 # Specialist can only see 2 patients per day
+    refill_amount: 2
+    refill_duration: 1
+  # Patient properties
+  y:
+    type: property
+    column: y
+  y_hat_dl:
+    type: property
+    column: y_hat_dl
+  y_hat_rf:
+    type: property
+    column: y_hat_rf
+  y_hat_lr:
+    type: property
+    column: y_hat_lr
+  random_resource_priority: # Random nonce used to deterministically (but randomly) prioritize patients for limited resources
+    type: property
+    column: random_resource_priority
+  time_already_in_sim:
+    type: simulation
+  sim_current_timestep:
+    type: simulation
+  # Utilities
+  qaly:
+    value: {
+      'YES_pad__UNTREATED__needs_surgery' : -1,
+      'YES_pad__YES_surgery' : -0.7,
+      'NO_pad__YES_surgery' : -0.6,
+      'YES_pad__UNTREATED__needs_medication' : -0.5,
+      'YES_pad__YES_medication' : -0.35,
+      'NO_pad__YES_medication' : -0.2,
+      'NO_pad__UNTREATED' : 0,
+    }
+
+states:
+  start:
+    type: start
+    label: "Start"
+    transitions:
+      - dest: admit
+  admit:
+    label: "Patient Visits Clinic"
+    transitions:
+      - dest: model_pred
+  model_pred:
+    label: "Make Model Prediction"
+    transitions:
+      - dest: send_pad_alert
+        if: y_hat_dl >= model_threshold
+      - dest: no_treatment
+  send_pad_alert:
+    label: "Send PAD Alert to EHR"
+    transitions:
+      - dest: doctor_presented_with_alert
+  doctor_presented_with_alert:
+    label: "Alert Appears in EHR"
+    transitions:
+      - dest: doctor_reads_alert
+        prob: prob_pad_alert_is_read       
+      - dest: no_treatment
+  doctor_reads_alert:
+    label: "Doctor Reads Alert"
+    transitions:
+      - dest: order_abi
+        prob: prob_doctor_orders_abi
+      - dest: no_treatment
+  order_abi:
+    label: "Doctor Orders ABI Test"
+    transitions:
+      - dest: doctor_interprets_abi_result
+  doctor_interprets_abi_result:
+    label: "Doctor Interprets ABI"
+    transitions:
+      - dest: doctor_treats_immediately
+        if: (abi_test_treat_immediately_threshold < abi_test_pred) and (abi_test_pred <= abi_test_threshold)
+      - dest: refer_to_specialist
+        if: abi_test_pred < abi_test_threshold
+      - dest: no_treatment
+  doctor_treats_immediately:
+    label: "Doctor Treats Immediately"
+    transitions:
+      - dest: medication
+  refer_to_specialist:
+    label: "Doctor Refers to Specialist"
+    transitions:
+      - dest: schedule_specialist_appt
+        prob: prob_specialist_follow_up_completed
+      - dest: no_treatment
+  schedule_specialist_appt:
+    label: "Schedule Appt with Specialist"
+    transitions:
+      - dest: specialist_review
+        if: (specialist_capacity > 0) and (sim_current_timestep % 7 in specialist_days_in_office)
+        resource_deltas: 
+          specialist_capacity: -1
+      - dest: no_treatment
+        if:  time_already_in_sim >= schedule_specialist_appt_time_out - 1
+      - dest: schedule_specialist_appt
+        duration: 1
+  specialist_review:
+    label: "Specialist Assessment"
+    transitions:
+      - dest: no_treatment
+        if: y == 0
+      - dest: surgery
+        if: abi_test_pred < abi_test_specialist_recommend_surgery_threshold
+      - dest: medication
+  no_treatment:
+    label: "Decide Not to Treat"
+    transitions:
+      - dest: untreated
+  medication:
+    type: end
+    label: "Medication"
+    utilities:
+      - value: qaly["YES_pad__YES_medication"]
+        if: y == 1
+        unit: qaly
+      - value: qaly["NO_pad__YES_medication"]
+        if: y == 0
+        unit: qaly
+  surgery:
+    type: end
+    label: "Surgery"
+    utilities:
+      - value: qaly["YES_pad__YES_surgery"]
+        if: y == 1
+        unit: qaly
+      - value: qaly["NO_pad__YES_surgery"]
+        if: y == 0
+        unit: qaly
+  untreated:
+    label: "Untreated"
+    type: end
+    utilities:
+      - value: qaly["YES_pad__UNTREATED__needs_surgery"]
+        if: y == 1 and (abi_test_pred < abi_test_untreated_needs_surgery_threshold)
+        unit: qaly
+      - value: qaly["YES_pad__UNTREATED__needs_medication"]
+        if: y == 1 and not (abi_test_pred < abi_test_untreated_needs_surgery_threshold)
+        unit: qaly
+      - value: qaly["NO_pad__UNTREATED"]
+        if: y == 0
+        unit: qaly
