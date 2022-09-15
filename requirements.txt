@@ -1,0 +1,12 @@
+pandas
+numpy
+simpy
+matplotlib
+sklearn
+oyaml
+plotnine
+pydot
+mpl-scatter-density
+mpire
+dill
+multiprocess
