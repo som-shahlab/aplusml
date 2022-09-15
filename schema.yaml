@@ -1,0 +1,103 @@
+(+) = optional
+{a|b} = must be either string a or b
+TODO = future feature
+
+metadata:
+  name (+): str
+  path_to_functions (+): str
+    => Path to PY file containing Python functions listed in 'variables'
+  path_to_properties (+): str
+    => Path to CSV file containing Patient properties listed in 'variables'
+  properties_col_for_patient_id (+): str
+    => Name of column in properties file corresponding to the Patient ID  
+  patient_sort_preference_property (+): 
+    variable: str
+      => Name of property (must be listed in 'variables') to order patients by
+    is_ascending: bool
+      => If TRUE, then ascending; else descending
+
+variables: dict
+  [key]: str
+      => Represents ID of state
+      => Must be unique
+    type: str{scalar|resource|property_dist|property_file|simulation|function} (default = "scalar")
+      => 'scalar' = a constant
+      => 'resource' = a hospital resource that fluctuates
+      => 'property' = a per patient property (from a file or randomly sampled)
+      => 'simulation' = tracked by simulation str{sim_current_timestep|time_left_in_sim|time_already_in_sim}
+        TODO: time_in_current_state
+        TODO: Allow variables to contain other variables
+        TODO: 'function' = Python function loaded from 'path_to_functions' file
+    % If type == 'scalar'...
+      value: (int|float|bool|str|list|dict|set)
+        NOTE: If specifify a 'set', then need to prepend the set with the '!!set' tag
+        NOTE: 'tuple' is not currently supported
+    % If type == 'resource'...
+      init_amount: int
+      max_amount: int
+      refill_amount: int
+      refill_duration: int
+    % If type == 'property'...
+      % Either load from file...
+        column: str
+      % or constant...
+        value: Any
+      % or randomly sample...
+        distribution: str{bernoulli|exponential|binomial|normal|poisson|uniform}
+        mean (+): float
+        std (+): float
+        start (+): float
+        end (+): float
+
+states: dict
+  [key]: str
+      => Represents ID of state
+      => Must be unique
+    label (+): str (default = value of 'id')
+    type (+): str{start|end|intermediate} (default = "intermediate")
+    duration (+): float (default = 0.0)
+      => Waiting this number of timesteps occurs AS SOON AS this state is hit (so BEFORE any transitions from it are calculated)
+    utilities (+): str|float|bool|list[dict] (default = 0.0)
+      => If not a list[dict], then the expression specified as evaluated as Python
+      - value (+): float|str (default = 0.0)
+          => If str, then assume it's a function
+        if (+): str
+          => String is a conditional expression
+          => If TRUE, then set 'value' as utility for this 'unit'
+          => NOTE - These 'if' statements are not mutually exclusive (i.e. multiple ones will simply be summed together)
+        unit (+): str (default = "")
+    resource_deltas (+): dict[float] (default = {})
+      => [key] = resource from 'variables', [value] = how much to change each resource level AS SOON AS this state is hit (so BEFORE any transitions from it are calculated)
+    TODO: property_updates (+): dict[float] (default = {})
+      => [key] = property from 'variables', [value] = new value of this property for patient AS SOON AS this state is hit
+    transitions (+): list[dict] (default = [])
+        dest: str
+          => Must match ID of a state
+        label (+): str (default = "")
+        % Can either have...
+        % - All transitions have an 'if' condition (where if the last transition doesn't have an 'if', it defaults to always TRUE)
+        % - All transitions have a 'prob' condition (where if the last transition doesn't have a 'prob', it defaults to = 1 - (sum of other probs))
+        % - The first half of transitions have an 'if' condition, but the second have of transitions have a 'prob' (all 'if' transitions must have an 'if', the 'prob' are evaluated conditional on all 'if' being FALSE, and the last 'prob' transition defaults to = 1 - sum(other probs))
+          if (+): bool|str (default = bool:true)
+            => String is a conditional expression
+            => Must come BEFORE 'prob' (if mixed)
+            => Must always be at least one TRUE condition across all transitions for this state (unless mixed with 'prob')
+            => Conditionals will be evaluted in order and break on first TRUE
+            => If last 'if' isn't specified, defaults to TRUE
+          prob (+): float|str (default = 1 - (sum of other probs))
+            => String is a variable
+            => Must come AFTER 'if' (if mixed)
+              => If mixed, then 'prob' is conditional probability given all 'if' are FALSE
+            => Must sum to 1 across all 'prob' transitions for this state
+            => If last 'prob' isn't specified, defaults to = 1 - (sum of other probs)
+          ================
+        %
+        duration (+): float (default = 0.0)
+          => Waiting this number of timesteps occurs BEFORE this transition is taken
+        utilities (+): str|float|bool|list[dict] (default = 0.0)
+          => Same as for state
+        resource_deltas (+): dict[float] (default = {})
+          => [key] = resource from 'variables', [value] = how much to change each resource level by taking this transition (so AFTER any transitions from it are calculated)
+        TODO: property_updates (+): dict[float] (default = {})
+          => [key] = property from 'variables', [value] = new value of this property for patient by taking this transition (so AFTER any transitions from it are calculated)
+
