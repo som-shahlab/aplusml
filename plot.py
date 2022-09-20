@@ -599,13 +599,13 @@ def plot_decision_curve(df_preds: pd.DataFrame, utilities: dict, ax: plt.Axes = 
     #   https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2804257/pdf/nihms-108324.pdf
     # Explanation of risk thresholds / curves (Page 5): 
     #   https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2577036/pdf/nihms74373.pdf
-    net_benefit_all = (utilities['tp'] - utilities['fn']) * (prevalence - (1 - prevalence) *  df_utility['threshold'] / (1 - df_utility['threshold']) )
+    net_benefit_all = (prevalence - (1 - prevalence) *  df_utility['threshold'] / (1 - df_utility['threshold']) )
     ax.plot(df_utility['threshold'], net_benefit_all, 'r--', label='Treat All')
     # Treat None
     net_benefit_none = [0] * df_utility['threshold'].shape[0]
     ax.plot(df_utility['threshold'], net_benefit_none, 'g--', label='Treat None')
     # Model
-    net_benefit_model = (utilities['tp'] - utilities['fn']) * (prevalence * df_utility['tpr'] - (1 - prevalence) * df_utility['fpr'] * df_utility['threshold'] / (1 - df_utility['threshold']) )
+    net_benefit_model = (prevalence * df_utility['tpr'] - (1 - prevalence) * df_utility['fpr'] * df_utility['threshold'] / (1 - df_utility['threshold']) )
     ax.plot(df_utility['threshold'], net_benefit_model, 'k', label='Model')
     ax.legend()
     ax.set_title(f"Decision Curve", fontdict={'fontsize' : 12})
