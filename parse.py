@@ -68,7 +68,7 @@ VALID_UTILITY_KEYS = {
 }
 
 class UniqueKeyLoader(oyaml.SafeLoader):
-    """Used to throw an Error when duplicate keys for the same YAML dict are detected
+    """Used to throw Error when duplicate keys for the same YAML dict are detected
     """    
     def construct_mapping(self, node, deep=False):
         mapping = set()
@@ -80,12 +80,10 @@ class UniqueKeyLoader(oyaml.SafeLoader):
         return super().construct_mapping(node, deep)
 
 def load_yaml(path_to_yaml: str) -> dict:
-    """Loads YAML file located at `path_to_yaml`, returns it as a Python dict
-    """    
     data = None
     with open(path_to_yaml, "r") as fd:
         try:
-            yaml = YAML(typ="safe")
+            yaml = YAML(typ="safe") # default, if not specfied, is 'rt' (round-trip)
             data = yaml.load(fd)
         except Exception as exc:
             print("ERROR loading YAML:", exc)
@@ -96,9 +94,7 @@ def is_keys_valid(yaml_entry: dict,
                     yaml_entry_type: str, 
                     valid_keys: dict[str],
                     is_check_required_keys: bool = True,
-                    is_check_optional_keys: bool = True) -> bool:
-    """Checks that the keys under a specific YAML entry are valid, returns TRUE/FALSE
-    """    
+                    is_check_optional_keys: bool = True):
     yaml_entry_keys = set(yaml_entry.keys())
     # 1. Make sure no extraneous keys
     if is_check_optional_keys:
@@ -116,8 +112,6 @@ def is_keys_valid(yaml_entry: dict,
     return True
 
 def is_valid_yaml(yaml: dict) -> bool:
-    """Checks if the dictionary `yaml` is valid YAML, returns TRUE/FALSE
-    """    
     #
     # Metadata
     metadata = yaml.get('metadata', {})
