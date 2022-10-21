@@ -1,11 +1,5 @@
 import pandas as pd
 import numpy as np
-import os
-import patchworklib as pw
-import sys
-import scipy
-import sklearn
-import sklearn.metrics
 from typing import Callable, Tuple
 import sim
 import parse
@@ -251,7 +245,7 @@ def plot_helper(model_2_result: dict,
         threshold (float, optional): If not specified, choose `threshold` that achieves max `mean_utility`. Defaults to None.
 
     Returns:
-        pd.DataFrame: _description_
+        pd.DataFrame: 4 columns -- label, y, y_sem, model
     """    
     plot_avg_utilities = []
     for m, df in model_2_result.items():
