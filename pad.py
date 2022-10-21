@@ -5,6 +5,12 @@ import sim
 import parse
 import run
 
+"""
+
+    Helper functions for pad.ipynb
+
+"""
+
 def generate_csv(PATH_TO_DL_MODEL, PATH_TO_RF_MODEL, PATH_TO_LR_MODEL, PATH_TO_PATIENT_PROPERTIES) -> pd.DataFrame:
     #
     # Read CSVs
