@@ -71,7 +71,7 @@ def generate_csv(PATH_TO_DL_MODEL, PATH_TO_RF_MODEL, PATH_TO_LR_MODEL, PATH_TO_P
     print("ABI sensitivity @ 0.9:", tp / (tp + fn))
     print("ABI specificity @ 0.9:", tn / (tn + fp))
     # For prioritization to limited resources
-    print("---- Random Nonce for Resource Priority ----")
+    print("---- Set Random Nonce for Resource Priority ----")
     df_merged['random_resource_priority'] = np.random.choice(df_merged.shape[0], df_merged.shape[0], replace=False)
     # Save to CSV
     print("---- Stats ----")
@@ -179,7 +179,6 @@ def load_simulation_for_model(path_to_yaml: str,
     return simulation
 
 
-
 ###################################
 #
 # Simulation
@@ -278,3 +277,57 @@ def plot_helper(model_2_result: dict,
             } for idx, row in df.iterrows() ]
     df_avg_utilities = pd.DataFrame(plot_avg_utilities)
     return df_avg_utilities
+
+
+###################################
+#
+# Workflows
+#
+###################################
+def setup_nurse_optimistic(simulation: sim.Simulation):
+    """Settings for "optimistic" case
+    """
+    # Reset simulation to "optimistic" case
+    simulation.variables['model_threshold']['value'] = 0.5
+    # Nurse capacity
+    # Wait 1 days for nurse to contact patient
+    simulation.variables['wait_for_nurse_time_out']['value'] = 1
+    # Total capacity of nurses = 1e5 patients/day
+    simulation.variables['nurse_capacity']['init_amount'] = 1e5
+    simulation.variables['nurse_capacity']['max_amount'] = 1e5
+    simulation.variables['nurse_capacity']['refill_amount'] = 1e5
+    simulation.variables['nurse_capacity']['refill_duration'] = 1
+    # Specialist
+    # Wait 1 days to find time with specialist
+    simulation.variables['schedule_specialist_appt_time_out']['value'] = 1
+    # Specialist can only see patients on these days of the week
+    simulation.variables['specialist_days_in_office']['value'] = [ 0, 1, 2, 3, 4, 5, 6, ]
+    # Total capacity of specialist = 1e5 patients/day
+    simulation.variables['specialist_capacity']['init_amount'] = 1e5
+    simulation.variables['specialist_capacity']['max_amount'] = 1e5
+    simulation.variables['specialist_capacity']['refill_amount'] = 1e5
+    simulation.variables['specialist_capacity']['refill_duration'] = 1
+
+def setup_doctor_optimistic(simulation: sim.Simulation):
+    """Settings for "optimistic" case
+    """    
+    # Reset simulation to "optimistic" case
+    simulation.variables['model_threshold']['value'] = 0.5
+    # Doctor probs
+    simulation.variables['prob_pad_alert_is_read']['value'] = 1
+    simulation.variables['prob_doctor_orders_abi']['value'] = 1
+    simulation.variables['prob_specialist_follow_up_completed']['value'] = 1
+    simulation.variables['abi_test_treat_immediately_threshold']['value'] = 100
+    # Specialist
+    # Wait 1 days to find time with specialist
+    simulation.variables['schedule_specialist_appt_time_out']['value'] = 1
+    # Specialist can only see patients on these days of the week
+    simulation.variables['specialist_days_in_office']['value'] = [ 0, 1, 2, 3, 4, 5, 6,]
+    # Total capacity of specialist = 1e5 patients/day
+    simulation.variables['specialist_capacity']['init_amount'] = 1e5
+    simulation.variables['specialist_capacity']['max_amount'] = 1e5
+    simulation.variables['specialist_capacity']['refill_amount'] = 1e5
+    simulation.variables['specialist_capacity']['refill_duration'] = 1
+    
+if __name__ == "__main__":
+    pass
