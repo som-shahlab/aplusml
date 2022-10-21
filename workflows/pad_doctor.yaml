@@ -62,13 +62,13 @@ variables:
   # Utilities
   qaly:
     value: {
-      'YES_pad__UNTREATED__needs_surgery' : -1,
-      'YES_pad__YES_surgery' : -0.7,
-      'NO_pad__YES_surgery' : -0.6,
-      'YES_pad__UNTREATED__needs_medication' : -0.5,
-      'YES_pad__YES_medication' : -0.35,
-      'NO_pad__YES_medication' : -0.2,
-      'NO_pad__UNTREATED' : 0,
+      'YES_pad__UNTREATED__needs_surgery' : 0.6,
+      'YES_pad__YES_surgery' : 0.68,
+      'NO_pad__YES_surgery' : 0.7,
+      'YES_pad__UNTREATED__needs_medication' : 0.85,
+      'YES_pad__YES_medication' : 0.9,
+      'NO_pad__YES_medication' : 0.95,
+      'NO_pad__UNTREATED' : 1,
     }
 
 states:
@@ -152,32 +152,32 @@ states:
     type: end
     label: "Medication"
     utilities:
-      - value: qaly["YES_pad__YES_medication"]
+      - value: qaly["YES_pad__YES_medication"] # DONE
         if: y == 1
         unit: qaly
-      - value: qaly["NO_pad__YES_medication"]
+      - value: qaly["NO_pad__YES_medication"] # DONE
         if: y == 0
         unit: qaly
   surgery:
     type: end
     label: "Surgery"
     utilities:
-      - value: qaly["YES_pad__YES_surgery"]
+      - value: qaly["YES_pad__YES_surgery"] # DONE
         if: y == 1
         unit: qaly
-      - value: qaly["NO_pad__YES_surgery"]
+      - value: qaly["NO_pad__YES_surgery"] # DONE
         if: y == 0
         unit: qaly
   untreated:
     label: "Untreated"
     type: end
     utilities:
-      - value: qaly["YES_pad__UNTREATED__needs_surgery"]
+      - value: qaly["YES_pad__UNTREATED__needs_surgery"] # DONE
         if: y == 1 and (abi_test_pred < abi_test_untreated_needs_surgery_threshold)
         unit: qaly
-      - value: qaly["YES_pad__UNTREATED__needs_medication"]
+      - value: qaly["YES_pad__UNTREATED__needs_medication"] # DONE
         if: y == 1 and not (abi_test_pred < abi_test_untreated_needs_surgery_threshold)
         unit: qaly
-      - value: qaly["NO_pad__UNTREATED"]
+      - value: qaly["NO_pad__UNTREATED"] # DONE
         if: y == 0
         unit: qaly
