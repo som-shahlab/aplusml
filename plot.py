@@ -16,16 +16,26 @@ warnings.filterwarnings( "ignore", module = "plotnine\..*" )
 # Simulation analysis
 ################################################
 def plot_mean_utility_v_threshold(title: str, 
-                                  df: pd.DataFrame) -> ggplot:
-    """Ribbon scatterplot of model cutoff threshold v. mean utility at each threshold
+                                  df: pd.DataFrame,
+                                  label_sort_order: list[str] = None,
+                                  label_names: list[str] = None,
+                                  label_title: str = '') -> ggplot:
+    """_summary_
 
     Args:
-        title (str): Title of plot
+        title (str): _description_
         df (pd.DataFrame): Output of `run.run_test()`
                             Columns: threshold, mean_utility, std_utility, sem_utility, mean_work_per_timestep, label
+        label_names (list, optional): If specified, actual names displayed for each label
+        label_title (str, optional): If specified, title of label legend
+
     Returns:
-        ggplot: Plotnine object
+        ggplot: _description_
     """    
+    df = df.copy()
+    df['label'].fillna('N/A', inplace=True)
+    df['label'] = pd.Categorical(df['label'], categories=label_sort_order if label_sort_order is not None else pd.unique(df['label']))
+    if not label_names: label_names = df['label'].unique()
     # Reorder labels ordered from lowest to highest max(mean_utility))
     p = (
         ggplot(df, aes(y='mean_utility', x='threshold', color='label')) +
@@ -34,17 +44,20 @@ def plot_mean_utility_v_threshold(title: str,
                                fill='label'), 
                            alpha=0.3, 
                            colour=None) +
-        geom_point(size=0.5) +
-        labs(x="Cutoff Threshold",
-             y="Mean Utility Per Patient",
-             title=f"Effect of {title}")
+        geom_point(size=0.5, show_legend=False) +
+        labs(x="Model Cutoff Threshold",
+             y="Achieved Utility Per Patient",
+             title=f"{title}") +
+        scale_fill_discrete(name = label_title or 'Setting', labels=label_names)
     )
     return p
 
 def plot_dodged_bar_mean_utilities(title: str, 
                                    df: pd.DataFrame,
-                                   label_sort_order: list = None,
-                                   color_sort_order: list = None,
+                                   label_sort_order: list[str] = None,
+                                   label_names: list[str] = None,
+                                   color_sort_order: list[str] = None,
+                                   color_names: list[str] = None,
                                    is_percent_of_optimistic: bool = False,
                                    x_label: str = None) -> ggplot:
     """Plot Relative Utility using the Optimistic model as a baseline
@@ -54,14 +67,13 @@ def plot_dodged_bar_mean_utilities(title: str,
         'color' = primary color of the line 
 
     Args:
-        title (str): Title of plot
+        title (str): _description_
         df (pd.DataFrame): Must contain 3 columns: y, label, color
         label_sort_order (list, optional): If specified, determines ordering of labels in x-axis. Defaults to None.
+        label_names (list, optional): If specified, actual names displayed for each label
         color_sort_order (list, optional): If specified, determines ordering of colored bars. Defaults to None.
+        color_names (list, optional): If specified, actual names displayed for each color
         is_percent_of_optimistic (bool, optional): If TRUE, then measure everything in terms of the % of the max optimistic setting. Defaults to False.
-        
-    Returns:
-        ggplot: Plotnine object
     """    
     df = df.copy()
     # Sort utilities
@@ -69,28 +81,27 @@ def plot_dodged_bar_mean_utilities(title: str,
     if is_percent_of_optimistic:
         # We scale everything by the 'optimistic' pathway that yields the max utility (since there may be multiple 'optimistic' rows)
         utility_optimistic = df[df['label'] == 'optimistic']['y'].max()
-        df['y'] = 100*(df['y'] - baseline) / (utility_optimistic - baseline)
+        df['y'] = (df['y'] - baseline) / (utility_optimistic - baseline)
     else:
         df['y'] = df['y'] - baseline
     df = df.sort_values('y')
     # NOTE: need to `fillna` b/c Pandas doesn't let you set None as a categorical value
     df['label'].fillna('N/A', inplace=True)
     df['label'] = pd.Categorical(df['label'], categories=label_sort_order if label_sort_order is not None else pd.unique(df['label']))
+    if not label_names: label_names = df['label'].unique()
     df['color'].fillna('N/A', inplace=True)
     df['color'] = pd.Categorical(df['color'], categories=color_sort_order if color_sort_order is not None else pd.unique(df['color']))
+    if not color_names: color_names = df['color'].unique()
     # Make plot
     p = (
         ggplot(df, aes(x = 'label', y = 'y', fill = 'color')) + 
         geom_col(stat='identity', position='dodge') +
         labs(x = f"{title}" if not x_label else x_label,
-             y = f"Achieved Utility Over None { 'as % of Optimistic' if is_percent_of_optimistic else ''}",
+             y = f"Achieved Utility Per Patient Over 'Treat None'\n { 'as Fraction of Optimistic Pathway Utility' if is_percent_of_optimistic else ''}",
              title = f"{title}",
              color='') + 
-        scale_fill_discrete(name = "Model", labels=['None', 'All', 'Logistic\nRegression', 'Random\nForest', 'Deep\nLearning'])
+        scale_fill_discrete(name = "Model", labels=color_names)
     )
-    print(df[df['color'] == 'dl'])
-    print(df[df['color'] == 'rf'])
-    print(df[df['color'] == 'dl']['y'].values - df[df['color'] == 'rf']['y'].values)
     return p
 
 def plot_line_mean_utilities(title: str, 
@@ -114,15 +125,12 @@ def plot_line_mean_utilities(title: str,
         'shape' = shape of the points on a line (e.g. circle, triangle)
 
     Args:
-        title (str): Title of plot
+        title (str): _description_
         df (pd.DataFrame): Must contain 3 columns: y, label, group (optional: color, shape)
         label_sort_order (list, optional): If specified, determines ordering of x in x-axis. Defaults to None.
         color_sort_order (list, optional): If specified, determines ordering of coloring. Defaults to None.
         shape_sort_order (list, optional): If specified, determines ordering of shapes. Defaults to None.
         is_percent_of_optimistic (bool, optional): If TRUE, then measure everything in terms of the % of the max optimistic setting. Defaults to False.
-        
-    Returns:
-        ggplot: Plotnine object
     """    
     df = df.copy()
     # Sort utilities
@@ -165,15 +173,6 @@ def plot_line_mean_utilities(title: str,
 
 def plot_bar_mean_utilities(title: str, 
                             plot_avg_utilities: dict[float]) -> ggplot:
-    """Plots a bar chart of the mean utility achieved under different settings (as passed in via the `plot_avg_utilities` dict)
-
-    Args:
-        title (str): Title of plot
-        plot_avg_utilities (dict[float]): Each [key] is a unique bar in the graph
-
-    Returns:
-        ggplot: Plotnine object
-    """    
     # Sort utilities
     sorted_plot_avg_utilities = sorted(list(plot_avg_utilities.items()), key = lambda x: x[1])
     labels = [x[0] for x in sorted_plot_avg_utilities]
@@ -205,11 +204,11 @@ def plot_line_compare_multiple_settings(title: str,
         Used to generate Figure 2 from Jung et al. 2021
 
     Args:
-        title (str): Title of plot
+        title (str): _description_
         df (pd.DataFrame): Columns: x, y, line
 
     Returns:
-        ggplot: Plotnine object
+        ggplot: _description_
     """
     p = (
         ggplot(df, aes(x = 'x', y = 'y', color = 'line', group = 'line')) + 
@@ -229,16 +228,69 @@ def plot_line_compare_multiple_settings(title: str,
     )
     return p
 
+def plot_sensitivity_analysis(mean_utility: float):
+    """
+    Parameters
+    ----------
+    results : dict
+        A mapping from question labels to a list of answers per category.
+        It is assumed all lists contain the same number of entries and that
+        it matches the length of *category_names*. The order is assumed
+        to be from 'Strongly disagree' to 'Strongly aisagree'
+    category_names : list of str
+        The category labels.
+    """
+    
+    category_names = ['Strongly disagree', 'Disagree',
+                    'Neither agree nor disagree', 'Agree', 'Strongly agree']
+    results = {
+        'Question 1': [10, 15, 17, 32, 26],
+        'Question 2': [26, 22, 29, 10, 13],
+        'Question 3': [35, 37, 7, 2, 19],
+        'Question 4': [32, 11, 9, 15, 33],
+        'Question 5': [21, 29, 5, 5, 40],
+        'Question 6': [8, 19, 5, 30, 38]
+    }
+    fig, ax = plt.subplots()
+    
+    labels = list(results.keys())
+    data = np.array(list(results.values()))
+    data_cum = data.cumsum(axis=1)
+    middle_index = data.shape[1]//2
+    offsets = data[:, range(middle_index)].sum(axis=1) + data[:, middle_index]/2
+    
+    # Plot Bars
+    for i, (colname, color) in enumerate(zip(category_names, category_colors)):
+        widths = data[:, i]
+        starts = data_cum[:, i] - widths - offsets
+        rects = ax.barh(labels, widths, left=starts, height=0.5,
+                        label=colname, color=color)
+    
+    # Add Zero Reference Line
+    ax.axvline(mean_utility, linestyle='--', color='black', alpha=.25)
+    
+    # X Axis
+    ax.set_xlim(-90, 90)
+    ax.xaxis.set_major_formatter(lambda x, pos: str(abs(int(x))))
+    
+    # Ledgend
+    ax.legend(ncol=len(category_names), bbox_to_anchor=(0, 1),
+              loc='lower left', fontsize='small')
+    
+    return fig, ax
+
+    
+    
 ################################################
 # Theoretical Utility Analysis
 ################################################
-"""Pattern for all "Theoretical Utility Analysi" plots below:
+"""Pattern for all plots:
     Args:
-        df_preds (pd.DataFrame): DataFrame that must contain two columns -- 'y' and 'y_hat', typically generated by `get_df_utility_from_df_preds()`
+        df_preds (pd.DataFrame): DataFrame that must contain two columns -- 'y' and 'y_hat'
         utilities (dict): Dictionary that must contain four keys: 'tp', 'fp', 'tn', 'fn'
 
     Returns:
-        Plotnine object
+        Plot object
 """
 
 PADDING = 0.05 # How much padding to add to plots that get bounded by (0,1) - e.g. ROC Curve
@@ -295,7 +347,6 @@ def plot_hist_pred(df_preds: pd.DataFrame, ax: plt.Axes = None) -> plt.figure:
 
     # Plot
     ax.hist(df_preds['y_hat'].values, bins=50)
-    print(df_preds['y_hat'].values)
     ax.set_title(f"Histogram of Predictions", fontdict={'fontsize' : 12})
     ax.set_ylabel("Count", fontdict={'fontsize' : 10})
     ax.set_xlabel("Prediction", fontdict={'fontsize' : 10})
@@ -621,7 +672,6 @@ def plot_relative_utility_curve(lines: list[dict[pd.DataFrame]],
                                 xlim: Tuple = (0, 1),
                                 ylim: Tuple = (-0.1, None),
                                 ax: plt.Axes = None) -> plt.figure:
-    # TODO
     """Generate Relative Utility Curve
         "The relative utility curve plots the fraction of the expected utility 
         of perfect prediction obtained by the risk prediction model at the 
@@ -650,6 +700,7 @@ def plot_relative_utility_curve(lines: list[dict[pd.DataFrame]],
         df_utility = get_df_utility_from_df_preds(df_preds, utilities, x)
         ru_none = (df_utility['unit_utility'] - utility_none) / (utility_perfect - utility_none)
         ru_all = (df_utility['unit_utility'] - utility_all) / (utility_perfect - utility_all)
+        # TODO
         # y = ru_all until prevalence then ru_all
         ax.plot(x, y, label=line['label'])
         y_max = y.max() if y.max() > y_max else y_max
@@ -665,31 +716,29 @@ def plot_relative_utility_curve(lines: list[dict[pd.DataFrame]],
 def calc_model_performance_metrics(df_preds: pd.DataFrame,
                                    thresholds: list[float] = [0.5]) -> dict:
     """Returns a dictionary containing performance metrics for this model
-        One overall metric: AUROC, AUPRC, Pearson Corr, Spearman Corr
-        One metric per binarization threshold: Accuracy, Matthews Corr
 
     Args:
         df_preds (pd.DataFrame): Dataframe with two columns, 'y' and 'y_hat'
         thresholds (list[float]): Cutoffs for thresholding predictions to binary 0/1 (used for accuracy, Matthews correlation)
-    
     Returns:
-        dict: The metrics described above
+        dict: _description_
     """    
     pearson_corr, p_p_val = scipy.stats.pearsonr(df_preds['y_hat'], df_preds['y'])
     spearman_corr, s_p_val = scipy.stats.spearmanr(df_preds['y_hat'], df_preds['y'])
-    fpr, tpr, __ = sklearn.metrics.roc_curve(df_preds['y'], df_preds['y_hat'])
+    fpr, tpr, t = sklearn.metrics.roc_curve(df_preds['y'], df_preds['y_hat'])
     auroc = sklearn.metrics.auc(fpr, tpr)
     precision, recall, t = sklearn.metrics.precision_recall_curve(df_preds['y'], df_preds['y_hat'])
     auprc = sklearn.metrics.auc(recall, precision)
     # Threshold dependent calculations
     matthews_corr = [ sklearn.metrics.matthews_corrcoef(df_preds['y'], df_preds['y_hat'] >= x) for x in thresholds ]
-    accuracies = [ np.mean(df_preds['y'] == (df_preds['y_hat'] >= x)) for x in thresholds ]
+    accuracy = [ np.mean(df_preds['y'] == (df_preds['y_hat'] >= x)) for x in thresholds ]
     results = {
         'auroc' : auroc,
         'auprc' : auprc,
         'pearson_corr' : pearson_corr,
         'spearman_corr' : spearman_corr,
-        'accuracies' : accuracies,
+        'spearman_corr' : spearman_corr,
+        'accuracies' : accuracy,
         'matthews_corrs' : matthews_corr,
         'thresholds' : thresholds,
     }
@@ -699,11 +748,11 @@ def make_model_utility_plots(df_preds: pd.DataFrame,
                              utilities: dict, 
                              is_show: bool = False,
                              path_to_plots_prefix: str = None):
-    """Run all plotting functions above
+    """Run all plotting functions
     
     Args:
-        df_preds (pd.DataFrame): Dataframe with two columns, 'y' and 'y_hat'
-        is_show (bool, optional): If TRUE, show plots. Otherwise saves them to `path_to_plots_prefix`. Defaults to False.
+        df_preds (pd.DataFrame):  - dataframe with two columns, 'y' and 'y_hat'
+        is_show (bool, optional): If TRUE, show plots. Defaults to False.
         path_to_plots_prefix (str, optional): Prefix for path to saved plot files. Defaults to None.
     """
     if path_to_plots_prefix: 
