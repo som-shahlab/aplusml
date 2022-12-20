@@ -2,7 +2,7 @@ pandas
 numpy
 simpy
 matplotlib
-sklearn
+scikit-learn
 oyaml
 plotnine
 pydot
