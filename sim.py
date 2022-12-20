@@ -2,14 +2,16 @@ import collections
 import io
 import random
 from types import CodeType
-from typing import Any, Callable, Tuple, Union
+from typing import Any, Callable, Tuple, Union, Dict
 import numpy as np
 import pandas as pd
 import ast
 import pickle
 import pydot
+import draw
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
+
 
 class Utility(object):
     def __init__(self,
@@ -53,14 +55,14 @@ class Transition(object):
                  label: str,
                  duration: int,
                  utilities: list[Utility],
-                 resource_deltas: dict,
+                 resource_deltas: Dict[str, float],
                  _if: Union[str, bool] = None,
                  prob: Union[str, float] = None):
         self.dest: str = dest
         self.label: str = label
         self.duration: int = duration
         self.utilities: list[Utility] = utilities
-        self.resource_deltas: dict = resource_deltas
+        self.resource_deltas: Dict[str, float] = resource_deltas
         self._if: Union[str, bool] = _if # NOTE: This is referred to as 'if' outside of this object
         self.prob: Union[str, float] = prob
         self._if_compiled: CodeType = compile(_if, '<string>', 'eval', optimize=2) if type(_if) == str else None
@@ -131,14 +133,14 @@ class State(object):
                  duration: int,
                  utilities: list[Utility],
                  transitions: list[Transition],
-                 resource_deltas: dict):
+                 resource_deltas: Dict[str, float]):
         self.id: str = id
         self.label: str = label
         self.type: str = type
         self.duration: int = duration
         self.utilities: list[Utility] = utilities
         self.transitions: list[Transition] = transitions
-        self.resource_deltas: dict = resource_deltas
+        self.resource_deltas:  Dict[str, float] = resource_deltas
 
     def print(self):
         return f"{self.id} | {self.label}"
@@ -577,7 +579,7 @@ class Simulation(object):
                             paused_patients[p.id] = transition.duration
                     p.current_state = next_state
                     # Decrement variables used in this STATE or TRANSITION
-                    resource_deltas: dict = { **current_state.resource_deltas, **(transition.resource_deltas if transition else {}) }
+                    resource_deltas: Dict[str, float] = { **current_state.resource_deltas, **(transition.resource_deltas if transition else {}) }
                     for v_id, delta in resource_deltas.items():
                         # Add 'delta' to resource
                         assert v_id in self.variables, f"ERROR - Variable '{v_id}' is not in the 'variables' section of the YAML, as it is used in the 'resource_deltas' of a state or transition"
@@ -617,6 +619,7 @@ class Simulation(object):
     def draw_workflow_diagram(self, path_to_file: str = None, figsize: Tuple[int, int] = (20, 20)):
         """Visualize (states, transitions) as a diagram using pydot
         """
+
         dot_graph = pydot.Dot(graph_type='digraph')
 
         colors = [
@@ -639,26 +642,31 @@ class Simulation(object):
             for t in state.transitions:
                 # Label
                 if t.is_conditional_prob():
-                    label = 'Probability = ' + str(t.prob)
+                    title = 'Prob = ' + str(t.prob)
                 elif t.is_conditional_if():
-                    label = 'If: ' + str(t._if)
+                    title = 'If ' + str(t._if)
                 elif len(state.transitions) == 1:
-                    label = 'Always'
+                    title = 'Always'
                 else: 
-                    label = 'Otherwise'
-                edge = pydot.Edge(state.id, t.dest)
-                edge.set_label(label)
-                edge.set_color(color)
-                edge.set_fontcolor(color)
-                dot_graph.add_edge(edge)
-            # Generate node
-            label = state.label + (
-                '\n' + ('+' if state.duration > 0 else '') + str(state.duration) + ' timesteps'
-                if state.duration > 0 else ''
-            )
-            shape = 'cds' if state.type == 'start' else 'doublecircle' if state.type == 'end' else 'ellipse'
+                    title = 'Otherwise'
+                label: str = draw.create_node_label(title, t.duration, t.utilities, t.resource_deltas, is_edge=True)
+                # Turn this edge into a node for visualization purposes
+                node_name: str = state.id + '-' + t.dest
+                node = pydot.Node(node_name, label=label)
+                node.set_shape('plain')
+                node.set_color(color)
+                dot_graph.add_node(node)
+                # Add edges to/from this new "edge" node
+                for (start, end) in [(state.id, node_name), (node_name, t.dest)]: 
+                    edge = pydot.Edge(start, end)
+                    edge.set_color(color)
+                    edge.set_fontcolor(color)
+                    dot_graph.add_edge(edge)
+            # Generate node (default to intermediate node)
+            label: str = draw.create_node_label(state.label, state.duration, state.utilities, state.resource_deltas)
+            # Shape/color
             node = pydot.Node(state.id, label=label)
-            node.set_shape(shape)
+            node.set_shape('plain')
             node.set_color(color)
             dot_graph.add_node(node)
         

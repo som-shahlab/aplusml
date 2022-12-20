@@ -14,7 +14,7 @@ It aims to quantitatively answer the question: *If I use this ML model to guide 
 
 ## Installation
 
-Run the following command to install APLUS:
+1) Run the following command to install **APLUS**:
 
 ```bash
 git clone https://github.com/som-shahlab/aplus.git
@@ -22,6 +22,11 @@ cd aplus
 python3 -m venv myvenv
 source myvenv/bin/activate
 pip3 install -r requirements.txt
+```
+
+2. Install **graphviz** by [downloading it here](https://graphviz.org/download/). If you're on Mac with `homebrew`, simply run:
+```
+brew install graphviz
 ```
 
 ## Tutorials
