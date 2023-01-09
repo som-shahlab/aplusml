@@ -1,7 +1,7 @@
 
 def _html_escape(text: str):
     """Escape HTML special characters: &, <, >, and " for use in HTML table in graphviz"""
-    return text.replace('"', '&quot;').replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+    return text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('\n', '<br align="left"/>')
 
 def create_node_label(title: str, duration: float, utilities: list, resource_deltas: dict, is_edge: bool = False) -> str:
     """Create label for graphviz node"""

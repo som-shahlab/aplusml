@@ -247,8 +247,7 @@ def create_simulation_from_yaml(yaml: dict) -> sim.Simulation:
         Simulation: Returns a Simulation object
     """
     if not is_valid_yaml(yaml):
-        print("ERROR - Invalid YAML")
-        exit()
+        raise ValueError("ERROR - Invalid YAML")
     
     # Create new Simulation
     simulation = sim.Simulation()

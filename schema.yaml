@@ -67,7 +67,7 @@ states: dict
           => NOTE - These 'if' statements are not mutually exclusive (i.e. multiple ones will simply be summed together)
         unit (+): str (default = "")
     resource_deltas (+): dict[float] (default = {})
-      => [key] = resource from 'variables', [value] = how much to change each resource level AS SOON AS this state is hit (so BEFORE any transitions from it are calculated)
+      => [key] = resource from 'variables', [value] = how much to change each resource level AS SOON AS this state is hit (so BEFORE any transitions from it are calculated, but AFTER the duration has occurred)
     TODO: property_updates (+): dict[float] (default = {})
       => [key] = property from 'variables', [value] = new value of this property for patient AS SOON AS this state is hit
     transitions (+): list[dict] (default = [])

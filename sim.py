@@ -616,9 +616,21 @@ class Simulation(object):
                     units.append(u.unit)
         return units
     
-    def draw_workflow_diagram(self, path_to_file: str = None, figsize: Tuple[int, int] = (20, 20)):
+    def draw_workflow_diagram(self, 
+                              path_to_file: str = None, 
+                              is_display: bool = True, 
+                              figsize: Tuple[int, int] = (20, 20)):
         """Visualize (states, transitions) as a diagram using pydot
-        """
+
+        Args:
+            path_to_file (str, optional): Path to save diagram to. If None, then nothing is written.
+                The path MUST include the file extension (e.g. ".png").
+                The file format is inferred from the file extension. It must be one of 
+                    the file extensions supported by Pydot, which are listed in the
+                    `self.formats` array here: https://github.com/pydot/pydot/blob/master/src/pydot/core.py#L1548
+            is_display (bool, optional): If TRUE, then print out diagram. Useful for Jupyter. Defaults to True.
+            figsize (Tuple[int, int], optional): Figure size for matplotlib. Defaults to (20, 20).
+        """        
 
         dot_graph = pydot.Dot(graph_type='digraph')
 
@@ -671,8 +683,12 @@ class Simulation(object):
             dot_graph.add_node(node)
         
         if path_to_file:
-            dot_graph.write_png(path_to_file + '.png')
-        else:
+            format: str = path_to_file.split('.')[-1]
+            if format not in dot_graph.formats:
+                raise ValueError(f"ERROR - Invalid file extension '{format}' specified for 'path_to_file'. Must be one of: {dot_graph.formats}")
+            dot_graph.write(path_to_file, format=format)
+
+        if is_display:
             # Source: https://stackoverflow.com/questions/4596962/display-graph-without-saving-using-pydot
             png_str = dot_graph.create_png()
             sio = io.BytesIO()
