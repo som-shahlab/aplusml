@@ -19,8 +19,6 @@ It aims to quantitatively answer the question: *If I use this ML model to guide 
 ```bash
 git clone https://github.com/som-shahlab/aplus.git
 cd aplus
-python3 -m venv myvenv
-source myvenv/bin/activate
 pip3 install -r requirements.txt
 ```
 
