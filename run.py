@@ -2,11 +2,9 @@ import os
 import collections
 from typing import Callable
 import copy
-import warnings
 import pandas as pd
 import numpy as np
 import sim
-from loess.loess_1d import loess_1d
 from mpire import WorkerPool
 
 def test_diff_thresholds(simulation: sim.Simulation, 
@@ -43,16 +41,6 @@ def test_diff_thresholds(simulation: sim.Simulation,
             'mean_work_per_timestep' : mean_work_per_timestep,
         })
     df = pd.DataFrame(rows)
-    # LOESS
-    ## Note: LOESS will throw an Error if `len(utilities) == 1` or every element in `utilities` is identical
-    df['mean_utility_loess'] = None
-    try:
-        with warnings.catch_warnings():
-            ## Suppress RunTimeWarning for divide by zero
-            warnings.simplefilter("ignore")
-            _, df['mean_utility_loess'], _ = loess_1d(df['threshold'], df['mean_utility'], degree=2, frac=0.75)
-    except Exception as e:
-        print("ERROR - LOESS", e)
     # Best model threshold
     max_threshold = df['threshold'].iloc[df['mean_utility'].argmax()]
     simulation.variables['model_threshold']['value'] = max_threshold
@@ -66,14 +54,16 @@ def _run_test(simulation: sim.Simulation,
                 func_match_patient_to_property_column: Callable,
                 is_refresh_patients: bool,
                 l: str,
-                k2v: dict) -> pd.DataFrame:
+                k2v: dict,
+                is_log: bool = False) -> pd.DataFrame:
     """Helper function used in `run_test()` to enable parallel processing of different runs - arguments have identical meanings
     
     Returns:
         pd.DataFrame: Has [1 + (# of cols returned by `test_diff_thresholds`)] columns, each row is a (threshold, label)
                         Columns: threshold, mean_utility, std_utility, sem_utility, mean_work_per_timestep, label
     """    
-    print(f"Run: {l}")
+    if is_log:
+        print(f"Run: {l}")
     simulation: sim.Simulation = copy.deepcopy(simulation)
     for key, val in k2v.items():
         simulation.variables[key] = val

@@ -105,15 +105,18 @@ def plot_dodged_bar_mean_utilities(title: str,
     return p
 
 def plot_line_mean_utilities(title: str, 
-                                   df: pd.DataFrame,
-                                   group_sort_order: list = None,
-                                   label_sort_order: list = None,
-                                   color_sort_order: list = None,
-                                   shape_sort_order: list = None,
-                                   is_percent_of_optimistic: bool = False,
-                                   color_title: str = None,
-                                   shape_title: str = None,
-                                   x_label: str = None) -> ggplot:
+                                df: pd.DataFrame,
+                                group_sort_order: list = None,
+                                groups_to_drop: list = None,
+                                label_sort_order: list = None,
+                                color_sort_order: list = None,
+                                color_names: list[str] = None,
+                                shape_sort_order: list = None,
+                                is_percent_of_optimistic: bool = False,
+                                color_title: str = None,
+                                shape_title: str = None,
+                                x_label: str = None) -> ggplot:
+                                   
     """Plot Relative Utility using the Optimistic model as a baseline
     (even though Relative Utility is typically measured as a fraction of a Perfect classifier)
     This uses different shapes of the same color to group lines belonging to the same category
@@ -129,6 +132,7 @@ def plot_line_mean_utilities(title: str,
         df (pd.DataFrame): Must contain 3 columns: y, label, group (optional: color, shape)
         label_sort_order (list, optional): If specified, determines ordering of x in x-axis. Defaults to None.
         color_sort_order (list, optional): If specified, determines ordering of coloring. Defaults to None.
+        color_names (list, optional): If specified, actual names displayed for each color
         shape_sort_order (list, optional): If specified, determines ordering of shapes. Defaults to None.
         is_percent_of_optimistic (bool, optional): If TRUE, then measure everything in terms of the % of the max optimistic setting. Defaults to False.
     """    
@@ -152,6 +156,11 @@ def plot_line_mean_utilities(title: str,
     if 'shape' in df:
         df['shape'].fillna('N/A', inplace=True)
         df['shape'] = pd.Categorical(df['shape'], categories=shape_sort_order if shape_sort_order is not None else pd.unique(df['shape']))
+    # Drop certain groups (if specified)
+    if groups_to_drop is not None:
+        for g in groups_to_drop:
+            df = df[df['group'] != g]
+    if not color_names: color_names = df['color'].unique()
     # Make plot
     p = (
         ggplot(df, aes(**{
@@ -167,7 +176,8 @@ def plot_line_mean_utilities(title: str,
              y = f"Achieved Utility Over Baseline { ' v. Optimistic (%)' if is_percent_of_optimistic else ''}",
              title = f"{title}",
              color=color_title if color_title else '',
-             shape=shape_title if shape_title else '')
+             shape=shape_title if shape_title else '') +
+        scale_color_hue(name = "Model", labels = color_names)
     )
     return p
 
@@ -227,59 +237,6 @@ def plot_line_compare_multiple_settings(title: str,
         )
     )
     return p
-
-def plot_sensitivity_analysis(mean_utility: float):
-    """
-    Parameters
-    ----------
-    results : dict
-        A mapping from question labels to a list of answers per category.
-        It is assumed all lists contain the same number of entries and that
-        it matches the length of *category_names*. The order is assumed
-        to be from 'Strongly disagree' to 'Strongly aisagree'
-    category_names : list of str
-        The category labels.
-    """
-    
-    category_names = ['Strongly disagree', 'Disagree',
-                    'Neither agree nor disagree', 'Agree', 'Strongly agree']
-    results = {
-        'Question 1': [10, 15, 17, 32, 26],
-        'Question 2': [26, 22, 29, 10, 13],
-        'Question 3': [35, 37, 7, 2, 19],
-        'Question 4': [32, 11, 9, 15, 33],
-        'Question 5': [21, 29, 5, 5, 40],
-        'Question 6': [8, 19, 5, 30, 38]
-    }
-    fig, ax = plt.subplots()
-    
-    labels = list(results.keys())
-    data = np.array(list(results.values()))
-    data_cum = data.cumsum(axis=1)
-    middle_index = data.shape[1]//2
-    offsets = data[:, range(middle_index)].sum(axis=1) + data[:, middle_index]/2
-    
-    # Plot Bars
-    for i, (colname, color) in enumerate(zip(category_names, category_colors)):
-        widths = data[:, i]
-        starts = data_cum[:, i] - widths - offsets
-        rects = ax.barh(labels, widths, left=starts, height=0.5,
-                        label=colname, color=color)
-    
-    # Add Zero Reference Line
-    ax.axvline(mean_utility, linestyle='--', color='black', alpha=.25)
-    
-    # X Axis
-    ax.set_xlim(-90, 90)
-    ax.xaxis.set_major_formatter(lambda x, pos: str(abs(int(x))))
-    
-    # Ledgend
-    ax.legend(ncol=len(category_names), bbox_to_anchor=(0, 1),
-              loc='lower left', fontsize='small')
-    
-    return fig, ax
-
-    
     
 ################################################
 # Theoretical Utility Analysis
