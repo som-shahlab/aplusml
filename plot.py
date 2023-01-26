@@ -42,8 +42,9 @@ def plot_mean_utility_v_threshold(title: str,
         geom_ribbon(aes(ymin='mean_utility - sem_utility', 
                                ymax='mean_utility + sem_utility',
                                fill='label'), 
-                           alpha=0.3, 
-                           colour=None) +
+                           alpha=0.3,
+                           outline_type = None,
+                           color=None) +
         geom_point(size=0.5, show_legend=False) +
         labs(x="Model Cutoff Threshold",
              y="Achieved Utility Per Patient",
