@@ -1,6 +1,20 @@
 # APLUS
 
-**A** **P**ython **L**ibrary for **U**sefulness **S**imulations of Machine Learning Models in Healthcare
+**A** **P**ython **L**ibrary for **U**sefulness **S**imulations of Machine Learning Models in Healthcare.
+
+Corresponding paper: [APLUS](https://www.sciencedirect.com/science/article/pii/S1532046423000400?via%3Dihub)
+
+Citation:
+```
+@article{wornow2023aplus,
+  title={APLUS: A Python Library for Usefulness Simulations of Machine Learning Models in Healthcare},
+  author={Wornow, Michael and Ross, Elsie Gyang and Callahan, Alison and Shah, Nigam H},
+  journal={Journal of Biomedical Informatics},
+  pages={104319},
+  year={2023},
+  publisher={Elsevier}
+}
+```
 
 ----
 
