@@ -2,7 +2,9 @@
 
 **A** **P**ython **L**ibrary for **U**sefulness **S**imulations of Machine Learning Models in Healthcare.
 
-Corresponding paper: [APLUS](https://www.sciencedirect.com/science/article/pii/S1532046423000400?via%3Dihub)
+![Graphical Abstract](img/graphical%20abstract.png)
+
+Corresponding paper: [APLUS - Journal of Biomedical Informatics](https://www.sciencedirect.com/science/article/pii/S1532046423000400?via%3Dihub)
 
 Citation:
 ```
@@ -15,10 +17,6 @@ Citation:
   publisher={Elsevier}
 }
 ```
-
-----
-
-![Graphical Abstract](img/graphical%20abstract.png)
 
 ## Motivation
 
