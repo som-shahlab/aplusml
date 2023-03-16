@@ -43,6 +43,8 @@ brew install graphviz
 
 We showcase APLUS on two use cases: PAD and ACP.
 
+Jupyter notebooks for these use cases can be found in the `tutorials/` folder.
+
 ### PAD
 
 The code used to generate the figures in our paper is located in the `tutorials/` directory in `pad.ipynb`. This notebook loads de-identified patient data from Stanford Hospital, which can be provided upon request.
