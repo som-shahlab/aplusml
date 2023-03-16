@@ -55,7 +55,7 @@ This `tutorials/pad.ipynb` was used to generate the following figures from the A
 
 ![PAD Figure 1](img/pad%20figure%201.png)
 
-![PAD Figure 2](img/pad%20figure%202.png)
+![PAD Figure 2](img/pad%20heatmap.png)
 
 ### ACP
 
