@@ -1,241 +1,18 @@
-import collections
+"""Core simulation engine which progresses patients through the desired clinical workflow"""
 import io
 import random
 from types import CodeType
-from typing import Any, Callable, Tuple, Union, Dict
+from typing import Any, Callable, Tuple, Dict, List
 import numpy as np
 import pandas as pd
-import ast
 import pickle
 import pydot
-import draw
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 
+import aplusml.draw as draw
+from aplusml.models import Patient, State, Transition, History, Utility
 
-class Utility(object):
-    def __init__(self,
-                 value: str,
-                 unit: str = '',
-                 _if: str = None):
-        self.value: str = value
-        self.unit: str = unit
-        self._if: str = _if
-        self._if_compiled: CodeType = compile(_if, '<string>', 'eval', optimize=2) if type(_if) == str else None
-        self.value_compiled: CodeType = compile(value, '<string>', 'eval', optimize=2) if type(value) == str else None
-
-    def __setattr__(self, name, value):
-        # Update compiled versions of if/value
-        if name == '_if':
-            super().__setattr__('_if_compiled', compile(value, '<string>', 'eval', optimize=2) if type(value) == str else None)
-        if name == 'value':
-            super().__setattr__('value_compiled', compile(value, '<string>', 'eval', optimize=2) if type(value) == str else None)
-        super().__setattr__(name, value)
-    
-    def is_conditional_if(self):
-        return self._if is not None
-    
-    def __repr__(self):
-        return str({
-            'value' : self.value,
-            'unit' : self.unit,
-            '_if' : self._if,
-        })
-    
-    def serialize(self):
-        return {
-            'value' : self.value,
-            'unit' : self.unit,
-            '_if' : self._if,
-        }
-
-class Transition(object):
-    def __init__(self, 
-                 dest: str,
-                 label: str,
-                 duration: int,
-                 utilities: list[Utility],
-                 resource_deltas: Dict[str, float],
-                 _if: Union[str, bool] = None,
-                 prob: Union[str, float] = None):
-        self.dest: str = dest
-        self.label: str = label
-        self.duration: int = duration
-        self.utilities: list[Utility] = utilities
-        self.resource_deltas: Dict[str, float] = resource_deltas
-        self._if: Union[str, bool] = _if # NOTE: This is referred to as 'if' outside of this object
-        self.prob: Union[str, float] = prob
-        self._if_compiled: CodeType = compile(_if, '<string>', 'eval', optimize=2) if type(_if) == str else None
-        self.prob_compiled: CodeType = compile(prob, '<string>', 'eval', optimize=2) if type(prob) == str else None
-        
-    def __setattr__(self, name, value):
-        # Update compiled versions of if/prob
-        if name == '_if':
-            super().__setattr__('_if_compiled', compile(value, '<string>', 'eval', optimize=2) if type(value) == str else None)
-        if name == 'prob':
-            super().__setattr__('prob_compiled', compile(value, '<string>', 'eval', optimize=2) if type(value) == str else None)
-        super().__setattr__(name, value)
-
-    def is_conditional_prob(self):
-        return self.prob is not None
-    def is_conditional_if(self):
-        return self._if is not None
-    
-    def get_variables_in_conditional(self) -> list[str]:
-        expression = ''
-        # Determine where to find conditional in Transition
-        if self.is_conditional_prob():
-            expression = self.prob
-        elif self.is_conditional_if():
-            expression = self._if
-        else:
-            # If there is not a conditional, then there can't be any variables involved
-            return []
-        # If the conditional is not a string (i.e. is a float or bool), then there can't be any variables involved
-        if type(expression) != str:
-            return []
-        # Parse conditional expression for variables
-        parsed_expression = ast.parse(expression)
-        parsed_variable_ids: list[str] = []
-        for node in ast.walk(parsed_expression):
-            if type(node) is ast.Name:
-                parsed_variable_ids.append(node.id)
-        return parsed_variable_ids
-
-    def print(self):
-        return f"=> {self.dest} ({self.label})"
-
-    def __repr__(self):
-        return str({
-            'dest' : self.dest,
-            'label' : self.label,
-            'duration' : self.duration,
-            'utilities' : self.utilities,
-            'if' : self._if,
-            'prob' : self.prob,
-        })
-    
-    def serialize(self):
-        return {
-            'dest' : self.dest,
-            'label' : self.label,
-            'duration' : self.duration,
-            'utilities' : [ u.serialize() for u in self.utilities ],
-            'resource_deltas' : self.resource_deltas,
-            '_if' : self._if,
-            'prob' : self.prob,
-        }
-
-class State(object):
-    def __init__(self, id: str,
-                 label: str,
-                 type: str,
-                 duration: int,
-                 utilities: list[Utility],
-                 transitions: list[Transition],
-                 resource_deltas: Dict[str, float]):
-        self.id: str = id
-        self.label: str = label
-        self.type: str = type
-        self.duration: int = duration
-        self.utilities: list[Utility] = utilities
-        self.transitions: list[Transition] = transitions
-        self.resource_deltas:  Dict[str, float] = resource_deltas
-
-    def print(self):
-        return f"{self.id} | {self.label}"
-
-    def __repr__(self):
-        return str({
-            'id' : self.id,
-            'label' : self.label,
-            'type' : self.type,
-            'duration' : self.duration,
-            'utilities' : self.utilities,
-            'transitions' : [ x.print() for x in self.transitions ],
-        })
-
-    def serialize(self):
-        return {
-            'id' : self.id,
-            'label' : self.label,
-            'type' : self.type,
-            'duration' : self.duration,
-            'utilities' : [ x.serialize() for x in self.utilities ],
-            'transitions' : [ x.serialize() for x in self.transitions ],
-            'resource_deltas' : self.resource_deltas,
-        }
-
-class History(object):
-    def __init__(self, 
-                 current_timestep: int,
-                 state_id: str,
-                 transition_idx: int, # Transition == state.transitions[idx]
-                 state_utility_idxs: list[int], # Utilities == state.utilities[idxs]
-                 transition_utility_idxs: list[int], # Utilities == state.transitions[idx].utilities[idxs]
-                 state_utility_vals: list[float], # Evaluated Utility Values == evaluate_utility_value(state.utilities[idxs].value)
-                 transition_utility_vals: list[float], # EvaluatedUtility Values == evaluate_utility_value(state.transitions[idx].utilities[idxs].value)
-                 sim_variables: dict):
-        self.current_timestep: int = current_timestep
-        self.state_id: str = state_id
-        self.transition_idx: Union[int, None] = transition_idx
-        self.state_utility_idxs: list[int] = state_utility_idxs
-        self.transition_utility_idxs: list[int] = transition_utility_idxs
-        self.state_utility_vals: list[float] = state_utility_vals
-        self.transition_utility_vals: list[float] = transition_utility_vals
-        self.sim_variables: dict = sim_variables
-    def __repr__(self):
-        return str({
-            'current_timestep' : self.current_timestep,
-            'state_id' : self.state_id,
-            'transition_idx' : self.transition_idx,
-            'state_utility_idxs' : self.state_utility_idxs,
-            'transition_utility_idxs' : self.transition_utility_idxs,
-            'state_utility_vals' : self.state_utility_vals,
-            'transition_utility_vals' : self.transition_utility_vals,
-        })
-    
-class Patient(object):
-    def __init__(self, 
-                 id: str, 
-                 start_timestep: int,
-                 properties: dict = None):
-        self.id: str = id
-        self.start_timestep: int = int(start_timestep) # Start time for this patient (i.e. admitted date)
-        self.properties: dict = properties if properties is not None else {} # Patient specific properties, i.e. "y_hat" or "y" or "los"
-        self.history: list[History]= [] # Track history of (state, transition, utility)
-        self.current_state: str = None # ID of current state
-    
-    def print_state_history(self, is_show_timesteps: bool = False):
-        if is_show_timesteps:
-            return " > ".join([ f"({h.current_timestep}) {h.state_id}" for h in self.history])
-        else:
-            return " > ".join([ h.state_id for h in self.history])
-
-    def get_sum_utilities(self, simulation) -> dict:
-        sums = collections.defaultdict(float) # [key] = unit, [value] = sum of that unit's utility across entire Patient's history
-        for h in self.history:
-            # State utilities
-            state = simulation.states[h.state_id]
-            for i, idx in enumerate(h.state_utility_idxs):
-                u = state.utilities[idx]
-                sums[u.unit] += h.state_utility_vals[i]
-            # Transition utilities (if transition exists)
-            if h.transition_idx is not None:
-                transition = state.transitions[h.transition_idx]
-                for i, idx in enumerate(h.transition_utility_idxs):
-                    u = transition.utilities[idx]
-                    sums[u.unit] += h.transition_utility_vals[i]
-        return dict(sums)
-
-    def __repr__(self):
-        return str({
-            'id' : self.id,
-            'start_timestep' : self.start_timestep,
-            'properties' : self.properties,
-            'history' : self.history,
-            'current_state' : self.current_state,
-        })
 
 class Simulation(object):
     def __init__(self):
@@ -319,7 +96,7 @@ class Simulation(object):
         return self.evaluate_expression(patient, utility.value, variables, utility.value_compiled)
             
     def select_transition(self, patient: Patient, 
-                          transitions: list[Transition],
+                          transitions: List[Transition],
                           variables: dict) -> int:
         """From a set of transitions, returns the idx of the one to take
             First, this evaluates all conditional transitions, i.e. 'if' statements
@@ -360,11 +137,11 @@ class Simulation(object):
         t_idx = start_idx_for_probs + random.choices(range(len(prob_transitions)), weights = probs)[0]
         return t_idx
 
-    def init_variables(self, variables: list[dict]):
+    def init_variables(self, variables: List[dict]):
         """Modifies 'variables' in place
 
         Args:
-            variables (list[dict]): From YAML
+            variables (List[dict]): From YAML
         """        
         # Resource initial amounts
         for v_id, v in variables.items():
@@ -381,11 +158,11 @@ class Simulation(object):
         np.random.seed(random_seed)
         random.seed(random_seed)
     
-    def is_valid_patients(self, patients: list[Patient]) -> Tuple[bool, str]:
+    def is_valid_patients(self, patients: List[Patient]) -> Tuple[bool, str]:
         """Returns true if 'patients' are valid
 
         Args:
-            patients (list[Patient]): NOTE: These aren't imported from YAML, but must be programmatically generated
+            patients (List[Patient]): NOTE: These aren't imported from YAML, but must be programmatically generated
 
         Returns:
             bool: TRUE if ecah Patient obj meets validation criteria
@@ -396,11 +173,11 @@ class Simulation(object):
             return False, f"Patients must all have unique IDs"
         return True, ""
 
-    def init_patients(self, patients: list[Patient]):
+    def init_patients(self, patients: List[Patient]):
         """Modifies 'patients' in place
 
         Args:
-            patients (list[Patient]): NOTE: These aren't imported from YAML, but must be programmatically generated
+            patients (List[Patient]): NOTE: These aren't imported from YAML, but must be programmatically generated
         """        
         for p in patients:
             # Current state = 'start'
@@ -413,14 +190,14 @@ class Simulation(object):
             print(f"{self.current_timestep} | {string}")
 
     def run(self, 
-            all_patients: list[Patient],
+            all_patients: List[Patient],
             max_timesteps: int = None,
             random_seed: int = 0,
-            is_print_log: bool = False) -> list[Patient]:
+            is_print_log: bool = False) -> List[Patient]:
         """This takes about 3 seconds to run for 15,000 patients, 10 seconds to run for 50,000 patients
 
         Args:
-            all_patients (list[Patient]): Contains all patients to be simulated, across all admit days. 
+            all_patients (List[Patient]): Contains all patients to be simulated, across all admit days. 
                 NOTE: This modifies all_patients in place
                 The only attributes that are modified are `history` and `current_state`
             max_timesteps (int, optional): End simulation after running this timestep (i.e. max_timesteps = 0, then immediately break; if max_timesteps=2, then run t=0, t=1 then break)
@@ -431,7 +208,7 @@ class Simulation(object):
         self.is_print_log = is_print_log
 
         # Track patients admitted after current value of 'self.current_timestep'
-        admitted_patients: list[Patient] = []
+        admitted_patients: List[Patient] = []
         # Track patients waiting some # of timesteps
         paused_patients: dict[int] = {} # [key] = patient ID
         # Track patients who were just unpaused
@@ -493,7 +270,7 @@ class Simulation(object):
                 most_recent_current_timestep_to_all_patients_idx = current_timestep_to_all_patients_idx[self.current_timestep]
             admitted_patients_start_idx: int = earliest_unfinished_patient_tuple[0] # NOTE: Need to save this info here for usage in 'while: True' loop
             admitted_patients_end_idx: int = most_recent_current_timestep_to_all_patients_idx + 1
-            admitted_patients: list[Patient] = all_patients[admitted_patients_start_idx:admitted_patients_end_idx]
+            admitted_patients: List[Patient] = all_patients[admitted_patients_start_idx:admitted_patients_end_idx]
             ## Set 'earliest_unfinished_patient_tuple' to best possible case (i.e. assume all 'admitted_patients' finish)
             ## We'll progressively decrease this value to "worse" cases (i.e. earlier patients in 'admitted_patients') as we loop through them below
             earliest_unfinished_patient_tuple: Tuple[int,int] = (admitted_patients_end_idx, all_patients[min(admitted_patients_end_idx, len(all_patients) - 1)].start_timestep)
@@ -603,7 +380,7 @@ class Simulation(object):
                     paused_patients[p_id] = time_left
             self.current_timestep += 1
     
-    def get_all_utility_units(self) -> list[str]:
+    def get_all_utility_units(self) -> List[str]:
         """Returns a list containing all the unit names for utilities (across both states and transitions)
             i.e. if a simulation tracks "QALY" and "USD", this returns the list ["QALY", "USD"]
         """
@@ -699,7 +476,7 @@ class Simulation(object):
             plt.axis('off')
             plt.imshow(img, aspect='equal')
 
-def sort_patient_by_preference(patients: list[Patient], 
+def sort_patient_by_preference(patients: List[Patient], 
                                property_to_sort_by: str = None, 
                                is_ascending: bool = True):
     """Sorts 'patients' in place by whatever patient property is specified in 'property_to_sort_by'
@@ -709,9 +486,10 @@ def sort_patient_by_preference(patients: list[Patient],
         patients.sort(key=lambda x : x.properties[property_to_sort_by], reverse = not is_ascending)
 
 def create_patients_for_simulation(simulation: Simulation, 
-                                   patients: list[Patient],
+                                   patients: List[Patient],
                                    func_match_patient_to_property_column: Callable = None,
-                                   random_seed: int = 0) -> list[Patient]:
+                                   random_seed: int = 0) -> List[Patient]:
+    # create deep copy of the `patients` object using pickle
     patients = pickle.loads(pickle.dumps(patients))
     patients = sorted(patients, key = lambda x: x.id)
     properties = [ (id, v) for id, v in simulation.variables.items() if v.get('type', 'scalar') == 'property' ]
@@ -791,13 +569,13 @@ def create_patients_for_simulation(simulation: Simulation,
             return None
     return patients
 
-def get_unit_utility_baselines(patients: list[Patient],
+def get_unit_utility_baselines(patients: List[Patient],
                                utilities: dict,
                                y_true_column_name: str = 'ground_truth') -> dict[float]:
     """Get average utility per patient under baseline settings (Treat All, Treat None, Treat Perfect)
 
     Args:
-        patients (list[Patient]): List of Patient objects
+        patients (List[Patient]): List of Patient objects
         utilities (dict): Utility values for TP/FP/FN/TN
         y_true_column_name (str, optional): Name of patient property that corresponds to the ground truth label. Defaults to 'ground_truth'.
             i.e. For a given patient `p`, the function will use `p.properties[y_true_column_name]` as the ground truth label for that patient
@@ -828,7 +606,7 @@ def get_unit_utility_baselines(patients: list[Patient],
         'perfect' : treat_perfect / len(patients),
     }
 
-def log_patients(simulation: Simulation, patients: list[Patient]):
+def log_patients(simulation: Simulation, patients: List[Patient]):
     for p in patients:
         print(f"{p.id} (t_0 = {p.start_timestep})")
         print('\t', p.properties)

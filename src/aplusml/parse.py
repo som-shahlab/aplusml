@@ -1,6 +1,6 @@
-import oyaml
-import sim
+"""Functions to parse YAML files into Python objects for use in `sim.py`"""
 from ruamel.yaml import YAML
+import aplusml.sim as sim
 
 VALID_METADATA_KEYS = {
     'name' : 'optional', 
@@ -67,19 +67,7 @@ VALID_UTILITY_KEYS = {
     'unit' : 'optional',
 }
 
-class UniqueKeyLoader(oyaml.SafeLoader):
-    """Used to throw Error when duplicate keys for the same YAML dict are detected
-    """    
-    def construct_mapping(self, node, deep=False):
-        mapping = set()
-        for key_node, value_node in node.value:
-            key = self.construct_object(key_node, deep=deep)
-            if key in mapping:
-                raise ValueError(f"Duplicate {key!r} key found in YAML.")
-            mapping.add(key)
-        return super().construct_mapping(node, deep)
-
-def load_yaml(path_to_yaml: str) -> dict:
+def load_config(path_to_yaml: str) -> dict:
     data = None
     with open(path_to_yaml, "r") as fd:
         try:
@@ -111,7 +99,7 @@ def is_keys_valid(yaml_entry: dict,
             return False
     return True
 
-def is_valid_yaml(yaml: dict) -> bool:
+def is_valid_config_yaml(yaml: dict) -> bool:
     #
     # Metadata
     metadata = yaml.get('metadata', {})
@@ -178,12 +166,19 @@ def is_valid_yaml(yaml: dict) -> bool:
         if not is_keys_valid(s, s_id, 'state', VALID_STATE_KEYS):
             return False
         # Ensure that all variables in resource_deltas are in the 'variables' section of the YAML
-        for v_id in s.get('resource_deltas', {}).keys():
+        resource_deltas = s.get('resource_deltas', {})
+        if resource_deltas is None:
+            print(f"ERROR - No resources specified under 'resource_deltas' for state '{s_id}'. Perhaps you left this blank accidentally?")
+            return False
+        for v_id in resource_deltas.keys():
             if v_id not in all_variable_ids:
                 print(f"ERROR - The variable {v_id} is used in a state's 'resource_deltas', but isn't listed in the 'variables' section")
                 return False
         # Utilities
         utilities = s.get('utilities', [])
+        if utilities is None:
+            print(f"ERROR - No resources specified under 'utilities' for state '{s_id}'. Perhaps you left this blank accidentally?")
+            return False
         if isinstance(utilities, list):
             for u in utilities:
                 if not is_keys_valid(u, s_id, 'utility', VALID_UTILITY_KEYS):
@@ -194,16 +189,17 @@ def is_valid_yaml(yaml: dict) -> bool:
                 return False
         # Transitions
         transitions = s.get('transitions', [])
+        if transitions is None:
+            print(f"ERROR - No resources specified under 'transitions' for state '{s_id}'. Perhaps you left this blank accidentally?")
+            return False
         for t in transitions:
             assert type(t) == dict, f"ERROR - Transitions for state '{s_id}' must be dicts"
             if not is_keys_valid(t, s_id, 'transition', VALID_TRANSITION_KEYS):
                 return False
             # Ensure that 'if' and 'prob' aren't intermixed
-            # TODO
             if 'prob' in t and 'if' in t:
                 print(f"ERROR - If you have both 'if' and 'prob' statements in the same transition, then all 'if' statements must precede the 'prob' statements for transition in state '{s_id}")
                 return False
-            # TODO
             # Ensure that all variables in resource_deltas are in the 'variables' section of the YAML
             for v_id in t.get('resource_deltas', {}).keys():
                 if v_id not in all_variable_ids:
@@ -211,6 +207,9 @@ def is_valid_yaml(yaml: dict) -> bool:
                     return False
             # Utilities
             utilities = t.get('utilities', [])
+            if utilities is None:
+                print(f"ERROR - No resources specified under 'utilities' for state '{s_id}' and transition '{t}'. Perhaps you left this blank accidentally?")
+                return False
             if isinstance(utilities, list):
                 for u in utilities:
                     if not is_keys_valid(u, s_id, 'utility', VALID_UTILITY_KEYS):
@@ -237,16 +236,16 @@ def is_valid_yaml(yaml: dict) -> bool:
         return False
     return True
 
-def create_simulation_from_yaml(yaml: dict) -> sim.Simulation:
+def create_simulation_from_config(yaml: dict) -> sim.Simulation:
     """Create a Simulation object from YAML
 
     Args:
-        yaml (dict): From 'load_yaml'
+        yaml (dict): From 'load_config'
 
     Returns:
         Simulation: Returns a Simulation object
     """
-    if not is_valid_yaml(yaml):
+    if not is_valid_config_yaml(yaml):
         raise ValueError("ERROR - Invalid YAML")
     
     # Create new Simulation

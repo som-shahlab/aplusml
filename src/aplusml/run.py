@@ -1,11 +1,12 @@
+"""Wrapper functions around `sim.py` to help run/track multiple simulations"""
 import os
 import collections
 from typing import Callable
 import copy
 import pandas as pd
 import numpy as np
-import sim
 from mpire import WorkerPool
+import aplusml.sim as sim
 
 def test_diff_thresholds(simulation: sim.Simulation, 
                          all_patients: list[sim.Patient], 
