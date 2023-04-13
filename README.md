@@ -6,13 +6,27 @@
 
 ![Graphical Abstract](img/graphical%20abstract.png)
 
+Corresponding paper: [APLUS - Journal of Biomedical Informatics](https://www.sciencedirect.com/science/article/pii/S1532046423000400?via%3Dihub)
+
+Citation:
+```
+@article{wornow2023aplus,
+  title={APLUS: A Python Library for Usefulness Simulations of Machine Learning Models in Healthcare},
+  author={Wornow, Michael and Ross, Elsie Gyang and Callahan, Alison and Shah, Nigam H},
+  journal={Journal of Biomedical Informatics},
+  pages={104319},
+  year={2023},
+  publisher={Elsevier}
+}
+```
+
 ## Motivation
 
 APLUS ML is a simulation framework for conducting usefulness assessments of machine learning models in workflows.
 
 It aims to quantitatively answer the question: *If I use this ML model within this workflow, will the benefits outweigh the costs, and by how much?*
 
-Though originally developed for clinical workflows in healthcare settings, APLUS ML is a broadly applicable library to any workflow that involves a machine learning model making decisions on a stream of datapoints.
+APLUS was originally developed for clinical workflows in healthcare settings, thus all of our examples are healthcare workflow.s. However, APLUS ML is a broadly applicable library to any workflow that involves a machine learning model making decisions on a stream of datapoints, and we encourage contributors from any domain to use and extend APLUS ML.
 
 ## Installation
 
@@ -38,10 +52,16 @@ brew install graphviz
 
 We showcase APLUS on two clinical workflows: 
 
+<<<<<<< HEAD
 1. Early detection of peripheral artery disease (PAD)
 2. Triaging patients for advanced care planning (ACP) consults
 
 ### Early Detection of PAD
+=======
+Jupyter notebooks for these use cases can be found in the `tutorials/` folder.
+
+### PAD
+>>>>>>> 88928ba3a37d5262400eb455aa36fa7ba86e5a08
 
 The code used to generate the figures in our paper is located in the `tutorials/` directory in `pad.ipynb`. This notebook loads de-identified patient data from Stanford Hospital, which can be provided upon request.
 
@@ -51,7 +71,7 @@ This `tutorials/pad.ipynb` was used to generate the following figures from the A
 
 ![PAD Figure 1](img/pad%20figure%201.png)
 
-![PAD Figure 2](img/pad%20figure%202.png)
+![PAD Figure 2](img/pad%20heatmap.png)
 
 ### Triaging Patients for ACP Consults
 
