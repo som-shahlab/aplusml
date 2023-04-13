@@ -1,0 +1,244 @@
+metadata:
+  name: "STEMI (Model)"
+  path_to_properties: "input/stemi/properties.csv"
+
+variables:
+  # Model
+  model_threshold:
+    value: 0.5
+  # ABI test
+  registration_clerk:
+    type: resource
+    init_amount: 1
+    max_amount: 1
+    refill_amount: 0 # manually refill this
+    refill_duration: 0
+  triage_nurse:
+    type: resource
+    init_amount: 2
+    max_amount: 2
+    refill_amount: 0 # manually refill this
+    refill_duration: 0
+  ecg_tech:
+    type: resource
+    init_amount: 3
+    max_amount: 3
+    refill_amount: 0 # manually refill this
+    refill_duration: 0
+  triage_physician:
+    type: resource
+    init_amount: 1
+    max_amount: 1
+    refill_amount: 0 # manually refill this
+    refill_duration: 0
+  open_ed_rooms:
+    type: resource
+    init_amount: 75
+    max_amount: 75
+    refill_amount: 0 # manually refill this
+    refill_duration: 0
+  # ED specific
+  cardiologist:
+    type: resource
+    init_amount: 1
+    max_amount: 1
+    refill_amount: 0 # manually refill this
+    refill_duration: 0
+  cath_lab_nurse:
+    type: resource
+    init_amount: 2
+    max_amount: 2
+    refill_amount: 0 # manually refill this
+    refill_duration: 0
+  cath_lab_tech:
+    type: resource
+    init_amount: 1
+    max_amount: 1
+    refill_amount: 0 # manually refill this
+    refill_duration: 0
+  ed_nurse:
+    type: resource
+    init_amount: 1
+    max_amount: 1
+    refill_amount: 0 # manually refill this
+    refill_duration: 0
+  # Patient properties
+  y:
+    type: property
+    column: y
+  is_stemi:
+    type: property
+    column: is_stemi
+  is_screen_positive:
+    type: property
+    column: is_screen_positive
+  is_stemi_severe:
+    type: property
+    column: is_stemi_severe
+  time_already_in_sim:
+    type: simulation
+  sim_current_timestep:
+    type: simulation
+  # Utilities
+  qaly:
+    value: {
+      'POS_thrombolysis' : .5,
+      'NEG_thrombolysis' : .99,
+      'POS_PCI' : .6,
+      'NEG_PCI' : .99,
+      'POS_none' : 0,
+      'NEG_none' : 1,
+    }
+
+states:
+  start:
+    type: start
+    label: "Patient Enters Hospital"
+    transitions:
+      - dest: wait_for_registration
+  wait_for_registration:
+    label: "Wait for registration"
+    transitions:
+      - dest: registration
+        if: registration_clerk > 0
+        resource_deltas:
+          registration_clerk: -1
+      - dest: wait_for_registration
+  registration:
+    label: "Register at Front Desk"
+    duration: 5
+    transitions:
+      - dest: model_prediction
+        resource_deltas:
+          registration_clerk: +1
+  model_prediction:
+    label: "Model Makes Prediction"
+    transitions:
+      - dest: wait_for_early_ecg
+        if: y_hat > model_threshold
+      - dest: wait_for_screening
+  wait_for_screening:
+    label: "Wait for Screening"
+    transitions:
+      - dest: screening
+        if: triage_nurse > 0
+        resource_deltas:
+          triage_nurse: -1
+      - dest: wait_for_screening
+  screening:
+    label: "Conduct Screening (Vitals + Complaints)"
+    duration: 10
+    transitions:
+      - dest: wait_for_early_ecg
+        if: is_screen_positive == 1
+        resource_deltas:
+          triage_nurse: +1
+      - dest: screen_negative
+        resource_deltas:
+          triage_nurse: +1
+  screen_negative:
+    label: "Screen Negative"
+    transitions:
+      - dest: wait_for_open_ed_room
+        duration: 60
+  wait_for_early_ecg:
+    label: "Wait for Early ECG"
+    duration: 5
+    transitions:
+      - dest: early_ecg
+        if: ecg_tech > 0
+        resource_deltas:
+          ecg_tech: -1
+      - dest: wait_for_early_ecg
+  early_ecg:
+    label: "Conduct Early ECG"
+    duration: 5
+    transitions:
+      - dest: wait_for_interpret_ecg
+        resource_deltas:
+          ecg_tech: +1
+  wait_for_interpret_ecg:
+    label: "Wait to Interpret ECG"
+    transitions:
+      - dest: interpret_ecg
+        if: triage_physician > 0
+        resource_deltas:
+          triage_physician: -1
+      - dest: wait_for_interpret_ecg
+  interpret_ecg:
+    label: "Interpret ECG"
+    duration: 1
+    resource_deltas:
+      triage_physician: +1
+    transitions:
+      - dest: stemi
+        if: is_stemi == 1
+      - dest: wait_for_bloodwork
+  wait_for_bloodwork:
+    label: "Wait for Bloodwork"
+    transitions:
+      - dest: bloodwork
+        if: triage_nurse > 0
+        resource_deltas:
+          triage_nurse: -1
+      - dest: wait_for_bloodwork
+  bloodwork:
+    label: "Bloodwork + Labs"
+    duration: 15
+    transitions:
+      - dest: wait_for_open_ed_room
+        resource_deltas:
+          triage_nurse: +1
+  stemi:
+    label: "Code STEMI Activation"
+    transitions:
+      - dest: move_to_ed
+  wait_for_open_ed_room:
+    label: "Wait for open ED room"
+    transitions:
+      - dest: move_to_ed
+        if: open_ed_rooms > 0 and cardiologist > 0 and cath_lab_nurse > 1 and cath_lab_tech > 0 and ed_nurse > 0
+        resource_deltas:
+          open_ed_rooms: -1
+          cardiologist: -1
+          cath_lab_nurse: -2
+          cath_lab_tech: -1
+          ed_nurse: -1
+      - dest: wait_for_open_ed_room
+  move_to_ed:
+    label: "Roomed to Main ED"
+    transitions:
+      - dest: pci
+        if: is_stemi == 1
+      - dest: no_treatment
+  pci:
+    type: end
+    label: "PCI"
+    utilities:
+      - value: qaly["POS_PCI"]
+        if: y == 1
+        unit: qaly
+      - value: qaly["NEG_PCI"]
+        if: y == 0
+        unit: qaly
+  no_treatment:
+    label: "No treatment"
+    transitions:
+      - dest: end
+    utilities:
+      - value: qaly["POS_none"]
+        if: y == 1
+        unit: qaly
+      - value: qaly["NEG_none"]
+        if: y == 0
+        unit: qaly
+  end:
+    label: "ED Stay"
+    type: end
+    duration: 60
+    resource_deltas:
+      open_ed_rooms: +1
+      cardiologist: +1
+      cath_lab_nurse: +2
+      cath_lab_tech: +1
+      ed_nurse: +1

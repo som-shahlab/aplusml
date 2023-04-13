@@ -1,0 +1,169 @@
+metadata:
+  name: "ACU (Model)"
+  path_to_properties: "input/acu/properties.csv"
+  patient_sort_preference_property:
+    variable: y_hat
+    is_ascending: False
+
+variables:
+  # Model
+  model_high_risk_threshold:
+    value: 0.9
+  model_medium_risk_threshold:
+    value: 0.8
+  model_low_risk_threshold:
+    value: 0.5
+  # Provider
+  provider_capacity:
+    type: resource
+    init_amount: 3
+    max_amount: 3
+    refill_amount: 0 # manually refill this
+    refill_duration: 0
+  # Patient properties
+  y:
+    type: property
+    column: y
+  y_hat:
+    type: property
+    column: y_hat
+  is_solution_pain:
+    type: property
+    column: is_solution_pain
+  is_solution_other:
+    type: property
+    column: is_solution_other
+  time_already_in_sim:
+    type: simulation
+  sim_current_timestep:
+    type: simulation
+  # Utilities
+  qaly:
+    value: {
+      'POS_thrombolysis' : .5,
+      'NEG_thrombolysis' : .99,
+      'POS_PCI' : .6,
+      'NEG_PCI' : .99,
+      'POS_none' : 0,
+      'NEG_none' : 1,
+    }
+
+states:
+  start:
+    type: start
+    label: "Start"
+    transitions:
+      - dest: model_prediction
+  model_prediction:
+    label: "Qual.AI Model Prediction"
+    transitions:
+      - dest: high_risk
+        if: y_hat >= model_high_risk_threshold
+      - dest: medium_risk
+        if: y_hat >= model_medium_risk_threshold
+      - dest: low_risk
+        if: y_hat >= model_low_risk_threshold
+  high_risk:
+    label: "High risk"
+    transitions:
+      - dest: myhealth_message_high
+  medium_risk:
+    label: "Medium risk"
+    transitions:
+      - dest: myhealth_message_medium
+  low_risk:
+    label: "Low risk"
+    transitions:
+      - dest: no_treatment
+  no_treatment:
+    type: end
+    label: "No futher action required"
+  myhealth_message_high:
+    label: "myHealth message to RN pool -- high risk content"
+    transitions:
+      - dest: phone_call
+        if: provider_capacity > 0
+        resource_deltas:
+          provider_capacity: -1
+  myhealth_message_medium:
+    label: "myHealth message to RN pool -- medium risk content"
+    transitions:
+      - dest: phone_call
+        if: provider_capacity > 0
+        resource_deltas:
+          provider_capacity: -1
+      - dest: mark_for_followup
+  phone_call:
+    label: "Phone call / other contact method"
+    transitions:
+      - dest: symptomatic
+        prob: 2/5
+      - dest: asymptomatic
+        prob: 3/5
+  symptomatic:
+    label: "Patient Symptomatic"
+    transitions:
+      - dest: escalation
+        prob: 1/2
+      - dest: within_scope
+        prob: 1/2
+  asymptomatic:
+    label: "Patient Asymptomatic"
+    transitions:
+      - dest: mark_for_followup
+  escalation:
+    label: "Escalation"
+    transitions:
+      - dest: oncologist
+      - dest: ita_urgent_care
+      - dest: ed
+      - dest: escalation_other
+  oncologist:
+    label: "Oncologist"
+    transitions:
+      - dest: treatment_per_provider
+  ita_urgent_care:
+    label: "ITA urgent care"
+    transitions:
+      - dest: treatment_per_provider
+  ed:
+    label: "ED"
+    transitions:
+      - dest: treatment_per_provider
+  escalation_other:
+    label: "Other"
+    transitions:
+      - dest: treatment_per_provider
+  treatment_per_provider:
+    label: "Treatment per provider"
+    type: end
+    resource_deltas:
+      provider_capacity: +1
+  within_scope:
+    label: "Solution within scope of practice"
+    transitions:
+      - dest: solution_pain
+        if: is_solution_pain == 1
+      - dest: solution_other
+        if: is_solution_other == 1
+  solution_pain:
+    label: |
+      Pain:
+      1.Call pharmacy
+      2.Document encounter and forward to primary oncology team
+    transitions:
+      - dest: mark_for_followup
+  solution_other:
+    label: |
+      Other:
+      1.Mitigation per clinician expertise.
+      2.Document encounter and forward to primary oncology team
+    transitions:
+      - dest: mark_for_followup
+  mark_for_followup:
+    label: "Mark for follow-up in 7 days or as appropriate"
+    transitions:
+      - dest: model_prediction
+        duration: 7
+        resource_deltas:
+          provider_capacity: +1
