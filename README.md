@@ -40,6 +40,7 @@ cd aplus
 # Create environment
 conda create -n aplus python=3.10 -y
 conda activate aplus
+pip3 install -e .
 pip3 install -r requirements.txt
 ```
 
@@ -52,16 +53,12 @@ brew install graphviz
 
 We showcase APLUS on two clinical workflows: 
 
-<<<<<<< HEAD
 1. Early detection of peripheral artery disease (PAD)
 2. Triaging patients for advanced care planning (ACP) consults
 
-### Early Detection of PAD
-=======
 Jupyter notebooks for these use cases can be found in the `tutorials/` folder.
 
-### PAD
->>>>>>> 88928ba3a37d5262400eb455aa36fa7ba86e5a08
+### Early Detection of PAD
 
 The code used to generate the figures in our paper is located in the `tutorials/` directory in `pad.ipynb`. This notebook loads de-identified patient data from Stanford Hospital, which can be provided upon request.
 
