@@ -1,6 +1,7 @@
 """Functions to parse YAML files into Python objects for use in `sim.py`"""
 from ruamel.yaml import YAML
 import aplusml.sim as sim
+from typing import Optional
 
 VALID_METADATA_KEYS = {
     'name' : 'optional', 
@@ -66,6 +67,22 @@ VALID_UTILITY_KEYS = {
     'if' : 'optional',
     'unit' : 'optional',
 }
+
+def load_simulation(path_to_yaml: str, path_to_patient_properties: Optional[str] = None) -> sim.Simulation:
+    """Loads YAML into Simulation object
+
+    Args:
+        path_to_yaml (str): Path to YAML file
+        path_to_patient_properties (str): Path to patient properties file
+
+    Returns:
+        aplusml.Simulation: Simulation object
+    """    
+    yaml: dict = load_config(path_to_yaml)
+    simulation: sim.Simulation = create_simulation_from_config(yaml)
+    if path_to_patient_properties:
+        simulation.metadata['path_to_properties'] = path_to_patient_properties
+    return simulation
 
 def load_config(path_to_yaml: str) -> dict:
     data = None

@@ -5,7 +5,7 @@ from .models import (
     Patient, State, Transition, History, Utility
 )
 from .parse import (
-    load_config, create_simulation_from_config,
+    load_config, create_simulation_from_config, load_simulation,
 )
 from .run import (
     test_diff_thresholds, run_test

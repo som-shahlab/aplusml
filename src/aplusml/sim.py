@@ -13,7 +13,6 @@ import matplotlib.image as mpimg
 import aplusml.draw as draw
 from aplusml.models import Patient, State, Transition, History, Utility
 
-
 class Simulation(object):
     def __init__(self):
         self.metadata = {}
