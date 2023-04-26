@@ -134,20 +134,6 @@ def setup_simulation_for_model(simulation: aplusml.Simulation,
         simulation.metadata['patient_sort_preference_property']['variable'] = f"random_resource_priority"
         simulation.metadata['patient_sort_preference_property']['is_ascending'] = False
 
-def load_simulation(path_to_yaml: str, path_to_properties: str) -> aplusml.Simulation:
-    """Loads YAML into Simulation object
-
-    Args:
-        path_to_yaml (str): Path to YAML file
-
-    Returns:
-        aplusml.Simulation: Simulation object
-    """    
-    yaml = aplusml.load_config(path_to_yaml)
-    simulation = aplusml.create_simulation_from_config(yaml)
-    simulation.metadata['path_to_properties'] = path_to_properties
-    return simulation
-
 def load_simulation_for_model(path_to_yaml: str,
                               path_to_properties: str,
                               model: str,
@@ -165,7 +151,7 @@ def load_simulation_for_model(path_to_yaml: str,
     Returns:
         aplusml.Simulation: Simulation object
     """    
-    simulation = load_simulation(path_to_yaml, path_to_properties)
+    simulation = aplusml.load_simulation(path_to_yaml, path_to_properties)
     setup_simulation_for_model(simulation, model, is_patient_sort_by_y_hat)
     if func_setup_optimistic:
         func_setup_optimistic(simulation)
