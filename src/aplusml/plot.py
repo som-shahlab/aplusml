@@ -3,9 +3,9 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import scipy
 import sklearn.metrics
 import sklearn.calibration
+from sklearn.neighbors import KernelDensity
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from plotnine import *
 import warnings
@@ -311,6 +311,14 @@ def plot_hist_pred(df_preds: pd.DataFrame, ax: plt.Axes = None) -> plt.figure:
     ax.set_xlabel("Prediction", fontdict={'fontsize' : 10})
     return fig
 
+def calc_pearsonr(a, b):
+    """Pearson correlation coefficient between two 1d vectors"""
+    return np.corrcoef(a, b)[0,1]
+
+def calc_spearmanr(a, b):
+    """Spearman correlation coefficient between two 1d vectors"""
+    return np.corrcoef(a, b)[0,1]
+
 def plot_pred_v_true(df_preds: pd.DataFrame, ax: plt.Axes = None) -> plt.figure:
     """Generate Predicted v. True Values
         x-axis = predictions ('y_hat')
@@ -319,14 +327,15 @@ def plot_pred_v_true(df_preds: pd.DataFrame, ax: plt.Axes = None) -> plt.figure:
     fig, ax = plt.subplots() if ax is None else (None, ax)
 
     # Calculate Pearson Correlation
-    pearson_corr, p_p_val = scipy.stats.pearsonr(df_preds['y_hat'], df_preds['y'])
-    spearman_corr, s_p_val = scipy.stats.spearmanr(df_preds['y_hat'], df_preds['y'])
+    pearson_corr = calc_pearsonr(df_preds['y_hat'], df_preds['y'])
+    spearman_corr = calc_spearmanr(df_preds['y_hat'], df_preds['y'])
     # Plot
     # Source: https://stackoverflow.com/a/20107592/3015186
     x = df_preds['y_hat'].values
     y = df_preds['y'].values
     xy = np.vstack([x, y])
-    z = scipy.stats.gaussian_kde(xy)(xy)
+    kde = KernelDensity(kernel='gaussian', bandwidth=0.5).fit(xy.T)
+    z = np.exp(kde.score_samples(xy.T))
     density = ax.scatter(x,y, c=z, s=10)
 
     ax.set_title(f"Predictions v. Ground Truth\nPearson $r$={round(pearson_corr, 3)}, Spearman $\\rho$={round(spearman_corr, 3)}", fontdict={'fontsize' : 12})
@@ -682,8 +691,8 @@ def calc_model_performance_metrics(df_preds: pd.DataFrame,
     Returns:
         dict: _description_
     """    
-    pearson_corr, p_p_val = scipy.stats.pearsonr(df_preds['y_hat'], df_preds['y'])
-    spearman_corr, s_p_val = scipy.stats.spearmanr(df_preds['y_hat'], df_preds['y'])
+    pearson_corr = calc_pearsonr(df_preds['y_hat'], df_preds['y'])
+    spearman_corr = calc_spearmanr(df_preds['y_hat'], df_preds['y'])
     fpr, tpr, t = sklearn.metrics.roc_curve(df_preds['y'], df_preds['y_hat'])
     auroc = sklearn.metrics.auc(fpr, tpr)
     precision, recall, t = sklearn.metrics.precision_recall_curve(df_preds['y'], df_preds['y_hat'])
