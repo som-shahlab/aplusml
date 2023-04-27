@@ -1,11 +1,15 @@
 metadata:
   name: "STEMI (Model)"
-  path_to_properties: "input/stemi/properties.csv"
+  path_to_properties: "../ignore/secure/stemi/stemi.csv"
+  patient_sort_preference_property:
+    variable: y_hat
+    is_ascending: False
 
 variables:
   # Model
   model_threshold:
     value: 0.5
+  
   # ABI test
   registration_clerk:
     type: resource
@@ -66,15 +70,18 @@ variables:
   y:
     type: property
     column: y
+  y_hat:
+    type: property
+    column: y_hat
   is_stemi:
     type: property
     column: is_stemi
+  ArrivalDTStoECG1_min:
+    type: property
+    column: ArrivalDTStoECG1_min
   is_screen_positive:
     type: property
     column: is_screen_positive
-  is_stemi_severe:
-    type: property
-    column: is_stemi_severe
   time_already_in_sim:
     type: simulation
   sim_current_timestep:
@@ -115,7 +122,7 @@ states:
     label: "Model Makes Prediction"
     transitions:
       - dest: wait_for_early_ecg
-        if: y_hat > model_threshold
+        if: y_hat >= model_threshold
       - dest: wait_for_screening
   wait_for_screening:
     label: "Wait for Screening"
@@ -143,7 +150,7 @@ states:
         duration: 60
   wait_for_early_ecg:
     label: "Wait for Early ECG"
-    duration: 5
+    duration: ArrivalDTStoECG1_min
     transitions:
       - dest: early_ecg
         if: ecg_tech > 0
