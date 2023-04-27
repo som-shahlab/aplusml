@@ -25,15 +25,7 @@ Citation:
 1) Run the following commands to install **APLUS ML**:
 
 ```bash
-# Download repo
-git clone https://github.com/som-shahlab/aplus.git
-cd aplus
-
-# Create environment
-conda create -n aplus python=3.10 -y
-conda activate aplus
-pip3 install -e .
-pip3 install -r requirements.txt
+pip install -i https://test.pypi.org/simple/ aplusml
 ```
 
 2. Install **graphviz** by [downloading it here](https://graphviz.org/download/). If you're on Mac with `homebrew`, simply run:
@@ -265,7 +257,23 @@ states: dict
           => [key] = resource from 'variables', [value] = how much to change each resource level by taking this transition (so AFTER any transitions from it are calculated)
 ```
 
-## Repository File Structure
+## Development
+
+### Installation
+
+```bash
+# Download repo
+git clone https://github.com/som-shahlab/aplus.git
+cd aplus
+
+# Create environment
+conda create -n aplus python=3.10 -y
+conda activate aplus
+pip3 install -e .
+pip3 install -r requirements.txt
+```
+
+### Repository File Structure
 
 Core APLUS module in `src/aplusml` (listed in the order that they should be used):
 1. `parse.py` - Functions to parse YAML files into Python objects for use in `sim.py`
@@ -292,7 +300,7 @@ Supporting files:
 * `input/` - Contains input data fed into the simulation
 * `output/` - Contains output data from the simulations (this is useful for caching results so you don't have to re-run time-consuming simulations)
 
-## Tests
+### Tests
 
 The file `tests/run_tests.py` runs all of the `test[d].py` files in the `tests/` directory. Each `test[d].py` file has a corresponding `test[d].yaml` file that serves as its input.
 
