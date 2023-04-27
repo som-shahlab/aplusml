@@ -9,7 +9,7 @@ def create_node_label(title: str, duration: float, utilities: list, resource_del
     edge_table_styles: str = 'cellborder="0" cellspacing="2" cellpadding="1" border="0"'
     node_table_styles: str = 'cellborder="0" cellspacing="2" cellpadding="1" border="1" style="rounded"'
     # Table content
-    dur: str = _html_escape('+' + str(duration) if duration > 0 else '--')
+    dur: str = _html_escape('+' + str(duration) if isinstance(duration, int) and duration > 0 else (str(duration) if duration else '--'))
     utils: str = ('<br align="left"/>' + '<br align="left"/>'.join([ str(idx + 1) + ') ' + _html_escape(x.value) for idx, x in enumerate(utilities) ])) if len(utilities) > 0 else '--' 
     resources: str = ('<br align="left"/>' + '<br align="left"/>'.join([ str(idx + 1) + ') ' + _html_escape(f"{'+' if v > 0 else ''}{round(v, 3)} {k}") for idx, (k, v) in enumerate(resource_deltas.items()) ])) if len(resource_deltas) > 0 else '--'
     return ('<<table ' + (edge_table_styles if is_edge else node_table_styles) + '>'

@@ -73,27 +73,24 @@ class Simulation(object):
             return True
         return self.evaluate_expression(patient, transition._if, variables, transition._if_compiled)
 
-    def evaluate_transition_prob(self, patient: Patient, 
-                                 transition: Transition,
-                                 variables: dict) -> bool:
+    def evaluate_transition_prob(self, patient: Patient, transition: Transition, variables: dict) -> bool:
         if not transition.is_conditional_prob():
             # If there is no 'prob', return None (default will be set to: 1 - (sum of other probs))
             return None
         return self.evaluate_expression(patient, transition.prob, variables, transition.prob_compiled)
 
-    def evaluate_utility_if(self, patient: Patient, 
-                            utility: Utility,
-                            variables: dict) -> bool:
+    def evaluate_utility_if(self, patient: Patient, utility: Utility, variables: dict) -> bool:
         if not utility.is_conditional_if():
             # If there is no 'if', return TRUE
             return True
         return self.evaluate_expression(patient, utility._if, variables, utility._if_compiled)
 
-    def evaluate_utility_value(self, patient: Patient, 
-                               utility: Utility,
-                               variables: dict) -> Any:
+    def evaluate_utility_value(self, patient: Patient, utility: Utility, variables: dict) -> Any:
         return self.evaluate_expression(patient, utility.value, variables, utility.value_compiled)
-            
+    
+    def evaluate_duration(self, patient: Patient, duration: str, variables: dict) -> int:
+        return self.evaluate_expression(patient, duration, variables)
+
     def select_transition(self, patient: Patient, 
                           transitions: List[Transition],
                           variables: dict) -> int:
@@ -296,13 +293,14 @@ class Simulation(object):
                     current_state: State = self.states[p.current_state]
                     transition: Transition = None
                     # Track if we need to "wait X timesteps" AS SOON AS state is hit (unless we've already waited, i.e. patient is in 'unpaused_patients')
-                    if current_state.duration > 0:
+                    current_state_duration = self.evaluate_duration(current_state.duration)
+                    if current_state_duration > 0:
                         if p.id in unpaused_patients:
                             # We HAVE already waited the requisite timesteps for 'current_state', so continue with rest of iteration
                             del unpaused_patients[p.id]
                         else:
                             # We HAVE NOT already waited the requisite timesteps for 'current_state' (i.e. this is the first time we're hitting this state)
-                            paused_patients[p.id] = current_state.duration
+                            paused_patients[p.id] = current_state_duration
                             continue
                     # Evaluate variables
                     variables = self.evaluate_variables(p)
@@ -350,9 +348,10 @@ class Simulation(object):
                         assert transition.dest in self.states, f"ERROR - Transition dest '{transition.dest}' not in 'states' section of YAML"
                         next_state = transition.dest
                         # Track if we need to "wait X timesteps" AFTER we take this transition (NOTE: we don't need to do an 'unpaused_patients' check, like we do for state, b/c it's impossible for this transition to have already been taken)
-                        if transition.duration > 0:
+                        transition_duration = self.evaluate_duration(p, transition.duration)
+                        if transition_duration > 0:
                             assert p.id not in paused_patients
-                            paused_patients[p.id] = transition.duration
+                            paused_patients[p.id] = transition_duration
                     p.current_state = next_state
                     # Decrement variables used in this STATE or TRANSITION
                     resource_deltas: Dict[str, float] = { **current_state.resource_deltas, **(transition.resource_deltas if transition else {}) }
