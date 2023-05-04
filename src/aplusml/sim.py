@@ -206,11 +206,11 @@ class Simulation(object):
         # Track patients admitted after current value of 'self.current_timestep'
         admitted_patients: List[Patient] = []
         # Track patients waiting some # of timesteps
-        paused_patients: dict[int] = {} # [key] = patient ID
+        paused_patients: dict[tuple[int, str]] = {} # [key] = patient ID, [value] = (time remaining in state/transition, state ID / transition dest)
         # Track patients who were just unpaused
-        unpaused_patients: dict[bool] = {} # [key] = patient ID
+        unpaused_patients: dict[str] = {} # [key] = patient ID, [value] = state ID/transition dest where patient is paused
         # Track patients who hit an end state
-        finished_patients: dict[bool] = {} # [key] = patient ID
+        finished_patients: dict[bool] = {} # [key] = patient ID, [value] = TRUE if patient hit an end state
         
         # Reset simulation to initialize for run
         self.init_patients(all_patients)
@@ -259,6 +259,7 @@ class Simulation(object):
                         # Cap resource at 'max_amount'
                         v['level'] = min(v['max_amount'], v['level'])
                     assert v['level'] <= v['max_amount'], f"ERROR - Variable '{v}' value for 'level' exceeded 'max_amount' during REFILL"
+            
             #
             # Admit new patients
             #
@@ -270,17 +271,22 @@ class Simulation(object):
             ## Set 'earliest_unfinished_patient_tuple' to best possible case (i.e. assume all 'admitted_patients' finish)
             ## We'll progressively decrease this value to "worse" cases (i.e. earlier patients in 'admitted_patients') as we loop through them below
             earliest_unfinished_patient_tuple: Tuple[int,int] = (admitted_patients_end_idx, all_patients[min(admitted_patients_end_idx, len(all_patients) - 1)].start_timestep)
+
             #
             # Process admitted patients
             #
             # Within a timestep, ordering of patients is arbitrary, so process them
             # in order of our constraint preference 
-            # (NOTE: this avoids the need to do separate processing on individual constraints)
+            # NOTE: this avoids the need to do separate processing on individual constraints
+            # NOTE: we need to return the actual sorting indices instead of sorting the list inplace
+            # b/c we need to know the actual indices of each element in `admitted_patients` so
+            # that we can adjust `earliest_unfinished_patient_tuple` correctly
             patient_sort_preference_variable: str = self.metadata['patient_sort_preference_property'].get('variable') if self.metadata['patient_sort_preference_property'] else None
             patient_sort_preference_is_ascending: str = self.metadata['patient_sort_preference_property'].get('is_ascending') if self.metadata['patient_sort_preference_property'] else None
-            sort_patient_by_preference(admitted_patients, property_to_sort_by=patient_sort_preference_variable, is_ascending=patient_sort_preference_is_ascending)
-            # print(self.current_timestep, "|", len(admitted_patients), admitted_patients_start_idx, ':', admitted_patients_end_idx, [ p.id for p in admitted_patients ])
-            for p_idx, p in enumerate(admitted_patients):
+            sorted_indices = sort_patient_by_preference(admitted_patients, property_to_sort_by=patient_sort_preference_variable, is_ascending=patient_sort_preference_is_ascending)
+            self.log(f"{self.current_timestep} | admitted_patients_idxs=[{admitted_patients_start_idx}:{admitted_patients_end_idx}] | earliest unfinished tuple={earliest_unfinished_patient_tuple} | finished={len(finished_patients)} paused={len(paused_patients)} unpaused={len(unpaused_patients)}")
+            for p_idx in sorted_indices:
+                p = admitted_patients[p_idx]
                 while True:
                     # Progress patient until hit pause or finish...
                     if p.id in finished_patients:
@@ -292,18 +298,25 @@ class Simulation(object):
                     # Go through 'current_state'...
                     current_state: State = self.states[p.current_state]
                     transition: Transition = None
-                    # Track if we need to "wait X timesteps" AS SOON AS state is hit (unless we've already waited, i.e. patient is in 'unpaused_patients')
-                    current_state_duration = self.evaluate_duration(current_state.duration)
-                    if current_state_duration > 0:
-                        if p.id in unpaused_patients:
-                            # We HAVE already waited the requisite timesteps for 'current_state', so continue with rest of iteration
-                            del unpaused_patients[p.id]
-                        else:
-                            # We HAVE NOT already waited the requisite timesteps for 'current_state' (i.e. this is the first time we're hitting this state)
-                            paused_patients[p.id] = current_state_duration
-                            continue
                     # Evaluate variables
                     variables = self.evaluate_variables(p)
+                    # Track if we need to "wait X timesteps" AS SOON AS state is hit (unless we've already waited, i.e. patient is in 'unpaused_patients')
+                    if p.id in unpaused_patients:
+                        # Unpause patient
+                        paused_state_or_transition: str = unpaused_patients[p.id]
+                        del unpaused_patients[p.id]
+                        # Check if we've already waited the requisite timesteps for 'current_state'
+                        if paused_state_or_transition == current_state.id:
+                            # We HAVE already waited the requisite timesteps for 'current_state', so continue with rest of iteration
+                            pass
+                        else:
+                            # We HAVE NOT already waited the requisite timesteps for 'current_state' (i.e. this is the first time we're hitting this state)
+                            # so we must have been waiting on some other state / transition
+                            current_state_duration = self.evaluate_duration(p, current_state.duration, variables)
+                            if current_state_duration > 0:
+                                # If we need to wait > 0 timesteps, then add patient to 'paused_patients'
+                                paused_patients[p.id] = (current_state_duration, current_state.id)
+                                continue
                     # Select TRANSITION / Update if patient is 'finished' with workflow (i.e. has reached an end state)
                     transition_idx: int = None
                     if current_state.type == 'end':
@@ -348,10 +361,10 @@ class Simulation(object):
                         assert transition.dest in self.states, f"ERROR - Transition dest '{transition.dest}' not in 'states' section of YAML"
                         next_state = transition.dest
                         # Track if we need to "wait X timesteps" AFTER we take this transition (NOTE: we don't need to do an 'unpaused_patients' check, like we do for state, b/c it's impossible for this transition to have already been taken)
-                        transition_duration = self.evaluate_duration(p, transition.duration)
+                        transition_duration = self.evaluate_duration(p, transition.duration, variables)
                         if transition_duration > 0:
                             assert p.id not in paused_patients
-                            paused_patients[p.id] = transition_duration
+                            paused_patients[p.id] = (transition_duration, transition.dest)
                     p.current_state = next_state
                     # Decrement variables used in this STATE or TRANSITION
                     resource_deltas: Dict[str, float] = { **current_state.resource_deltas, **(transition.resource_deltas if transition else {}) }
@@ -362,7 +375,7 @@ class Simulation(object):
                         # Cap resource at 'max_amount'
                         self.variables[v_id]['level'] = min(self.variables[v_id]['max_amount'], self.variables[v_id]['level'])
                         assert self.variables[v_id]['level'] <= self.variables[v_id]['max_amount'], f"ERROR - Variable '{v_id}' value for 'level' exceeded 'max_amount' "
-                    self.log(f"=> {transition.dest if transition else 'N/A'}")
+                    self.log(f"({p.id}) => {transition.dest if transition else 'N/A'}")
             #
             # By this point, all patients are either finished or paused
             # Now, we take a timestep forward
@@ -370,12 +383,16 @@ class Simulation(object):
             
             # For all paused patients, advance them one timestep...
             for p_id in list(paused_patients.keys()):
-                time_left = paused_patients[p_id] - 1
+                time_left = paused_patients[p_id][0]
+                paused_state = paused_patients[p_id][1]
+                # Decrement time left
+                time_left -= 1
                 if time_left <= 0:
                     del paused_patients[p_id]
-                    unpaused_patients[p_id] = 1
+                    # Record that we just unpaused this patient from this state/transition
+                    unpaused_patients[p_id] = paused_state
                 else:
-                    paused_patients[p_id] = time_left
+                    paused_patients[p_id] = (time_left, paused_state)
             self.current_timestep += 1
     
     def get_all_utility_units(self) -> List[str]:
@@ -476,12 +493,14 @@ class Simulation(object):
 
 def sort_patient_by_preference(patients: List[Patient], 
                                property_to_sort_by: str = None, 
-                               is_ascending: bool = True):
-    """Sorts 'patients' in place by whatever patient property is specified in 'property_to_sort_by'
-        NOTE: This is done in place for speed
+                               is_ascending: bool = True) -> List[int]:
+    """Returns the indices that will sort 'patients' by whatever patient property is specified in 'property_to_sort_by'
     """
     if property_to_sort_by:
-        patients.sort(key=lambda x : x.properties[property_to_sort_by], reverse = not is_ascending)
+        properties = [ x.properties[property_to_sort_by] for x in patients ]
+        return sorted(range(len(patients)), key=properties.__getitem__, reverse = not is_ascending)
+    else:
+        return range(len(patients))
 
 def create_patients_for_simulation(simulation: Simulation, 
                                    patients: List[Patient],
