@@ -184,7 +184,7 @@ class History(object):
             'state_utility_vals' : self.state_utility_vals,
             'transition_utility_vals' : self.transition_utility_vals,
         })
-    
+
 class Patient(object):
     def __init__(self, 
                  id: str, 

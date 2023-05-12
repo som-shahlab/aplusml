@@ -16,8 +16,9 @@ from aplusml.models import Patient, State, Transition, History, Utility
 class Simulation(object):
     def __init__(self):
         self.metadata = {}
-        self.variables: dict[dict] = {} # [key] = id, [value] = dict
-        self.states: dict[State] = {} # [key] = id, [value] = State
+        self.variables: Dict[str, Dict] = {} # [key] = id, [value] = dict
+        self.variable_history: Dict[List[Tuple[int, Any]]] = {} # [key] = id, [value] = tuple(timestep, value)
+        self.states: Dict[str, State] = {} # [key] = id, [value] = State
         self.current_timestep: int = None
     
     def evaluate_variables(self, patient: Patient) -> dict:
@@ -144,6 +145,7 @@ class Simulation(object):
             if v['type'] == 'resource':
                 variables[v_id]['level'] = v['init_amount']
                 variables[v_id]['last_refill_timestep'] = 0
+                self.variable_history[v_id] = [ (0, variables[v_id]['level']) ]
 
     def init_run(self, random_seed: int = 0):
         # Track simulation timesteps
@@ -250,7 +252,7 @@ class Simulation(object):
             #
             # Replenish resources
             #
-            for _, v in self.variables.items():
+            for v_id, v in self.variables.items():
                 if v.get('type', 'scalar') == 'resource':
                     if self.current_timestep - v['last_refill_timestep'] >= v['refill_duration']:
                         # Refill resource
@@ -258,6 +260,7 @@ class Simulation(object):
                         v['level'] += v['refill_amount']
                         # Cap resource at 'max_amount'
                         v['level'] = min(v['max_amount'], v['level'])
+                        self.variable_history[v_id].append((self.current_timestep, v['level']))
                     assert v['level'] <= v['max_amount'], f"ERROR - Variable '{v}' value for 'level' exceeded 'max_amount' during REFILL"
             
             #
@@ -300,23 +303,23 @@ class Simulation(object):
                     transition: Transition = None
                     # Evaluate variables
                     variables = self.evaluate_variables(p)
-                    # Track if we need to "wait X timesteps" AS SOON AS state is hit (unless we've already waited, i.e. patient is in 'unpaused_patients')
+                    # Unpause patient if we've already waited the requisite timesteps
+                    paused_state_or_transition = None
                     if p.id in unpaused_patients:
-                        # Unpause patient
                         paused_state_or_transition: str = unpaused_patients[p.id]
                         del unpaused_patients[p.id]
-                        # Check if we've already waited the requisite timesteps for 'current_state'
-                        if paused_state_or_transition == current_state.id:
-                            # We HAVE already waited the requisite timesteps for 'current_state', so continue with rest of iteration
-                            pass
-                        else:
-                            # We HAVE NOT already waited the requisite timesteps for 'current_state' (i.e. this is the first time we're hitting this state)
-                            # so we must have been waiting on some other state / transition
-                            current_state_duration = self.evaluate_duration(p, current_state.duration, variables)
-                            if current_state_duration > 0:
-                                # If we need to wait > 0 timesteps, then add patient to 'paused_patients'
-                                paused_patients[p.id] = (current_state_duration, current_state.id)
-                                continue
+                    # Track if we need to "wait X timesteps" AS SOON AS state is hit (unless we've already waited, i.e. patient is in 'unpaused_patients')
+                    if paused_state_or_transition is not None and paused_state_or_transition == current_state.id:
+                        # We HAVE already waited the requisite timesteps for 'current_state', so continue with rest of iteration
+                        pass
+                    else:
+                        # We HAVE NOT already waited the requisite timesteps for 'current_state' (i.e. this is the first time we're hitting this state,
+                        # or we were just waiting but on some other state / transition
+                        current_state_duration = self.evaluate_duration(p, current_state.duration, variables)
+                        if current_state_duration > 0:
+                            # If we need to wait > 0 timesteps, then add patient to 'paused_patients'
+                            paused_patients[p.id] = (current_state_duration, current_state.id)
+                            continue
                     # Select TRANSITION / Update if patient is 'finished' with workflow (i.e. has reached an end state)
                     transition_idx: int = None
                     if current_state.type == 'end':
@@ -340,7 +343,7 @@ class Simulation(object):
                             if utils_idx == 0: 
                                 state_utility_idxs.append(u_idx)
                                 state_utility_vals.append(u_val)
-                            else: 
+                            else:
                                 transition_utility_idxs.append(u_idx)
                                 transition_utility_vals.append(u_val)
                     # Record history
@@ -374,6 +377,7 @@ class Simulation(object):
                         self.variables[v_id]['level'] += delta
                         # Cap resource at 'max_amount'
                         self.variables[v_id]['level'] = min(self.variables[v_id]['max_amount'], self.variables[v_id]['level'])
+                        self.variable_history[v_id].append((self.current_timestep, self.variables[v_id]['level']))
                         assert self.variables[v_id]['level'] <= self.variables[v_id]['max_amount'], f"ERROR - Variable '{v_id}' value for 'level' exceeded 'max_amount' "
                     self.log(f"({p.id}) => {transition.dest if transition else 'N/A'}")
             #
@@ -496,7 +500,16 @@ def sort_patient_by_preference(patients: List[Patient],
                                is_ascending: bool = True) -> List[int]:
     """Returns the indices that will sort 'patients' by whatever patient property is specified in 'property_to_sort_by'
     """
-    if property_to_sort_by:
+    if property_to_sort_by == 'id':
+        # Attribute that is directly part of `Patient` object
+        properties = [ x.id for x in patients ]
+        return sorted(range(len(patients)), key=properties.__getitem__, reverse = not is_ascending)
+    elif property_to_sort_by == 'start_timestep':
+        # Attribute that is directly part of `Patient` object
+        properties = [ x.start_timestep for x in patients ]
+        return sorted(range(len(patients)), key=properties.__getitem__, reverse = not is_ascending)
+    elif property_to_sort_by:
+        # Attribute in `.properties` attribute
         properties = [ x.properties[property_to_sort_by] for x in patients ]
         return sorted(range(len(patients)), key=properties.__getitem__, reverse = not is_ascending)
     else:

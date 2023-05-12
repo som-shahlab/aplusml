@@ -172,8 +172,9 @@ def is_valid_config_yaml(yaml: dict) -> bool:
     # Ensure 'patient_sort_preference_property' is an actual property
     patient_sort_preference_property = metadata.get('patient_sort_preference_property', {}).get('variable')
     if patient_sort_preference_property and len([ key for key, val in variables.items() if val.get('type') == 'property' and key == patient_sort_preference_property ]) != 1:
-        print("ERROR - The 'variable' key in metadata's 'patient_sort_preference_property' must be the name of a variable with the type 'property'")
-        return False
+        if patient_sort_preference_property not in [ 'start_timestep', 'id']:
+            print("ERROR - The 'variable' key in metadata's 'patient_sort_preference_property' must be the name of a variable with the type 'property' or must be an attribute of the 'Patient' class")
+            return False
     #
     # States
     states = yaml.get('states', {})
