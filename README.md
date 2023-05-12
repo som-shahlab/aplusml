@@ -25,7 +25,7 @@ Citation:
 1) Run the following commands to install **APLUS ML**:
 
 ```bash
-pip install -i https://test.pypi.org/simple/ aplusml
+pip install aplusml
 ```
 
 2. Install **graphviz** by [downloading it here](https://graphviz.org/download/). If you're on Mac with `homebrew`, simply run:
