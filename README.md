@@ -22,7 +22,7 @@ Citation:
 
 ## Installation
 
-1) Run the following commands to install **APLUS ML**:
+1. Run the following commands to install **APLUS ML**:
 
 ```bash
 pip install aplusml
