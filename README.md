@@ -33,6 +33,12 @@ pip install aplusml
 brew install graphviz
 ```
 
+## Usage
+
+Run `tutorials/synthetic_pad.ipynb` to try an example notebook which works out-of-the-box.
+
+This simulates a utility analysis of PAD referral pathways for synthetic PAD patients.
+
 ## Motivation
 
 APLUS ML is a simulation framework for conducting usefulness assessments of machine learning models in workflows.
