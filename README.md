@@ -101,9 +101,9 @@ Each state $s \in S$ has associated with it:
 
 Invariants:
 * $|\{ s \in S | \tau_s = \text{start} \}| = 1$
-* $ \forall s \in S$ such that $\tau_s = \text{start}, |T_s| > 0$
-* $ \forall s \in S$ such that $\tau_s = \text{normal}, |T_s| > 0$
-* $ \forall s \in S$ such that $\tau_s = \text{end}, |T_s| = 0$
+* $\forall s \in S$ such that $\tau_s = \text{start}, |T_s| > 0$
+* $\forall s \in S$ such that $\tau_s = \text{normal}, |T_s| > 0$
+* $\forall s \in S$ such that $\tau_s = \text{end}, |T_s| = 0$
 
 ### Transitions
 Given the set of all transitions $T$, each transition $t \in T_s \subseteq T$ has associated with it:
@@ -139,7 +139,7 @@ A resource $r \in R$ is a constrained resource that is shared across all patient
 Each patient $p \in P$ has associated with it:
 1. A start timestep $\lambda_p$ representing the timestep of the simulation at which the patient began progressing through the workflow (i.e. the day that the patient was admitted to the hospital)
 1. A current state $s_p \in S$. The patient always starts at a state $s_p$ where $\tau_{s_p} = \text{start}$
-2. A set of **properties** $\Rho_p$ which can be anything (integers, floats, strings, dictionaries, lists, etc.)
+2. A set of **properties** $\rho_p$ which can be anything (integers, floats, strings, dictionaries, lists, etc.)
 3. A **history** object $H_p$ which captures all of the past states, transitions, and utilities that the patient achieved.
 
 ### Running a Simulation
