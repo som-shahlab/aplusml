@@ -2,6 +2,7 @@
 import pandas as pd
 import numpy as np
 from typing import Callable, Tuple, List
+
 import aplusml
 
 def generate_csv(PATH_TO_DL_MODEL, PATH_TO_RF_MODEL, PATH_TO_LR_MODEL, PATH_TO_PATIENT_PROPERTIES) -> pd.DataFrame:
@@ -112,6 +113,44 @@ def generate_patient_list(simulation: aplusml.Simulation,
     all_patients = aplusml.create_patients_for_simulation(simulation, 
                                                         all_patients,
                                                         # Ignore p.id since we want to randomly sample patients from our CSV
+                                                        lambda p_id, random_idx, df, col: df.iloc[random_idx][col],
+                                                        random_seed = 0)
+    return all_patients
+
+def generate_patient_list_seismometer(simulation: aplusml.Simulation,
+                                      seismometer_patients : pd.DataFrame,
+                            mean_admits_per_day: int = 35, 
+                          num_days: int = 500) -> List[aplusml.Patient]:
+    """Generate list of Patient objects fed into Simulation
+        These patients have the model predictions from Elsie's original files,
+        plus a `start_timestep` (so that their admittance is properly staggered)
+
+    Args:
+        mean_admits_per_day (int, optional): Mean of Poisson dist for admits per day. Defaults to 35.
+        num_days (int, optional): Total number of days to simulate. Defaults to 500.
+
+    Returns:
+        List[aplusml.Patient]: List of Patients
+    """    
+    # Sample patients randomly
+    np.random.seed(0)
+
+    # Simulate number of patients per day
+    num_admits_per_day = np.random.poisson(lam=mean_admits_per_day, 
+                                            size=num_days)
+
+    # Simulate patients
+    all_patients: List[aplusml.Patient] = []
+    for timestep, n_admits in enumerate(num_admits_per_day):
+        for x in range(n_admits):
+            all_patients.append(aplusml.Patient(
+                len(all_patients), # ID
+                timestep, # Start timestep
+            ))
+
+    all_patients = aplusml.load_patients_for_simulation(simulation, 
+                                                        all_patients,
+                                                        seismometer_patients,
                                                         lambda p_id, random_idx, df, col: df.iloc[random_idx][col],
                                                         random_seed = 0)
     return all_patients
