@@ -1,0 +1,30 @@
+# Can be separated into two files, this has both predictions and events
+# This should describe the data available, but not necessarily used
+predictions:
+- definition: Patient identifier
+  dtype: object
+  name: id
+- definition: Deep Learning output
+  dtype: int64
+  name: y_hat_dl 
+- definition: Random Forest output
+  dtype: int64
+  name: y_hat_rf
+- definition: Logistic Regression output
+  dtype: int64
+  name: y_hat_lr 
+- definition: ABI test prediction
+  dtype: int64
+  name: abi_test_pred
+- definition: Random resource priority
+  dtype:int64
+  name:random_resource_priority
+- definition: Timestamp of when the patient was scored
+  dtype: datetime64[ns]
+  name: ScoringTime
+- definition: PAD binary indicator
+  dtype: bool
+  name: y
+  display_name: "Our Target"
+  definition: |
+    A binary indicator of whether the patient experienced the predicted event

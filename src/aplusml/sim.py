@@ -599,6 +599,58 @@ def create_patients_for_simulation(simulation: Simulation,
             return None
     return patients
 
+def load_patients_for_simulation( simulation: Simulation, 
+                                   patients: List[Patient],
+                                   seismometer_patients_dataframe: pd.DataFrame,
+                                   func_match_patient_to_property_column: Callable = None,
+                                   random_seed: int = 0) -> List[Patient]:
+    
+    patients = pickle.loads(pickle.dumps(patients))
+    patients = sorted(patients, key = lambda x: x.id)
+    properties = [ (id, v) for id, v in simulation.variables.items() if v.get('type', 'scalar') == 'property' ]
+
+    properties_col_for_patient_id = simulation.metadata.get('properties_col_for_patient_id', None)
+
+    if properties_col_for_patient_id:
+        # Check that column corresponding to the Patient ID actually exists in Seismometer dataframe
+        if properties_col_for_patient_id not in seismometer_patients_dataframe.columns:
+            print(f"ERROR - The value for `properties_col_for_patient_id` ({properties_col_for_patient_id}) must be a column name in the dataframe {seismometer_patients_dataframe}")
+            return None
+        # Sort Seismometer patients by ID
+        seismometer_patients_dataframe = seismometer_patients_dataframe.sort_values(properties_col_for_patient_id)
+    # If we want to randomly sample patients from the Seismometer dataframe (instead of using their ID), 
+    # then do this sampling deterministically by tracking `map_pid_to_random_df_idx`
+    np.random.seed(random_seed)
+    random_idxs = np.random.randint(0, seismometer_patients_dataframe.shape[0], size = len(patients))
+    map_pid_to_random_df_idx = { p.id: random_idxs[idx] for idx, p in enumerate(patients) }
+    
+    # Add properties to each Patient
+    np.random.seed(random_seed)
+    for (v_id, v) in properties:
+        if 'value' in v:
+            # Set to constant
+            for p in patients:
+                p.properties[v_id] = v['value']
+        elif 'column' in v:
+            # Load from patients_dataframe
+            if v['column'] not in seismometer_patients_dataframe:
+                print(f"ERROR - 'column' {v['column']} is not contained in the dataframe {seismometer_patients_dataframe}")
+                return None
+            if properties_col_for_patient_id:
+                ## NOTE: This may seem like an unnecessary special case of the functionality offered by `func_match_patient_to_property_column`,
+                ## But its a necessary performance optimization that actually helps speed up the program a lot
+                sorted_properties = seismometer_patients_dataframe[v['column']].values
+                for p_idx, p in enumerate(patients):
+                    p.properties[v_id] = sorted_properties[p_idx]
+            else:
+                if func_match_patient_to_property_column is None and properties_col_for_patient_id is None:
+                    print(f"ERROR - You need to either specify a `func_match_patient_to_property_column` when calling this function, or the `properties_col_for_patient_id` metadata property in your YAML file (otherwise we have no idea how to match patients to rows in the file)")
+                    return None
+                for p in patients:
+                    p.properties[v_id] = func_match_patient_to_property_column(p.id, map_pid_to_random_df_idx[p.id], seismometer_patients_dataframe, v['column'])
+    return patients
+
+
 def get_unit_utility_baselines(patients: List[Patient],
                                utilities: dict,
                                y_true_column_name: str = 'ground_truth') -> dict[float]:
