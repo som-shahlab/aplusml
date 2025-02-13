@@ -263,6 +263,18 @@ states: dict
           => [key] = resource from 'variables', [value] = how much to change each resource level by taking this transition (so AFTER any transitions from it are calculated)
 ```
 
+## API
+
+Higher-level funcs to load / run simulations:
+  * `aplusml.load_simulation(path_to_config_yaml: str, path_to_patient_properties_csv: str) -> sim.Simulation` — loads config YAML and CSV containing patients, returns a Simulation object
+  * `aplusml.run_test(simulation: sim.Simulation, all_patients: List[sim.Patient], labels: List[str], keys2values: List[Dict]) -> pd.DataFrame` — runs a set of simulations with different settings
+      * `labels` = Name for each simulation setting
+      * `keys2values` = Variables in simulation to overwrite for each setting
+
+Methods for simulations:
+  * `simulation.run(patients: List[sim.Patient]` -- runs patients through simulation
+  * `simulation.draw_workflow_diagram(figsize)` — outputs Graphviz representation of workflow in simulation
+
 ## Development
 
 ### Installation
