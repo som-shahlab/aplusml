@@ -45,7 +45,7 @@ APLUS ML is a simulation framework for conducting usefulness assessments of mach
 
 It aims to quantitatively answer the question: *If I use this ML model within this workflow, will the benefits outweigh the costs, and by how much?*
 
-APLUS was originally developed for clinical workflows in healthcare settings, thus all of our examples are healthcare workflow.s. However, APLUS ML is a broadly applicable library to any workflow that involves a machine learning model making decisions on a stream of datapoints, and we encourage contributors from any domain to use and extend APLUS ML.
+APLUS was originally developed for clinical workflows in healthcare settings, thus all of our examples are healthcare workflows. However, APLUS ML is a broadly applicable library to any workflow that involves a machine learning model making decisions on a stream of datapoints, and we encourage contributors from any domain to use and extend APLUS ML.
 
 ## Tutorials
 
