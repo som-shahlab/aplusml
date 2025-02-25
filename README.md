@@ -45,7 +45,7 @@ APLUS ML is a simulation framework for conducting usefulness assessments of mach
 
 It aims to quantitatively answer the question: *If I use this ML model within this workflow, will the benefits outweigh the costs, and by how much?*
 
-APLUS was originally developed for clinical workflows in healthcare settings, thus all of our examples are healthcare workflow.s. However, APLUS ML is a broadly applicable library to any workflow that involves a machine learning model making decisions on a stream of datapoints, and we encourage contributors from any domain to use and extend APLUS ML.
+APLUS was originally developed for clinical workflows in healthcare settings, thus all of our examples are healthcare workflows. However, APLUS ML is a broadly applicable library to any workflow that involves a machine learning model making decisions on a stream of datapoints, and we encourage contributors from any domain to use and extend APLUS ML.
 
 ## Tutorials
 
@@ -262,6 +262,18 @@ states: dict
         resource_deltas (+): dict[float] (default = {})
           => [key] = resource from 'variables', [value] = how much to change each resource level by taking this transition (so AFTER any transitions from it are calculated)
 ```
+
+## API
+
+Higher-level funcs to load / run simulations:
+  * `aplusml.load_simulation(path_to_config_yaml: str, path_to_patient_properties_csv: str) -> sim.Simulation` — loads config YAML and CSV containing patients, returns a Simulation object
+  * `aplusml.run_test(simulation: sim.Simulation, all_patients: List[sim.Patient], labels: List[str], keys2values: List[Dict]) -> pd.DataFrame` — runs a set of simulations with different settings
+      * `labels` = Name for each simulation setting
+      * `keys2values` = Variables in simulation to overwrite for each setting
+
+Methods for simulations:
+  * `simulation.run(patients: List[sim.Patient]` -- runs patients through simulation
+  * `simulation.draw_workflow_diagram(figsize)` — outputs Graphviz representation of workflow in simulation
 
 ## Development
 

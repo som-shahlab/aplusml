@@ -1,5 +1,5 @@
 from .sim import (
-    Simulation, sort_patient_by_preference, create_patients_for_simulation, get_unit_utility_baselines, log_patients,
+    Simulation, sort_patient_by_preference, create_patients_for_simulation, load_patients_for_simulation, get_unit_utility_baselines, log_patients,
 )
 from .models import (
     Patient, State, Transition, History, Utility

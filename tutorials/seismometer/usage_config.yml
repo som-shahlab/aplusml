@@ -1,0 +1,13 @@
+data_usage:
+  # Define the keys used to identify an output;
+  # entity_id is required while a secondary context grouping is optional
+  entity_id: id
+  # Each use case must define a primary output and target
+  # Output should be in the predictions table but target may be a display name of a windowed event
+  primary_output: y_hat_dl
+  # Predict time indicates the column for timestamp associated with the row
+  predict_time: ScoringTime
+  # This list defines available cohort options for the default selectors
+  # The event_table allows mapping of event columns to those expected by the tool
+  # Minimum group size to be included in the analysis
+  censor_min_count: 10
