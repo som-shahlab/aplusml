@@ -4,6 +4,11 @@ ignore/
 myvenv/
 .DS_Store
 
+# Docs
+docs/source/html/
+docs/source/latex/
+docs/source/_build/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

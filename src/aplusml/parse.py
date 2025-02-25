@@ -1,4 +1,7 @@
-"""Functions to parse YAML files into Python objects for use in `sim.py`"""
+"""
+Functions to parse APLUS config YAML files into Python objects for use in `sim.py`.
+Contains a list of required and optional keys for each config section.
+"""
 from ruamel.yaml import YAML
 import aplusml.sim as sim
 from typing import Optional
@@ -69,14 +72,14 @@ VALID_UTILITY_KEYS = {
 }
 
 def load_simulation(path_to_yaml: str, path_to_patient_properties: Optional[str] = None) -> sim.Simulation:
-    """Loads YAML into Simulation object
+    """Loads YAML into an APLUS :class:`aplusml.sim.Simulation` object
 
     Args:
         path_to_yaml (str): Path to YAML file
         path_to_patient_properties (str): Path to patient properties file
 
     Returns:
-        aplusml.Simulation: Simulation object
+        :class:`aplusml.sim.Simulation`: Simulation object
     """    
     yaml: dict = load_config(path_to_yaml)
     simulation: sim.Simulation = create_simulation_from_config(yaml)

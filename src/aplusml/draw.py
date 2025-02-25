@@ -1,10 +1,25 @@
+"""
+Functions for drawing graphs using graphviz
+"""
 
 def _html_escape(text: str):
     """Escape HTML special characters: &, <, >, and " for use in HTML table in graphviz"""
     return text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('\n', '<br align="left"/>')
 
 def create_node_label(title: str, duration: float, utilities: list, resource_deltas: dict, is_edge: bool = False) -> str:
-    """Create label for graphviz node"""
+    """
+    Create a label for a graphviz node
+    
+    Args:
+        title: Title of the node
+        duration: Duration of the node
+        utilities: List of utilities associated with the node
+        resource_deltas: Dictionary of resource deltas associated with the node
+        is_edge: Whether the node is an edge
+        
+    Returns:
+        The HTML string for the node
+    """
     # Styles
     edge_table_styles: str = 'cellborder="0" cellspacing="2" cellpadding="1" border="0"'
     node_table_styles: str = 'cellborder="0" cellspacing="2" cellpadding="1" border="1" style="rounded"'

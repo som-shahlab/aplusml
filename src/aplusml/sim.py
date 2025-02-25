@@ -1,4 +1,6 @@
-"""Core simulation engine which progresses patients through the desired clinical workflow"""
+"""
+Core simulation engine which progresses patients through a given workflow
+"""
 import io
 import random
 from types import CodeType
@@ -14,14 +16,17 @@ import aplusml.draw as draw
 from aplusml.models import Patient, State, Transition, History, Utility
 
 class Simulation(object):
+    """The core APLUS simulation engine which progresses patients through a given workflow"""
     def __init__(self):
+        """Initializes the simulation with default values"""
         self.metadata = {}
         self.variables: Dict[str, Dict] = {} # [key] = id, [value] = dict
         self.variable_history: Dict[List[Tuple[int, Any]]] = {} # [key] = id, [value] = tuple(timestep, value)
         self.states: Dict[str, State] = {} # [key] = id, [value] = State
         self.current_timestep: int = None
     
-    def evaluate_variables(self, patient: Patient) -> dict:
+    def evaluate_variables(self, patient: Patient) -> Dict[str, Any]:
+        """Evaluates the variables for a given patient"""
         variable_to_value = {}
         for v_id, v in self.variables.items():
             if v['type'] == 'scalar':
@@ -51,6 +56,17 @@ class Simulation(object):
                             expression: Any,
                             variables: dict,
                             expression_compiled: CodeType = None) -> Any:
+        """Evaluates an expression.
+
+        Args:
+            patient (Patient): The patient.
+            expression (Any): The expression to evaluate.
+            variables (dict): The variables.
+            expression_compiled (CodeType, optional): The compiled expression.
+
+        Returns:
+            Any: The evaluated expression.
+        """
         if type(expression) in [bool, int, float]:
             return expression
         elif type(expression) != str:
@@ -69,36 +85,93 @@ class Simulation(object):
     def evaluate_transition_if(self, patient: Patient, 
                                transition: Transition,
                                variables: dict) -> bool:
+        """Evaluates the 'if' statement for a given transition.
+
+        Args:
+            patient (Patient): The patient.
+            transition (Transition): The transition.
+            variables (dict): The variables.
+
+        Returns:
+            bool: The result of the 'if' statement.
+        """
         if not transition.is_conditional_if():
             # If there is no 'if', return TRUE
             return True
         return self.evaluate_expression(patient, transition._if, variables, transition._if_compiled)
 
     def evaluate_transition_prob(self, patient: Patient, transition: Transition, variables: dict) -> bool:
+        """Evaluates the 'prob' statement for a given transition.
+
+        Args:
+            patient (Patient): The patient.
+            transition (Transition): The transition.
+            variables (dict): The variables.
+
+        Returns:
+            bool: The result of the 'prob' statement.
+        """
+
         if not transition.is_conditional_prob():
             # If there is no 'prob', return None (default will be set to: 1 - (sum of other probs))
             return None
         return self.evaluate_expression(patient, transition.prob, variables, transition.prob_compiled)
 
     def evaluate_utility_if(self, patient: Patient, utility: Utility, variables: dict) -> bool:
+        """Evaluates the 'if' statement for a given utility.
+
+        Args:
+            patient (Patient): The patient.
+            utility (Utility): The utility.
+            variables (dict): The variables.
+
+        Returns:
+            bool: The result of the 'if' statement.
+        """
+
         if not utility.is_conditional_if():
             # If there is no 'if', return TRUE
             return True
         return self.evaluate_expression(patient, utility._if, variables, utility._if_compiled)
 
     def evaluate_utility_value(self, patient: Patient, utility: Utility, variables: dict) -> Any:
+        """Evaluates the value of a given utility.
+
+        Args:
+            patient (Patient): The patient.
+            utility (Utility): The utility.
+            variables (dict): The variables.
+
+        Returns:
+            Any: The evaluated utility value.
+        """
         return self.evaluate_expression(patient, utility.value, variables, utility.value_compiled)
     
     def evaluate_duration(self, patient: Patient, duration: str, variables: dict) -> int:
+        """Evaluates the duration of a given state or transition.
+
+        Args:
+            patient (Patient): The patient.
+            duration (str): The duration.
+            variables (dict): The variables.
+
+        Returns:
+            int: The evaluated duration.
+        """
         return self.evaluate_expression(patient, duration, variables)
 
     def select_transition(self, patient: Patient, 
                           transitions: List[Transition],
                           variables: dict) -> int:
-        """From a set of transitions, returns the idx of the one to take
-            First, this evaluates all conditional transitions, i.e. 'if' statements
-            If all 'if' are FALSE, then evaluate all probabilistic transitions, i.e. 'prob' statements
-                Thus, the probabilistic transitions are conditional on the 'if' statements all being FALSE
+        """From a set of transitions, returns the idx of the one to take. First, this evaluates all conditional transitions, i.e. 'if' statements. If all 'if' are FALSE, then evaluate all probabilistic transitions, i.e. 'prob' statements. Thus, the probabilistic transitions are conditional on the 'if' statements all being FALSE
+
+        Args:
+            patient (Patient): The patient.
+            transitions (List[Transition]): The transitions.
+            variables (dict): The variables.
+
+        Returns:
+            int: The idx of the transition to take.
         """    
         # Conditional transition
         start_idx_for_probs = 0
@@ -172,7 +245,7 @@ class Simulation(object):
         return True, ""
 
     def init_patients(self, patients: List[Patient]):
-        """Modifies 'patients' in place
+        """Initializes the patients for the simulation. NOTE: This modifies 'patients' in place
 
         Args:
             patients (List[Patient]): NOTE: These aren't imported from YAML, but must be programmatically generated
@@ -192,16 +265,16 @@ class Simulation(object):
             max_timesteps: int = None,
             random_seed: int = 0,
             is_print_log: bool = False) -> List[Patient]:
-        """This takes about 3 seconds to run for 15,000 patients, 10 seconds to run for 50,000 patients
+        """Run the simulation by progressing all patients through the workflow. This takes about 3 seconds to run for 15,000 patients, 10 seconds to run for 50,000 patients
 
         Args:
-            all_patients (List[Patient]): Contains all patients to be simulated, across all admit days. 
-                NOTE: This modifies all_patients in place
-                The only attributes that are modified are `history` and `current_state`
-            max_timesteps (int, optional): End simulation after running this timestep (i.e. max_timesteps = 0, then immediately break; if max_timesteps=2, then run t=0, t=1 then break)
-                NOTE: If break b/c of max_timesteps, then: simulation.current_timestep = max_timesteps - 1
+            all_patients (List[Patient]): Contains all patients to be simulated, across all admit days. NOTE: This modifies `all_patients` in place. The only attributes that are modified are `history` and `current_state`
+            max_timesteps (int, optional): End simulation after running this timestep (i.e. max_timesteps = 0, then immediately break; if max_timesteps=2, then run t=0, t=1 then break). NOTE: If break b/c of max_timesteps, then: simulation.current_timestep = max_timesteps - 1
             random_seed (int, optional): Used for 'init_run()'. Defaults to 0.
             is_print_log (bool, optional): If FALSE, then don't print anything to console. Defaults to FALSE.
+        
+        Returns:
+            List[Patient]: The patients after the simulation has run. Their `history` attributes will have been updated with the simulation results.
         """
         self.is_print_log = is_print_log
 
@@ -419,11 +492,7 @@ class Simulation(object):
         """Visualize (states, transitions) as a diagram using pydot
 
         Args:
-            path_to_file (str, optional): Path to save diagram to. If None, then nothing is written.
-                The path MUST include the file extension (e.g. ".png").
-                The file format is inferred from the file extension. It must be one of 
-                    the file extensions supported by Pydot, which are listed in the
-                    `self.formats` array here: https://github.com/pydot/pydot/blob/master/src/pydot/core.py#L1548
+            path_to_file (str, optional): Path to save diagram to. If None, then nothing is written. The path MUST include the file extension (e.g. ".png"). The file format is inferred from the file extension. It must be one of  the file extensions supported by Pydot, which are listed in the `self.formats` array here: https://github.com/pydot/pydot/blob/master/src/pydot/core.py#L1548
             is_display (bool, optional): If TRUE, then print out diagram. Useful for Jupyter. Defaults to True.
             figsize (Tuple[int, int], optional): Figure size for matplotlib. Defaults to (20, 20).
         """        
@@ -499,6 +568,14 @@ def sort_patient_by_preference(patients: List[Patient],
                                property_to_sort_by: str = None, 
                                is_ascending: bool = True) -> List[int]:
     """Returns the indices that will sort 'patients' by whatever patient property is specified in 'property_to_sort_by'
+    
+    Args:
+        patients (List[Patient]): The patients to sort.
+        property_to_sort_by (str, optional): The property to sort by. Defaults to None.
+        is_ascending (bool, optional): If TRUE, then sort in ascending order. If FALSE, then sort in descending order. Defaults to TRUE.
+
+    Returns:
+        List[int]: The indices that will sort 'patients' by the specified property.
     """
     if property_to_sort_by == 'id':
         # Attribute that is directly part of `Patient` object
@@ -519,6 +596,14 @@ def create_patients_for_simulation(simulation: Simulation,
                                    patients: List[Patient],
                                    func_match_patient_to_property_column: Callable = None,
                                    random_seed: int = 0) -> List[Patient]:
+    """Create a deep copy of the `patients` object using pickle, sort them by ID, and then initialize their properties
+
+    Args:
+        simulation (Simulation): The simulation.
+        patients (List[Patient]): The patients to create.
+        func_match_patient_to_property_column (Callable, optional): A function that matches a patient to a row in a CSV file. Defaults to None.
+        random_seed (int, optional): The random seed. Defaults to 0.
+    """
     # create deep copy of the `patients` object using pickle
     patients = pickle.loads(pickle.dumps(patients))
     patients = sorted(patients, key = lambda x: x.id)
@@ -600,18 +685,17 @@ def create_patients_for_simulation(simulation: Simulation,
     return patients
 
 def get_unit_utility_baselines(patients: List[Patient],
-                               utilities: dict,
-                               y_true_column_name: str = 'ground_truth') -> dict[float]:
+                               utilities: Dict[str, float],
+                               y_true_column_name: str = 'ground_truth') -> Dict[str, float]:
     """Get average utility per patient under baseline settings (Treat All, Treat None, Treat Perfect)
 
     Args:
         patients (List[Patient]): List of Patient objects
         utilities (dict): Utility values for TP/FP/FN/TN
-        y_true_column_name (str, optional): Name of patient property that corresponds to the ground truth label. Defaults to 'ground_truth'.
-            i.e. For a given patient `p`, the function will use `p.properties[y_true_column_name]` as the ground truth label for that patient
+        y_true_column_name (str, optional): Name of patient property that corresponds to the ground truth label. Defaults to 'ground_truth'. i.e. For a given patient `p`, the function will use `p.properties[y_true_column_name]` as the ground truth label for that patient
 
     Returns:
-        dict[float]: Three keys (all|none|perfect), each corresponding to their average utility per patient
+        Dict[str, float]: Three keys (all|none|perfect), each corresponding to their average utility per patient
     """    
     positives = len([ p for p in patients if p.properties[y_true_column_name] == 1 ])
     negatives = len([ p for p in patients if p.properties[y_true_column_name] == 0 ])

@@ -1,13 +1,26 @@
+"""
+Models for the APLUS simulation framework.
+"""
 import collections
 from types import CodeType
 from typing import Union, Dict, List
 import ast
 
 class Utility(object):
+    """
+    A utility is a value that is associated with being in a state or undergoing a transition.
+    """
+
     def __init__(self,
                  value: str,
                  unit: str = '',
                  _if: str = None):
+        """
+        Args:
+            value (str): The value of the utility. Example: '100000'
+            unit (str, optional): The unit of the utility. Defaults to ''. Example: 'USD', 'days', 'kg', 'cm', etc.
+            _if (str, optional): The condition for the utility, specified as a Python expression. Defaults to None. Example: 'y_hat > 0.5'
+        """
         self.value: str = value
         self.unit: str = unit
         self._if: str = _if
@@ -22,7 +35,10 @@ class Utility(object):
             super().__setattr__('value_compiled', compile(value, '<string>', 'eval', optimize=2) if type(value) == str else None)
         super().__setattr__(name, value)
     
-    def is_conditional_if(self):
+    def is_conditional_if(self) -> bool:
+        """
+        Returns True if the utility is conditional on a Python expression.
+        """
         return self._if is not None
     
     def __repr__(self):
@@ -40,6 +56,10 @@ class Utility(object):
         }
 
 class Transition(object):
+    """
+    A transition between states.
+    """
+
     def __init__(self, 
                  dest: str,
                  label: str,
@@ -48,6 +68,16 @@ class Transition(object):
                  resource_deltas: Dict[str, float],
                  _if: Union[str, bool] = None,
                  prob: Union[str, float] = None):
+        """
+        Args:
+            dest (str): The destination state.
+            label (str): The label of the transition.
+            duration (int): The duration of the transition. Example: 1
+            utilities (List[Utility]): The utilities of the transition. Example: [Utility(value='100000', unit='USD')]
+            resource_deltas (Dict[str, float]): The resource deltas of the transition. Example: {'MRI': -1}
+            _if (Union[str, bool], optional): The condition for the transition, specified as a Python expression. Defaults to None. Example: 'y_hat > 0.5'
+            prob (Union[str, float], optional): The probability of the transition. Defaults to None. Example: 0.5
+        """
         self.dest: str = dest
         self.label: str = label
         self.duration: int = duration
@@ -66,12 +96,22 @@ class Transition(object):
             super().__setattr__('prob_compiled', compile(value, '<string>', 'eval', optimize=2) if type(value) == str else None)
         super().__setattr__(name, value)
 
-    def is_conditional_prob(self):
+    def is_conditional_prob(self) -> bool:
+        """
+        Returns True if the transition is probabilistic.
+        """
         return self.prob is not None
-    def is_conditional_if(self):
+
+    def is_conditional_if(self) -> bool:
+        """
+        Returns True if the transition is conditional on a Python expression.
+        """
         return self._if is not None
     
     def get_variables_in_conditional(self) -> List[str]:
+        """
+        Returns a list of variables involved in the conditional expression.
+        """
         expression = ''
         # Determine where to find conditional in Transition
         if self.is_conditional_prob():
@@ -117,13 +157,28 @@ class Transition(object):
         }
 
 class State(object):
-    def __init__(self, id: str,
+    """
+    A state in the workflow.
+    """
+
+    def __init__(self, 
+                 id: str,
                  label: str,
                  type: str,
                  duration: int,
                  utilities: List[Utility],
                  transitions: List[Transition],
                  resource_deltas: Dict[str, float]):
+        """
+        Args:
+            id (str): The ID of the state.
+            label (str): The label of the state.
+            type (str): The type of the state. Must be one of: 'start', 'intermediate', 'end'
+            duration (int): The duration of the state. Example: 1
+            utilities (List[Utility]): The utilities of the state. Example: [Utility(value='100000', unit='USD')]
+            transitions (List[Transition]): The transitions of the state. Example: [Transition(dest='state2', label='To State 2', duration=1, utilities=[Utility(value='100000', unit='USD')], resource_deltas={'MRI': -1})]
+            resource_deltas (Dict[str, float]): The resource deltas of the state. Example: {'MRI': -1}
+        """
         self.id: str = id
         self.label: str = label
         self.type: str = type
@@ -157,6 +212,10 @@ class State(object):
         }
 
 class History(object):
+    """
+    The history of a patient's states and transitions.
+    """
+
     def __init__(self, 
                  current_timestep: int,
                  state_id: str,
@@ -165,7 +224,18 @@ class History(object):
                  transition_utility_idxs: List[int], # Utilities == state.transitions[idx].utilities[idxs]
                  state_utility_vals: List[float], # Evaluated Utility Values == evaluate_utility_value(state.utilities[idxs].value)
                  transition_utility_vals: List[float], # EvaluatedUtility Values == evaluate_utility_value(state.transitions[idx].utilities[idxs].value)
-                 sim_variables: dict):
+                 sim_variables: Dict):
+        """
+        Args: 
+            current_timestep (int): The current timestep. Example: 1
+            state_id (str): The ID of the current state. Example: 'state1'
+            transition_idx (int): The index of the current transition. Example: 0
+            state_utility_idxs (List[int]): The indices of the utilities of the current state. Example: [0]
+            transition_utility_idxs (List[int]): The indices of the utilities of the current transition. Example: [0]
+            state_utility_vals (List[float]): The evaluated utility values of the current state. Example: [100000]
+            transition_utility_vals (List[float]): The evaluated utility values of the current transition. Example: [100000]
+            sim_variables (Dict): The variables of the simulation. Example: {'y_hat': 0.5}
+        """
         self.current_timestep: int = current_timestep
         self.state_id: str = state_id
         self.transition_idx: Union[int, None] = transition_idx
@@ -173,7 +243,8 @@ class History(object):
         self.transition_utility_idxs: List[int] = transition_utility_idxs
         self.state_utility_vals: List[float] = state_utility_vals
         self.transition_utility_vals: List[float] = transition_utility_vals
-        self.sim_variables: dict = sim_variables
+        self.sim_variables: Dict = sim_variables
+
     def __repr__(self):
         return str({
             'current_timestep' : self.current_timestep,
@@ -186,10 +257,20 @@ class History(object):
         })
 
 class Patient(object):
+    """
+    A patient in the simulation.
+    """
+
     def __init__(self, 
                  id: str, 
                  start_timestep: int,
                  properties: dict = None):
+        """
+        Args:
+            id (str): The ID of the patient. Example: 'patient1'
+            start_timestep (int): The start timestep of the patient. Example: 1
+            properties (dict, optional): The properties of the patient. Example: {'y_hat': 0.5}
+        """
         self.id: str = id
         self.start_timestep: int = int(start_timestep) # Start time for this patient (i.e. admitted date)
         self.properties: dict = properties if properties is not None else {} # Patient specific properties, i.e. "y_hat" or "y" or "los"
@@ -202,7 +283,16 @@ class Patient(object):
         else:
             return " > ".join([ h.state_id for h in self.history])
 
-    def get_sum_utilities(self, simulation) -> dict:
+    def get_sum_utilities(self, simulation: 'aplusml.sim.Simulation') -> Dict[str, float]:
+        """
+        Returns a dictionary of the sum of the utilities of the patient's history.
+
+        Args:
+            simulation (Simulation): The simulation.
+
+        Returns:
+            Dict[str, float]: A dictionary of the sum of the utilities of the patient's history. Example: {'USD': 100000}
+        """
         sums = collections.defaultdict(float) # [key] = unit, [value] = sum of that unit's utility across entire Patient's history
         for h in self.history:
             # State utilities

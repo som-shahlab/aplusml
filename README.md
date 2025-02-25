@@ -275,8 +275,7 @@ cd aplus
 # Create environment
 conda create -n aplus python=3.10 -y
 conda activate aplus
-pip3 install -e .
-pip3 install -r requirements.txt
+pip install poetry && poetry install
 ```
 
 ### Repository File Structure
@@ -314,4 +313,18 @@ To run tests:
 ```
 cd tests
 python3 run_tests.py
+```
+
+## Documentation
+
+We use [Sphinx](https://www.sphinx-doc.org/en/master/) to build the documentation, and host it on [Read the Docs](https://readthedocs.org/).
+
+To build the docs, run:
+
+```bash
+# View server
+sphinx-autobuild docs/source docs/build/html
+
+# Build for dist
+make html
 ```
