@@ -3,52 +3,53 @@ API Reference
 
 .. toctree::
    :maxdepth: 2
-   :caption: API
+   :caption: Contents:
 
-aplusml.draw module
--------------------
-
+Draw
+^^^^^^^^^^^^^
 .. automodule:: aplusml.draw
    :members:
    :undoc-members:
+   :private-members:
    :show-inheritance:
+   :special-members: __init__
 
-aplusml.models module
----------------------
-
+Models
+^^^^^^^^^^^^^^
 .. automodule:: aplusml.models
    :members:
    :undoc-members:
    :show-inheritance:
+   :special-members: __init__
 
-aplusml.parse module
---------------------
-
+Parse
+^^^^^^^^^^^^^
 .. automodule:: aplusml.parse
    :members:
    :undoc-members:
    :show-inheritance:
+   :special-members: __init__
 
-aplusml.plot module
--------------------
-
+Plot
+^^^^^^^^^^^^
 .. automodule:: aplusml.plot
    :members:
    :undoc-members:
    :show-inheritance:
+   :special-members: __init__
 
-aplusml.run module
-------------------
-
+Run
+^^^^^^^^^^^
 .. automodule:: aplusml.run
    :members:
    :undoc-members:
    :show-inheritance:
+   :special-members: __init__
 
-aplusml.sim module
-------------------
-
+Simulation
+^^^^^^^^^^^^^^^^^^
 .. automodule:: aplusml.sim
    :members:
    :undoc-members:
    :show-inheritance:
+   :special-members: __init__

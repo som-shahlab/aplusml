@@ -133,9 +133,11 @@ class Transition(object):
         return parsed_variable_ids
 
     def print(self):
+        """Print the transition in a human-readable format."""
         return f"=> {self.dest} ({self.label})"
 
     def __repr__(self):
+        """Return a string representation of the transition."""
         return str({
             'dest' : self.dest,
             'label' : self.label,
@@ -146,6 +148,7 @@ class Transition(object):
         })
     
     def serialize(self):
+        """Serialize the transition into a dictionary."""
         return {
             'dest' : self.dest,
             'label' : self.label,
@@ -188,9 +191,11 @@ class State(object):
         self.resource_deltas:  Dict[str, float] = resource_deltas
 
     def print(self):
+        """Print the state in a human-readable format."""
         return f"{self.id} | {self.label}"
 
     def __repr__(self):
+        """Return a string representation of the state."""
         return str({
             'id' : self.id,
             'label' : self.label,
@@ -201,6 +206,7 @@ class State(object):
         })
 
     def serialize(self):
+        """Serialize the state into a dictionary."""
         return {
             'id' : self.id,
             'label' : self.label,
@@ -246,6 +252,7 @@ class History(object):
         self.sim_variables: Dict = sim_variables
 
     def __repr__(self):
+        """Return a string representation of the history."""
         return str({
             'current_timestep' : self.current_timestep,
             'state_id' : self.state_id,
@@ -278,6 +285,7 @@ class Patient(object):
         self.current_state: str = None # ID of current state
     
     def print_state_history(self, is_show_timesteps: bool = False):
+        """Print the state history in a human-readable format."""
         if is_show_timesteps:
             return " > ".join([ f"({h.current_timestep}) {h.state_id}" for h in self.history])
         else:
@@ -293,22 +301,23 @@ class Patient(object):
         Returns:
             Dict[str, float]: A dictionary of the sum of the utilities of the patient's history. Example: {'USD': 100000}
         """
-        sums = collections.defaultdict(float) # [key] = unit, [value] = sum of that unit's utility across entire Patient's history
+        sums: Dict[str, float] = collections.defaultdict(float) # [key] = unit, [value] = sum of that unit's utility across entire Patient's history
         for h in self.history:
             # State utilities
-            state = simulation.states[h.state_id]
+            state: State = simulation.states[h.state_id]
             for i, idx in enumerate(h.state_utility_idxs):
-                u = state.utilities[idx]
+                u: Utility = state.utilities[idx]
                 sums[u.unit] += h.state_utility_vals[i]
             # Transition utilities (if transition exists)
             if h.transition_idx is not None:
-                transition = state.transitions[h.transition_idx]
+                transition: Transition = state.transitions[h.transition_idx]
                 for i, idx in enumerate(h.transition_utility_idxs):
-                    u = transition.utilities[idx]
+                    u: Utility = transition.utilities[idx]
                     sums[u.unit] += h.transition_utility_vals[i]
         return dict(sums)
 
     def __repr__(self):
+        """Return a string representation of the patient."""
         return str({
             'id' : self.id,
             'start_timestep' : self.start_timestep,

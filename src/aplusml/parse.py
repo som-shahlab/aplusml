@@ -72,14 +72,18 @@ VALID_UTILITY_KEYS = {
 }
 
 def load_simulation(path_to_yaml: str, path_to_patient_properties: Optional[str] = None) -> sim.Simulation:
-    """Loads YAML into an APLUS :class:`aplusml.sim.Simulation` object
+    """Loads YAML into an APLUS :class:`~aplusml.sim.Simulation` object.
+    
+    If ``path_to_patient_properties`` is provided, then it overwrites the current Metadata section's ``path_to_properties`` key.
+    
+    Under the hood this basically just calls :func:`~aplusml.parse.create_simulation_from_config`
 
     Args:
         path_to_yaml (str): Path to YAML file
         path_to_patient_properties (str): Path to patient properties file
 
     Returns:
-        :class:`aplusml.sim.Simulation`: Simulation object
+        :class:`~aplusml.sim.Simulation`: Simulation object
     """    
     yaml: dict = load_config(path_to_yaml)
     simulation: sim.Simulation = create_simulation_from_config(yaml)
@@ -88,6 +92,14 @@ def load_simulation(path_to_yaml: str, path_to_patient_properties: Optional[str]
     return simulation
 
 def load_config(path_to_yaml: str) -> dict:
+    """Loads YAML file into a Python dictionary.
+
+    Args:
+        path_to_yaml (str): Path to YAML file
+
+    Returns:
+        dict: Python dictionary
+    """
     data = None
     with open(path_to_yaml, "r") as fd:
         try:
@@ -258,13 +270,13 @@ def is_valid_config_yaml(yaml: dict) -> bool:
     return True
 
 def create_simulation_from_config(yaml: dict) -> sim.Simulation:
-    """Create a Simulation object from YAML
+    """Create a :class:`~aplusml.sim.Simulation` object from YAML
 
     Args:
         yaml (dict): From 'load_config'
 
     Returns:
-        Simulation: Returns a Simulation object
+        Simulation: A :class:`~aplusml.sim.Simulation` object that contains all of the metadata, variables, states, and transitions from the YAML file
     """
     if not is_valid_config_yaml(yaml):
         raise ValueError("ERROR - Invalid YAML")

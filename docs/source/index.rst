@@ -23,7 +23,7 @@ Key Features
 * Built-in visualization capabilities
 
 🧑‍💻 Installation
------------------
+---------------------
 
 First, install the **aplusml** package:
 
@@ -37,7 +37,7 @@ Second, install **graphviz** to enable workflow visualization:
 
    brew install graphviz
 
-Please see the :doc:`intro/introduction` for a high-level conceptual overview of APLUS, or jump straight to :doc:`usage/tutorial` for a step-by-step walkthrough of using APLUS to model a clinical workflow.
+Please see the :doc:`intro/background` for a high-level conceptual overview of APLUS, or jump straight to :doc:`usage/tutorial` for a step-by-step walkthrough of using APLUS to model a clinical workflow.
 
 🚀 Quick Start
 ---------------
@@ -60,11 +60,11 @@ Documentation
 
 .. toctree::
    :maxdepth: 2
-   :caption: 🚦 Getting Started
+   :caption: 🚦 Introduction
 
    intro/background
    intro/installation
-   intro/concepts
+   intro/definitions
 
 .. toctree::
    :maxdepth: 2

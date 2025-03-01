@@ -563,6 +563,161 @@ class Simulation(object):
             plt.figure(figsize = figsize)
             plt.axis('off')
             plt.imshow(img, aspect='equal')
+    
+    def create_patients_for_simulation(self, 
+                                        patients: List[Patient],
+                                        func_match_patient_to_property_column: Callable = None,
+                                        random_seed: int = 0) -> List[Patient]:
+        """Create a deep copy of the `patients` object using pickle, sort them by ID, and then initialize their properties
+
+        Args:
+            patients (List[Patient]): The patients to create.
+            func_match_patient_to_property_column (Callable, optional): A function that matches a patient to a row in a CSV file. Defaults to None.
+            random_seed (int, optional): The random seed. Defaults to 0.
+        
+        Returns:
+            List[Patient]: A deep copy of the `patients` object, sorted by ID, with their properties initialized.
+        """
+        # create deep copy of the `patients` object using pickle
+        patients = pickle.loads(pickle.dumps(patients))
+        patients = sorted(patients, key = lambda x: x.id)
+        properties = [ (id, v) for id, v in self.variables.items() if v.get('type', 'scalar') == 'property' ]
+        # CSV for file-defined properties
+        path_to_properties = self.metadata.get('path_to_properties', None)
+        properties_col_for_patient_id = self.metadata.get('properties_col_for_patient_id', None)
+        if path_to_properties:
+            # Read CSV containing patient properties
+            _df = pd.read_csv(path_to_properties)
+            if properties_col_for_patient_id:
+                # Check that column corresponding to the Patient ID actually exists in CSV
+                if properties_col_for_patient_id not in _df.columns:
+                    print(f"ERROR - The value for `properties_col_for_patient_id` ({properties_col_for_patient_id}) must be a column name in the file {path_to_properties}")
+                    return None
+                # Sort patients by ID
+                _df = _df.sort_values(properties_col_for_patient_id)
+            # If we want to randomly sample patients from the CSV (instead of using their ID), 
+            # then do this sampling deterministically by tracking `map_pid_to_random_df_idx`
+            np.random.seed(random_seed)
+            random_idxs = np.random.randint(0, _df.shape[0], size = len(patients))
+            map_pid_to_random_df_idx = { p.id: random_idxs[idx] for idx, p in enumerate(patients) }
+        #
+        # Add properties to each Patient
+        np.random.seed(random_seed)
+        for (v_id, v) in properties:
+            if 'value' in v:
+                # Set to constant
+                for p in patients:
+                    p.properties[v_id] = v['value']
+            elif 'column' in v:
+                # Load from 'path_to_properties' file
+                if not path_to_properties:
+                    print(f"ERROR - If you specify a 'column' variable, you need to specify a 'path_to_properties' value in the 'metadata' section")
+                    return None
+                if v['column'] not in _df:
+                    print(f"ERROR - 'column' {v['column']} is not contained in the file pointed to by 'path_to_properties'")
+                    return None
+                if properties_col_for_patient_id:
+                    ## NOTE: This may seem like an unnecessary special case of the functionality offered by `func_match_patient_to_property_column`,
+                    ## But its a necessary performance optimization that actually helps speed up the program a lot
+                    sorted_properties = _df[v['column']].values
+                    for p_idx, p in enumerate(patients):
+                        p.properties[v_id] = sorted_properties[p_idx]
+                else:
+                    if func_match_patient_to_property_column is None and properties_col_for_patient_id is None:
+                        print(f"ERROR - You need to either specify a `func_match_patient_to_property_column` when calling this function, or the `properties_col_for_patient_id` metadata property in your YAML file (otherwise we have no idea how to match patients to rows in the file)")
+                        return None
+                    for p in patients:
+                        p.properties[v_id] = func_match_patient_to_property_column(p.id, map_pid_to_random_df_idx[p.id], _df, v['column'])
+            elif 'distribution' in v:
+                # Distribution
+                if v['distribution'] == 'bernoulli':
+                    assert 'mean' in v, f"ERROR - Bernoulli variable '{v_id}' missing 'mean' property"
+                    values = np.random.binomial(1, v['mean'], size = len(patients))
+                elif v['distribution'] == 'exponential':
+                    assert 'mean' in v, f"ERROR - Exponential variable '{v_id}' missing 'mean' property"
+                    values = np.random.exponential(v['mean'], size = len(patients))
+                elif v['distribution'] == 'binomial':
+                    assert 'mean' in v and 'n' in v, f"ERROR - Binomial variable '{v_id}' missing 'mean' or 'n' property"
+                    values = np.random.binomial(v['n'], v['mean'], size = len(patients))
+                elif v['distribution'] == 'normal':
+                    assert 'mean' in v and 'std' in v, f"ERROR - Normal variable '{v_id}' missing 'mean' or 'std' property"
+                    values = np.random.normal(v['mean'], v['std'], size = len(patients))
+                elif v['distribution'] == 'poisson':
+                    assert 'mean' in v, f"ERROR - Poisson variable '{v_id}' missing 'mean' property"
+                    values = np.random.poisson(v['mean'], size = len(patients))
+                elif v['distribution'] == 'uniform':
+                    assert 'start' in v and 'end' in v, f"ERROR - Uniform variable '{v_id}' missing 'start' or 'end' property"
+                    values = np.random.uniform(v['start'], v['end'], size = len(patients))
+                else:
+                    print(f"ERROR - Unrecognized 'distribution' in variable '{v_id}'")
+                    return None
+                for idx, p in enumerate(patients):
+                    p.properties[v_id] = values[idx]
+            else:
+                print(f"ERROR - Unrecognized properties for variable '{v_id}'")
+                return None
+        return patients
+
+    def load_patients_for_simulation(self, 
+                                        patients: List[Patient],
+                                        df_patients_seismometer: pd.DataFrame,
+                                        func_match_patient_to_property_column: Callable = None,
+                                        random_seed: int = 0) -> List[Patient]:
+        """Load patients from a dataframe, sort them by ID, and then initialize their properties
+
+        Args:
+            patients (List[Patient]): The patients to load.
+            df_patients_seismometer (pd.DataFrame): The dataframe containing the patients from Epic Seismometer.
+            random_seed (int, optional): The random seed. Defaults to 0.
+        
+        Returns:
+            List[Patient]: A deep copy of the `patients` object, sorted by ID, with their properties initialized.
+        """
+        
+        patients = pickle.loads(pickle.dumps(patients))
+        patients = sorted(patients, key = lambda x: x.id)
+        properties = [ (id, v) for id, v in self.variables.items() if v.get('type', 'scalar') == 'property' ]
+
+        properties_col_for_patient_id = self.metadata.get('properties_col_for_patient_id', None)
+
+        if properties_col_for_patient_id:
+            # Check that column corresponding to the Patient ID actually exists in Seismometer dataframe
+            if properties_col_for_patient_id not in df_patients_seismometer.columns:
+                print(f"ERROR - The value for `properties_col_for_patient_id` ({properties_col_for_patient_id}) must be a column name in the dataframe {df_patients_seismometer}")
+                return None
+            # Sort Seismometer patients by ID
+            df_patients_seismometer = df_patients_seismometer.sort_values(properties_col_for_patient_id)
+        # If we want to randomly sample patients from the Seismometer dataframe (instead of using their ID), 
+        # then do this sampling deterministically by tracking `map_pid_to_random_df_idx`
+        np.random.seed(random_seed)
+        random_idxs = np.random.randint(0, df_patients_seismometer.shape[0], size = len(patients))
+        map_pid_to_random_df_idx = { p.id: random_idxs[idx] for idx, p in enumerate(patients) }
+        
+        # Add properties to each Patient
+        np.random.seed(random_seed)
+        for (v_id, v) in properties:
+            if 'value' in v:
+                # Set to constant
+                for p in patients:
+                    p.properties[v_id] = v['value']
+            elif 'column' in v:
+                # Load from patients_dataframe
+                if v['column'] not in df_patients_seismometer:
+                    print(f"ERROR - 'column' {v['column']} is not contained in the dataframe {df_patients_seismometer}")
+                    return None
+                if properties_col_for_patient_id:
+                    ## NOTE: This may seem like an unnecessary special case of the functionality offered by `func_match_patient_to_property_column`,
+                    ## But its a necessary performance optimization that actually helps speed up the program a lot
+                    sorted_properties = df_patients_seismometer[v['column']].values
+                    for p_idx, p in enumerate(patients):
+                        p.properties[v_id] = sorted_properties[p_idx]
+                else:
+                    if func_match_patient_to_property_column is None and properties_col_for_patient_id is None:
+                        print(f"ERROR - You need to either specify a `func_match_patient_to_property_column` when calling this function, or the `properties_col_for_patient_id` metadata property in your YAML file (otherwise we have no idea how to match patients to rows in the file)")
+                        return None
+                    for p in patients:
+                        p.properties[v_id] = func_match_patient_to_property_column(p.id, map_pid_to_random_df_idx[p.id], df_patients_seismometer, v['column'])
+        return patients
 
 def sort_patient_by_preference(patients: List[Patient], 
                                property_to_sort_by: str = None, 
@@ -591,149 +746,6 @@ def sort_patient_by_preference(patients: List[Patient],
         return sorted(range(len(patients)), key=properties.__getitem__, reverse = not is_ascending)
     else:
         return range(len(patients))
-
-def create_patients_for_simulation(simulation: Simulation, 
-                                   patients: List[Patient],
-                                   func_match_patient_to_property_column: Callable = None,
-                                   random_seed: int = 0) -> List[Patient]:
-    """Create a deep copy of the `patients` object using pickle, sort them by ID, and then initialize their properties
-
-    Args:
-        simulation (Simulation): The simulation.
-        patients (List[Patient]): The patients to create.
-        func_match_patient_to_property_column (Callable, optional): A function that matches a patient to a row in a CSV file. Defaults to None.
-        random_seed (int, optional): The random seed. Defaults to 0.
-    """
-    # create deep copy of the `patients` object using pickle
-    patients = pickle.loads(pickle.dumps(patients))
-    patients = sorted(patients, key = lambda x: x.id)
-    properties = [ (id, v) for id, v in simulation.variables.items() if v.get('type', 'scalar') == 'property' ]
-    # CSV for file-defined properties
-    path_to_properties = simulation.metadata.get('path_to_properties', None)
-    properties_col_for_patient_id = simulation.metadata.get('properties_col_for_patient_id', None)
-    if path_to_properties:
-        # Read CSV containing patient properties
-        _df = pd.read_csv(path_to_properties)
-        if properties_col_for_patient_id:
-            # Check that column corresponding to the Patient ID actually exists in CSV
-            if properties_col_for_patient_id not in _df.columns:
-                print(f"ERROR - The value for `properties_col_for_patient_id` ({properties_col_for_patient_id}) must be a column name in the file {path_to_properties}")
-                return None
-            # Sort patients by ID
-            _df = _df.sort_values(properties_col_for_patient_id)
-        # If we want to randomly sample patients from the CSV (instead of using their ID), 
-        # then do this sampling deterministically by tracking `map_pid_to_random_df_idx`
-        np.random.seed(random_seed)
-        random_idxs = np.random.randint(0, _df.shape[0], size = len(patients))
-        map_pid_to_random_df_idx = { p.id: random_idxs[idx] for idx, p in enumerate(patients) }
-    #
-    # Add properties to each Patient
-    np.random.seed(random_seed)
-    for (v_id, v) in properties:
-        if 'value' in v:
-            # Set to constant
-            for p in patients:
-                p.properties[v_id] = v['value']
-        elif 'column' in v:
-            # Load from 'path_to_properties' file
-            if not path_to_properties:
-                print(f"ERROR - If you specify a 'column' variable, you need to specify a 'path_to_properties' value in the 'metadata' section")
-                return None
-            if v['column'] not in _df:
-                print(f"ERROR - 'column' {v['column']} is not contained in the file pointed to by 'path_to_properties'")
-                return None
-            if properties_col_for_patient_id:
-                ## NOTE: This may seem like an unnecessary special case of the functionality offered by `func_match_patient_to_property_column`,
-                ## But its a necessary performance optimization that actually helps speed up the program a lot
-                sorted_properties = _df[v['column']].values
-                for p_idx, p in enumerate(patients):
-                    p.properties[v_id] = sorted_properties[p_idx]
-            else:
-                if func_match_patient_to_property_column is None and properties_col_for_patient_id is None:
-                    print(f"ERROR - You need to either specify a `func_match_patient_to_property_column` when calling this function, or the `properties_col_for_patient_id` metadata property in your YAML file (otherwise we have no idea how to match patients to rows in the file)")
-                    return None
-                for p in patients:
-                    p.properties[v_id] = func_match_patient_to_property_column(p.id, map_pid_to_random_df_idx[p.id], _df, v['column'])
-        elif 'distribution' in v:
-            # Distribution
-            if v['distribution'] == 'bernoulli':
-                assert 'mean' in v, f"ERROR - Bernoulli variable '{v_id}' missing 'mean' property"
-                values = np.random.binomial(1, v['mean'], size = len(patients))
-            elif v['distribution'] == 'exponential':
-                assert 'mean' in v, f"ERROR - Exponential variable '{v_id}' missing 'mean' property"
-                values = np.random.exponential(v['mean'], size = len(patients))
-            elif v['distribution'] == 'binomial':
-                assert 'mean' in v and 'n' in v, f"ERROR - Binomial variable '{v_id}' missing 'mean' or 'n' property"
-                values = np.random.binomial(v['n'], v['mean'], size = len(patients))
-            elif v['distribution'] == 'normal':
-                assert 'mean' in v and 'std' in v, f"ERROR - Normal variable '{v_id}' missing 'mean' or 'std' property"
-                values = np.random.normal(v['mean'], v['std'], size = len(patients))
-            elif v['distribution'] == 'poisson':
-                assert 'mean' in v, f"ERROR - Poisson variable '{v_id}' missing 'mean' property"
-                values = np.random.poisson(v['mean'], size = len(patients))
-            elif v['distribution'] == 'uniform':
-                assert 'start' in v and 'end' in v, f"ERROR - Uniform variable '{v_id}' missing 'start' or 'end' property"
-                values = np.random.uniform(v['start'], v['end'], size = len(patients))
-            else:
-                print(f"ERROR - Unrecognized 'distribution' in variable '{v_id}'")
-                return None
-            for idx, p in enumerate(patients):
-                p.properties[v_id] = values[idx]
-        else:
-            print(f"ERROR - Unrecognized properties for variable '{v_id}'")
-            return None
-    return patients
-
-def load_patients_for_simulation( simulation: Simulation, 
-                                   patients: List[Patient],
-                                   seismometer_patients_dataframe: pd.DataFrame,
-                                   func_match_patient_to_property_column: Callable = None,
-                                   random_seed: int = 0) -> List[Patient]:
-    
-    patients = pickle.loads(pickle.dumps(patients))
-    patients = sorted(patients, key = lambda x: x.id)
-    properties = [ (id, v) for id, v in simulation.variables.items() if v.get('type', 'scalar') == 'property' ]
-
-    properties_col_for_patient_id = simulation.metadata.get('properties_col_for_patient_id', None)
-
-    if properties_col_for_patient_id:
-        # Check that column corresponding to the Patient ID actually exists in Seismometer dataframe
-        if properties_col_for_patient_id not in seismometer_patients_dataframe.columns:
-            print(f"ERROR - The value for `properties_col_for_patient_id` ({properties_col_for_patient_id}) must be a column name in the dataframe {seismometer_patients_dataframe}")
-            return None
-        # Sort Seismometer patients by ID
-        seismometer_patients_dataframe = seismometer_patients_dataframe.sort_values(properties_col_for_patient_id)
-    # If we want to randomly sample patients from the Seismometer dataframe (instead of using their ID), 
-    # then do this sampling deterministically by tracking `map_pid_to_random_df_idx`
-    np.random.seed(random_seed)
-    random_idxs = np.random.randint(0, seismometer_patients_dataframe.shape[0], size = len(patients))
-    map_pid_to_random_df_idx = { p.id: random_idxs[idx] for idx, p in enumerate(patients) }
-    
-    # Add properties to each Patient
-    np.random.seed(random_seed)
-    for (v_id, v) in properties:
-        if 'value' in v:
-            # Set to constant
-            for p in patients:
-                p.properties[v_id] = v['value']
-        elif 'column' in v:
-            # Load from patients_dataframe
-            if v['column'] not in seismometer_patients_dataframe:
-                print(f"ERROR - 'column' {v['column']} is not contained in the dataframe {seismometer_patients_dataframe}")
-                return None
-            if properties_col_for_patient_id:
-                ## NOTE: This may seem like an unnecessary special case of the functionality offered by `func_match_patient_to_property_column`,
-                ## But its a necessary performance optimization that actually helps speed up the program a lot
-                sorted_properties = seismometer_patients_dataframe[v['column']].values
-                for p_idx, p in enumerate(patients):
-                    p.properties[v_id] = sorted_properties[p_idx]
-            else:
-                if func_match_patient_to_property_column is None and properties_col_for_patient_id is None:
-                    print(f"ERROR - You need to either specify a `func_match_patient_to_property_column` when calling this function, or the `properties_col_for_patient_id` metadata property in your YAML file (otherwise we have no idea how to match patients to rows in the file)")
-                    return None
-                for p in patients:
-                    p.properties[v_id] = func_match_patient_to_property_column(p.id, map_pid_to_random_df_idx[p.id], seismometer_patients_dataframe, v['column'])
-    return patients
 
 
 def get_unit_utility_baselines(patients: List[Patient],

@@ -22,7 +22,7 @@ You can install **aplusml** using pip:
 
 
 🧑‍💻 Development
----------------
+-----------------
 
 For development, clone the repository and install it in editable mode:
 

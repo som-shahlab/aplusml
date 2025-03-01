@@ -148,11 +148,10 @@ def generate_patient_list_seismometer(simulation: aplusml.Simulation,
                 timestep, # Start timestep
             ))
 
-    all_patients = aplusml.load_patients_for_simulation(simulation, 
-                                                        all_patients,
-                                                        seismometer_patients,
-                                                        lambda p_id, random_idx, df, col: df.iloc[random_idx][col],
-                                                        random_seed = 0)
+    all_patients = simulation.load_patients_for_simulation(all_patients, 
+                                                            seismometer_patients,
+                                                            lambda p_id, random_idx, df, col: df.iloc[random_idx][col],
+                                                            random_seed = 0)
     return all_patients
 
 def setup_simulation_for_model(simulation: aplusml.Simulation, 

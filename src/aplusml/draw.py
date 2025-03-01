@@ -1,26 +1,49 @@
 """
-Functions for drawing graphs using graphviz
+Functions for drawing graphs using graphviz.
+
+This module provides utilities for creating and formatting graphviz diagrams
+of workflows, including HTML table generation and text escaping.
 """
 
-def _html_escape(text: str):
-    """Escape HTML special characters: &, <, >, and " for use in HTML table in graphviz"""
+def _html_escape(text: str) -> str:
+    """Escape HTML special characters for use in HTML tables in graphviz.
+
+    Replaces special characters with their HTML entity equivalents to ensure
+    proper rendering in graphviz HTML-like labels.
+
+    Args:
+        text (str): The input text to escape.
+
+    Returns:
+        str: The escaped text with the following replacements:
+            - & → &amp;
+            - < → &lt;
+            - > → &gt;
+            - \\n → <br align="left"/>
+    """
     return text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('\n', '<br align="left"/>')
 
 def create_node_label(title: str, duration: float, utilities: list, resource_deltas: dict, is_edge: bool = False) -> str:
-    """
-    Create a label for a graphviz node
+    """Creates an HTML-formatted label string for use in graphviz diagrams, containing
+    information about the node's title, duration, utilities, and resource changes.
     
     Args:
-        title: Title of the node
-        duration: Duration of the node
-        utilities: List of utilities associated with the node
-        resource_deltas: Dictionary of resource deltas associated with the node
-        is_edge: Whether the node is an edge
-        
+        title (str): Title of the node.
+        duration (float): Duration of the node.
+        utilities (list): List of utilities associated with the node.
+        resource_deltas (dict): Dictionary of resource deltas associated with the node.
+        is_edge (bool, optional): Whether the node represents an edge. Defaults to False.
+    
     Returns:
-        The HTML string for the node
+        str: An HTML-formatted string containing the node's label.
+        
+    Note:
+        The returned string uses graphviz's HTML-like label syntax and includes:
+        * A title section with optional edge formatting
+        * Duration information
+        * List of utilities
+        * List of resource changes
     """
-    # Styles
     edge_table_styles: str = 'cellborder="0" cellspacing="2" cellpadding="1" border="0"'
     node_table_styles: str = 'cellborder="0" cellspacing="2" cellpadding="1" border="1" style="rounded"'
     # Table content

@@ -1,9 +1,9 @@
-Concepts
+Definitions
 ==============
 
 .. toctree::
    :maxdepth: 2
-   :caption: Concepts
+   :caption: Definitions
 
 Here, we provide a more detailed specification of the concepts underlying the APLUS simulation framework.
 

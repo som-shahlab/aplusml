@@ -3,6 +3,11 @@
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
+# -- Path setup --------------------------------------------------------------
+import os
+import sys
+sys.path.insert(0, os.path.abspath('../..'))  # Add the project root directory
+
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
@@ -17,6 +22,8 @@ extensions = [
     'sphinx.ext.autodoc',   # Automatically document from docstrings
     'sphinx.ext.napoleon',   # Support Google-style and NumPy-style docstrings
     'sphinx.ext.viewcode',   # Link to source code
+    'sphinx.ext.coverage',   # Check documentation coverage
+    'sphinx.ext.autosummary',
 ]
 
 templates_path = ['_templates']
@@ -29,7 +36,9 @@ autodoc_mock_imports = [
     'sklearn',
     'pydot',
     'simpy',
-    'mpire'
+    'mpire',
+    'mizani',
+    'plotnine',
 ]
 
 
@@ -38,4 +47,8 @@ autodoc_mock_imports = [
 import sphinx_rtd_theme
 html_theme = "sphinx_rtd_theme"
 html_static_path = ['_static']
+
+# -- Options for search output ----------------------------------------------
+html_search_language = 'en'
+html_search_options = {'type': 'default'}
 

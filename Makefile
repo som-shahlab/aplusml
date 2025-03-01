@@ -7,6 +7,8 @@ SPHINXOPTS    ?=
 SPHINXBUILD   ?= sphinx-build
 SOURCEDIR     = docs/source
 BUILDDIR      = docs/build
+# Use absolute path for project root
+PROJECTDIR    = $(shell pwd)
 
 # Put it first so that "make" without argument is like "make help".
 help:
@@ -17,4 +19,4 @@ help:
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 %: Makefile
-	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+	@pip install -e . && PYTHONPATH="$(PROJECTDIR):$(PYTHONPATH)" $(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)

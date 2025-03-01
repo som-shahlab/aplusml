@@ -1,7 +1,7 @@
 """Wrapper functions around `sim.py` to help run/track multiple simulations"""
 import os
 import collections
-from typing import Callable
+from typing import Callable, Optional
 import copy
 import pandas as pd
 import numpy as np
@@ -51,7 +51,7 @@ def test_diff_thresholds(simulation: sim.Simulation,
 
 def _run_test(simulation: sim.Simulation,
                 all_patients: list[sim.Patient],
-                func_run_test: Callable,
+                func_run_test: Optional[Callable],
                 func_match_patient_to_property_column: Callable,
                 is_refresh_patients: bool,
                 l: str,
@@ -59,9 +59,16 @@ def _run_test(simulation: sim.Simulation,
                 is_log: bool = False) -> pd.DataFrame:
     """Helper function used in `run_test()` to enable parallel processing of different runs - arguments have identical meanings
     
+    Args:
+        simulation (sim.Simulation): Simulation object
+        all_patients (list[sim.Patient]): List of Patient objects
+        func_run_test (Callable): Function that actually runs the simulation -- typically set to `test_diff_thresholds`
+        func_match_patient_to_property_column (Callable): Used in `create_patients_for_simulation`
+        is_refresh_patients (bool): If TRUE, then re-create patients after running each setting (useful for patient-specific properties)
+        l (str): Name for this setting
+    
     Returns:
-        pd.DataFrame: Has [1 + (# of cols returned by `test_diff_thresholds`)] columns, each row is a (threshold, label)
-                        Columns: threshold, mean_utility, std_utility, sem_utility, mean_work_per_timestep, label
+        pd.DataFrame: Has [1 + (# of cols returned by `test_diff_thresholds`)] columns, each row is a (threshold, label). Columns: threshold, mean_utility, std_utility, sem_utility, mean_work_per_timestep, label
     """    
     if is_log:
         print(f"Run: {l}")
