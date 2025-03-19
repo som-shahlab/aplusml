@@ -87,7 +87,7 @@ class Transition(object):
         self.prob: Union[str, float] = prob
         self._if_compiled: CodeType = compile(_if, '<string>', 'eval', optimize=2) if type(_if) == str else None
         self.prob_compiled: CodeType = compile(prob, '<string>', 'eval', optimize=2) if type(prob) == str else None
-        
+
     def __setattr__(self, name, value):
         # Update compiled versions of if/prob
         if name == '_if':
@@ -267,6 +267,7 @@ class Patient(object):
     """
     A patient in the simulation.
     """
+    __module__ = 'aplusml.models'
 
     def __init__(self, 
                  id: str, 

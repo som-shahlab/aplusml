@@ -273,7 +273,7 @@ def create_simulation_from_config(yaml: dict) -> sim.Simulation:
     """Create a :class:`~aplusml.sim.Simulation` object from YAML
 
     Args:
-        yaml (dict): From 'load_config'
+        yaml (dict): From :func:`~aplusml.parse.load_config`
 
     Returns:
         Simulation: A :class:`~aplusml.sim.Simulation` object that contains all of the metadata, variables, states, and transitions from the YAML file

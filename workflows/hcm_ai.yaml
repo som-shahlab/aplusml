@@ -1,0 +1,136 @@
+
+  metadata:
+    name: "HCM (AI-Guided)"
+
+  variables:
+    # Patient properties
+    has_hcm:
+      type: property # Boolean property that is true if the patient has HCM
+      value: None # this will be overwritten
+    patient_screen_idx:
+      type: property  # Random index of the patient; used for determining which patients get screened given a capacity constraint. All patients with ``patient_random_idx <= n_patients_screened`` will be screened.
+      value: None # this will be overwritten
+    patient_delayed_screen_idx:
+      type: property # Random index of the patient; used for determining which patients get screened given a capacity constraint. All patients with ``patient_random_idx <= n_patients_delayed_screened`` will be screened.
+      value: None # this will be overwritten
+    ecg_result: # Used for determining if the patient is positive for ECG screening
+      type: property
+      distribution: uniform
+      start: 0
+      end: 1
+    echo_result: # Used for determining if the patient is positive for Echo screening
+      type: property
+      distribution: uniform
+      start: 0
+      end: 1
+    # Fixed constants
+    hcm_prevalence:
+      value: 1/350 # Prevalence of HCM in the population ('p' in the diagram)
+    n_patients_screened:
+      value: 1_000 # Capacity constraint on the number of patients screened ('C' in the diagram)
+    n_patients_delayed_screened:
+      value: 100 # Capacity constraint on the number of patients worked up at HCM clinic with delay after failing initial HCM triage, aka flex capacity ('F' in the diagram)
+    ecg_sensitivity:
+      value: 0.95 # Sensitivity of ECG screening ('g' in the diagram)
+    ecg_specificity:
+      value: 0.95 # Specificity of ECG screening ('f' in the diagram)
+    echo_sensitivity:
+      value: 0.95 # Sensitivity of Echo screening ('h' in the diagram)
+    echo_specificity:
+      value: 0.95 # Specificity of Echo screening ('j' in the diagram)
+
+  states:
+    start:
+      type: start
+      label: "Start"
+      transitions:
+        - dest: ecg_screening
+    ecg_screening:
+      label: "ECG screening"
+      transitions:
+        - dest: echo_screening
+          # The patient is marked as POSITIVE for ECG screen if...
+          #   Has HCM + ECG result is <= the sensitivity of the ECG screening, or
+          #   Does not have HCM + ECG result is >= the specificity of the ECG screening
+          if: (has_hcm and (ecg_result <= ecg_sensitivity)) or (not has_hcm and (ecg_result >= ecg_specificity))
+        - dest: undiagnosed
+    echo_screening:
+      label: "Echo screening"
+      transitions:
+        - dest: hcm_triage
+          # The patient is marked as POSITIVE for Echo screen if...
+          #   Has HCM + Echo result is <= the sensitivity of the Echo screening, or
+          #   Does not have HCM + Echo result is >= the specificity of the Echo screening
+          if: (has_hcm and (echo_result <= echo_sensitivity)) or (not has_hcm and (echo_result >= echo_specificity))
+        - dest: undiagnosed
+    hcm_triage:
+      label: "HCM triage"
+      transitions:
+        - dest: visit_hcm_clinic
+          if: patient_screen_idx <= n_patients_screened
+        - dest: hcm_flex_waitlist
+    visit_hcm_clinic:
+      label: "Patients worked up at HCM clinic"
+      transitions:
+        - dest: diagnosed
+          if: has_hcm
+        - dest: undiagnosed
+    hcm_flex_waitlist:
+      label: "Patients not worked up at HCM clinic with minimal delay"
+      transitions:
+        - dest: visit_hcm_clinic_delayed
+          if: patient_delayed_screen_idx <= n_patients_delayed_screened
+        - dest: undiagnosed
+    visit_hcm_clinic_delayed:
+      label: "Patients worked up at HCM clinic (delay up to 1 year)"
+      transitions:
+        - dest: diagnosed_delayed
+          if: has_hcm # Assume perfect split between diagnosed and undiagnosed
+        - dest: undiagnosed
+    diagnosed_delayed:
+      label: "Diagnosed (delay up to 1 year)"
+      transitions:
+        - dest: true_positive_delayed
+    diagnosed:
+      label: "Diagnosed"
+      transitions:
+        - dest: true_positive
+          if: has_hcm
+        - dest: false_positive
+          if: not has_hcm
+    undiagnosed:
+      label: "Undiagnosed"
+      transitions:
+        - dest: true_negative
+          if: not has_hcm
+        - dest: false_negative
+    true_positive_delayed:
+      type: end
+      label: "True Positive (delayed)"
+      utilities:
+        - value: 0.95 * 0.995**4 # 0.5% annual mortality for first year, 5% annual mortality for 4 years
+          unit: five_year_life_expectancy
+    true_positive:
+      type: end
+      label: "True Positive"
+      utilities:
+        - value: 0.995**5 # 0.5% annual ortality for 5 years
+          unit: five_year_life_expectancy
+    false_positive:
+      type: end
+      label: "False Positive"
+      utilities:
+        - value: 0
+          unit: five_year_life_expectancy
+    true_negative:
+      type: end
+      label: "True Negative"
+      utilities:
+        - value: 0
+          unit: five_year_life_expectancy
+    false_negative:
+      type: end
+      label: "False Negative"
+      utilities:
+        - value: 0.95**5 # 5% annual mortality for 5 years
+          unit: five_year_life_expectancy

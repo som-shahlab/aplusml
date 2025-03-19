@@ -16,11 +16,12 @@ def _html_escape(text: str) -> str:
 
     Returns:
         str: The escaped text with the following replacements:
-            - & → &amp;
-            - < → &lt;
-            - > → &gt;
-            - \\n → <br align="left"/>
+            - ``&`` → ``&amp;``
+            - ``<`` → ``&lt;``
+            - ``>`` → ``&gt;``
+            - ``\n`` → ``<br align="left"/>``
     """
+    text = str(text)
     return text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('\n', '<br align="left"/>')
 
 def create_node_label(title: str, duration: float, utilities: list, resource_deltas: dict, is_edge: bool = False) -> str:
@@ -32,7 +33,7 @@ def create_node_label(title: str, duration: float, utilities: list, resource_del
         duration (float): Duration of the node.
         utilities (list): List of utilities associated with the node.
         resource_deltas (dict): Dictionary of resource deltas associated with the node.
-        is_edge (bool, optional): Whether the node represents an edge. Defaults to False.
+        is_edge (bool, optional): Whether the node represents an edge. Defaults to ``False``.
     
     Returns:
         str: An HTML-formatted string containing the node's label.

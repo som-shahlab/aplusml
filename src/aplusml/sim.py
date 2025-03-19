@@ -42,7 +42,28 @@ class Simulation(object):
         self.variable_history: Dict[List[Tuple[int, Any]]] = {} # [key] = id, [value] = tuple(timestep, value)
         self.states: Dict[str, State] = {} # [key] = id, [value] = State
         self.current_timestep: int = None
-    
+
+    def __repr__(self):
+        metadata_str = f"self.metadata:\n"
+        for k, v in self.metadata.items():
+            metadata_str += f"    - {k}: {v}\n"
+        
+        variables_str = "self.variables:\n"
+        for var in self.variables:
+            variables_str += f"    - {var}: {self.variables[var]}\n"
+        
+        states_str = "self.states:\n"
+        for state in self.states:
+            states_str += f"    - {state}\n"
+            for t in self.states[state].transitions:
+                states_str += f"        - {t.dest}\n"
+                if t.is_conditional_if():
+                    states_str += f"            if: {t._if}\n"
+                elif t.is_conditional_prob():
+                    states_str += f"            prob: {t.prob}\n"
+        
+        return f"{metadata_str}\n{variables_str}\n{states_str}"
+
     def evaluate_variables(self, patient: Patient) -> Dict[str, Any]:
         """Evaluates all variables for a given patient at the current timestep.
         
@@ -699,16 +720,16 @@ class Simulation(object):
         1. Deep copies patients using pickle
         2. Sorts patients by ID
         3. Initializes patient properties from:
-        - Constants
-        - CSV file data (using matching function)
-        - Random distributions
+            - Constants
+            - CSV file data (using matching function)
+            - Random distributions
         
         Args:
             patients (List[Patient]): Template patients to copy and initialize
             func_match_patient_to_property_column (Callable, optional): Function to match patients
-                to rows in properties CSV. Takes (patient_id, random_idx, df, column).
-                Required if using CSV properties without ID column. Defaults to None.
-            random_seed (int, optional): Random seed for reproducibility. Defaults to 0.
+                to rows in properties CSV. Takes ``(patient_id, random_idx, df, column)``.
+                Required if using CSV properties without ID column. Defaults to ``None``.
+            random_seed (int, optional): Random seed for reproducibility. Defaults to ``0``.
 
         Returns:
             List[Patient]: New list of initialized patients
@@ -810,9 +831,9 @@ class Simulation(object):
             patients (List[Patient]): Template patients to initialize
             df_patients_seismometer (pd.DataFrame): Dataframe containing patient properties
             func_match_patient_to_property_column (Callable, optional): Function to match patients
-                to rows in dataframe. Takes (patient_id, random_idx, df, column).
-                Required if not using ID column. Defaults to None.
-            random_seed (int, optional): Random seed for reproducibility. Defaults to 0.
+                to rows in dataframe. Takes ``(patient_id, random_idx, df, column)``.
+                Required if not using ID column. Defaults to ``None``.
+            random_seed (int, optional): Random seed for reproducibility. Defaults to ``0``.
 
         Returns:
             List[Patient]: Patients with initialized properties
@@ -872,13 +893,13 @@ def sort_patient_by_preference(patients: List[Patient],
     """Returns indices that would sort patients by specified property.
     
     Can sort by:
-    - Direct Patient attributes (id, start_timestep)
-    - Patient properties dictionary values
+        - Direct ``Patient`` attributes (``id``, ``start_timestep``)
+        - Patient properties dictionary values
     
     Args:
         patients (List[Patient]): Patients to sort
-        property_to_sort_by (str, optional): Property name to sort by. Defaults to None.
-        is_ascending (bool, optional): Sort order. Defaults to True.
+        property_to_sort_by (str, optional): Property name to sort by. Defaults to ``None``.
+        is_ascending (bool, optional): Sort order. Defaults to ``True``.
 
     Returns:
         List[int]: Indices that would sort the patients list
@@ -945,10 +966,10 @@ def log_patients(simulation: Simulation, patients: List[Patient]):
     """Prints detailed debug information about patients.
     
     For each patient, prints:
-    - ID and start timestep
-    - Properties
-    - State history
-    - Sum of utilities
+        - ID and start timestep
+        - Properties
+        - State history
+        - Sum of utilities
     
     Args:
         simulation (Simulation): Simulation context

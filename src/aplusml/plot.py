@@ -1,5 +1,9 @@
 """
-Plotting functions for visualizing simulation results
+Plotting functions for visualizing simulation results.
+
+Some quick notes:
+    - For all functions, the `df_preds` dataframe must contain two columns -- 'y' (ground truth) and 'y_hat' (predicted labels).
+    - For all functions, the `utilities` dictionary must contain four keys -- 'tp', 'fp', 'tn', 'fn' -- which map to the utility values for each class.
 """
 from typing import Tuple
 import numpy as np
@@ -200,6 +204,16 @@ def plot_line_mean_utilities(title: str,
 
 def plot_bar_mean_utilities(title: str, 
                             plot_avg_utilities: dict[float]) -> p9.ggplot:
+    """Plots bar chart of mean utilities for different settings
+    
+    Args:
+        title (str): Title of the plot
+        plot_avg_utilities (dict[float]): Dictionary of mean utilities for different settings
+
+    Returns:
+        p9.ggplot: A plotnine plot object showing bar chart of mean utilities
+    """
+
     # Sort utilities
     sorted_plot_avg_utilities = sorted(list(plot_avg_utilities.items()), key = lambda x: x[1])
     labels = [x[0] for x in sorted_plot_avg_utilities]
@@ -227,15 +241,16 @@ def plot_line_compare_multiple_settings(title: str,
                                         df: list[pd.DataFrame],
                                         x_label: str = None,
                                         line_labels: list[str] = None) -> p9.ggplot:
-    """Plots multiple lines on the same x- and y-axis
-        Used to generate Figure 2 from Jung et al. 2021
+    """Plots multiple lines on the same x- and y-axis. Used to generate Figure 2 from Jung et al. 2021
 
     Args:
-        title (str): _description_
-        df (pd.DataFrame): Columns: x, y, line
+        title (str): Title of the plot
+        df (list[pd.DataFrame]): List of DataFrames, each containing columns: x, y, line
+        x_label (str, optional): Label for the x-axis. Defaults to None.
+        line_labels (list[str], optional): Labels for the lines. Defaults to None.
 
     Returns:
-        ggplot: _description_
+        p9.ggplot: A plotnine plot object showing multiple lines
     """
     p = (
         p9.ggplot(df, p9.aes(x = 'x', y = 'y', color = 'line', group = 'line')) + 
@@ -258,14 +273,7 @@ def plot_line_compare_multiple_settings(title: str,
 ################################################
 # Theoretical Utility Analysis
 ################################################
-"""Pattern for all plots:
-    Args:
-        df_preds (pd.DataFrame): DataFrame that must contain two columns -- 'y' and 'y_hat'
-        utilities (dict): Dictionary that must contain four keys: 'tp', 'fp', 'tn', 'fn'
 
-    Returns:
-        Plot object
-"""
 
 PADDING = 0.05 # How much padding to add to plots that get bounded by (0,1) - e.g. ROC Curve
 def get_df_utility_from_df_preds(df_preds: pd.DataFrame, 
@@ -276,6 +284,8 @@ def get_df_utility_from_df_preds(df_preds: pd.DataFrame,
     """Adds metrics (Utilities + TP/FP/TN/FN) to DataFrame of predictions
 
     Args:
+        df_preds (pd.DataFrame): DataFrame containing 'y_hat' (predictions) and 'y' (ground truth) columns
+        utilities (dict): Dictionary containing utility values for each class. Must contain four keys: 'tp', 'fp', 'tn', 'fn'
         thresholds (np.ndarray): Array of model thresholds to consider
         is_add_0_and_1 (bool): If TRUE, add 0 and 1 to the start/end of the `thresholds` array
 
@@ -314,8 +324,15 @@ def get_df_utility_from_df_preds(df_preds: pd.DataFrame,
 
 def plot_hist_pred(df_preds: pd.DataFrame, ax: plt.Axes = None) -> plt.figure:
     """Generate Histogram of predictions
-        x-axis = predictions ('y_hat')
-        y-axis = density
+        - x-axis = predictions ('y_hat')
+        - y-axis = density
+        
+    Args:
+        df_preds (pd.DataFrame): DataFrame containing 'y_hat' (predictions) and 'y' (ground truth) columns
+        ax (plt.Axes, optional): Matplotlib axes to plot on. If None, creates new figure. Defaults to None.
+
+    Returns:
+        plt.figure: Matplotlib figure object containing the plot
     """
     fig, ax = plt.subplots() if ax is None else (None, ax)
 
@@ -325,30 +342,6 @@ def plot_hist_pred(df_preds: pd.DataFrame, ax: plt.Axes = None) -> plt.figure:
     ax.set_ylabel("Count", fontdict={'fontsize' : 10})
     ax.set_xlabel("Prediction", fontdict={'fontsize' : 10})
     return fig
-
-def calc_pearsonr(a: np.ndarray, b: np.ndarray) -> float:
-    """Pearson correlation coefficient between two 1d vectors
-    
-    Args:
-        a (np.ndarray): First vector
-        b (np.ndarray): Second vector
-
-    Returns:
-        float: Pearson correlation coefficient
-    """
-    return np.corrcoef(a, b)[0,1]
-
-def calc_spearmanr(a: np.ndarray, b: np.ndarray) -> float:
-    """Spearman correlation coefficient between two 1d vectors
-    
-    Args:
-        a (np.ndarray): First vector
-        b (np.ndarray): Second vector
-
-    Returns:
-        float: Spearman correlation coefficient
-    """
-    return np.corrcoef(a, b)[0,1]
 
 def plot_pred_v_true(df_preds: pd.DataFrame, ax: plt.Axes = None) -> plt.figure:
     """Generate a scatter plot comparing predicted vs true values with density coloring.
@@ -382,13 +375,13 @@ def plot_pred_v_true(df_preds: pd.DataFrame, ax: plt.Axes = None) -> plt.figure:
     return fig
 
 def plot_calibration_curve(df_preds: pd.DataFrame, ax: plt.Axes = None) -> plt.figure:
-    """Generate Calibration curve where...
+    """Generate Calibration curve where:
         - x-axis = mean predicted probability for each bin
         - y-axis = fraction of positive cases in each bin
         
-        The calibration curve shows how well the predicted probabilities match 
-        the actual observed frequencies. A perfectly calibrated model will follow 
-        the diagonal line y=x.
+    The calibration curve shows how well the predicted probabilities match 
+    the actual observed frequencies. A perfectly calibrated model will follow 
+    the diagonal line y=x.
         
     Args:
         df_preds (pd.DataFrame): DataFrame containing 'y_hat' (predictions) and 'y' (ground truth) columns
@@ -416,7 +409,7 @@ def plot_calibration_curve(df_preds: pd.DataFrame, ax: plt.Axes = None) -> plt.f
     return fig
 
 def plot_confusion_matrix(df_preds: pd.DataFrame, utilities: dict = None, threshold: float = None, ax: plt.Axes = None) -> plt.figure:
-    """Generate Confusion Matrix @ highest utility threshold (if `threshold` is not specified) where...
+    """Generate Confusion Matrix @ highest utility threshold (if `threshold` is not specified) where:
         - x-axis = predictions ('y_hat')
         - y-axis = ground truth ('y')
     
@@ -451,11 +444,11 @@ def plot_confusion_matrix(df_preds: pd.DataFrame, utilities: dict = None, thresh
     return fig
 
 def plot_roc_curve(df_preds: pd.DataFrame, utilities: dict = None, ax: plt.Axes = None) -> plt.figure:
-    """Generate ROC curve with indifference curves where...
+    """Generate ROC curve with indifference curves where:
         - x-axis = false positive rate (FPR)
         - y-axis = true positive rate (TPR)
         
-        Explanation of indifference curves: http://www0.cs.ucl.ac.uk/staff/ucacbbl/roc/
+    Explanation of indifference curves: http://www0.cs.ucl.ac.uk/staff/ucacbbl/roc/
         
     Args:
         df_preds (pd.DataFrame): DataFrame containing 'y_hat' (predictions) and 'y' (ground truth) columns
@@ -508,11 +501,11 @@ def plot_roc_curve(df_preds: pd.DataFrame, utilities: dict = None, ax: plt.Axes 
     return fig
 
 def plot_precision_recall_curve(df_preds: pd.DataFrame, utilities: dict = None, ax: plt.Axes = None) -> plt.figure:
-    """Generate Precision-Recall curve with utility contours where...
+    """Generate Precision-Recall curve with utility contours where:
         - x-axis = recall (TPR)
         - y-axis = precision (PPV)
         
-        Explanation of Expected Utility (EU) calculations (Appendix A): https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2804257/pdf/nihms-108324.pdf
+    Explanation of Expected Utility (EU) calculations (Appendix A): https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2804257/pdf/nihms-108324.pdf
         
     Args:
         df_preds (pd.DataFrame): DataFrame containing 'y_hat' (predictions) and 'y' (ground truth) columns
@@ -561,7 +554,7 @@ def plot_precision_recall_curve(df_preds: pd.DataFrame, utilities: dict = None, 
     return fig
 
 def plot_ppv_v_utility_curve(df_preds: pd.DataFrame, utilities: dict, ax: plt.Axes = None) -> plt.figure:
-    """Generate PPV v. Unit Utility curve where...
+    """Generate PPV v. Unit Utility curve where:
         - x-axis = precision (PPV)
         - y-axis = unit utility
         
@@ -594,7 +587,7 @@ def plot_ppv_v_utility_curve(df_preds: pd.DataFrame, utilities: dict, ax: plt.Ax
     return fig
 
 def plot_threshold_v_utility_curve(df_preds: pd.DataFrame, utilities: dict, ax: plt.Axes = None) -> plt.figure:
-    """Generate Cutoff Threshold v. Unit Utility curve where...
+    """Generate Cutoff Threshold v. Unit Utility curve where:
         - x-axis = cutoff threshold
         - y-axis = unit utility
         
@@ -627,7 +620,7 @@ def plot_threshold_v_utility_curve(df_preds: pd.DataFrame, utilities: dict, ax: 
     return fig
 
 def plot_work_v_utility(df_preds: pd.DataFrame, utilities: dict, ax: plt.Axes = None) -> plt.figure:
-    """Generate Work v. Unit Utility curve where...
+    """Generate Work v. Unit Utility curve where:
         - x-axis = work (%)
         - y-axis = unit utility
         
@@ -660,7 +653,7 @@ def plot_work_v_utility(df_preds: pd.DataFrame, utilities: dict, ax: plt.Axes = 
     return fig
 
 def plot_work_v_ppv_tpr_fpr(df_preds: pd.DataFrame, utilities: dict, ax: plt.Axes = None) -> plt.figure:
-    """Generate Work v. PPV/TPR/FPR curve where...
+    """Generate Work v. PPV/TPR/FPR curve where:
         - x-axis = work (%)
         - y-axis = PPV/TPR/FPR
         
@@ -692,7 +685,7 @@ def plot_work_v_ppv_tpr_fpr(df_preds: pd.DataFrame, utilities: dict, ax: plt.Axe
     return fig
 
 def plot_threshold_v_ppv_tpr_work(df_preds: pd.DataFrame, utilities: dict, ax: plt.Axes = None) -> plt.figure:
-    """Generate Cutoff Threshold v. PPV/TPR/Work curve where...
+    """Generate Cutoff Threshold v. PPV/TPR/Work curve where:
         - x-axis = cutoff threshold
         - y-axis = PPV/TPR/Work
         
@@ -724,7 +717,7 @@ def plot_threshold_v_ppv_tpr_work(df_preds: pd.DataFrame, utilities: dict, ax: p
     return fig
 
 def plot_decision_curve(df_preds: pd.DataFrame, utilities: dict, ax: plt.Axes = None) -> plt.figure:
-    """Generate Decision Curve for model where...
+    """Generate Decision Curve for model where:
         - y-axis = X - U_none (i.e. everything is relative to Treat None)
         - x-axis = R
 
@@ -779,7 +772,7 @@ def plot_relative_utility_curve(lines: list[dict[pd.DataFrame]],
                                 xlim: Tuple = (0, 1),
                                 ylim: Tuple = (-0.1, None),
                                 ax: plt.Axes = None) -> plt.figure:
-    """Generate Relative Utility Curve where...
+    """Generate Relative Utility Curve where:
         - y-axis = relative utility
         - x-axis = risk threshold
         
@@ -915,6 +908,30 @@ def make_model_utility_plots(df_preds: pd.DataFrame,
         for fig, suffix in zip(plots, suffixes):
             fig.savefig(path_to_plots_prefix + suffix)
         plt.close('all')
+
+def calc_pearsonr(a: np.ndarray, b: np.ndarray) -> float:
+    """Pearson correlation coefficient between two 1d vectors
+    
+    Args:
+        a (np.ndarray): First vector
+        b (np.ndarray): Second vector
+
+    Returns:
+        float: Pearson correlation coefficient
+    """
+    return np.corrcoef(a, b)[0,1]
+
+def calc_spearmanr(a: np.ndarray, b: np.ndarray) -> float:
+    """Spearman correlation coefficient between two 1d vectors
+    
+    Args:
+        a (np.ndarray): First vector
+        b (np.ndarray): Second vector
+
+    Returns:
+        float: Spearman correlation coefficient
+    """
+    return np.corrcoef(a, b)[0,1]
 
 if __name__ == '__main__':
     pass

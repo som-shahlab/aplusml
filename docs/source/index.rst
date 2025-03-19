@@ -71,8 +71,9 @@ Documentation
    :caption: 📚 User Guide
 
    usage/quick
-   usage/tutorial
    usage/config
+   usage/tutorial_pad
+   usage/tutorial_hcm
 
 .. toctree::
    :maxdepth: 2

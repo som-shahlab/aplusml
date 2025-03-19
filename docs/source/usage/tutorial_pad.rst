@@ -1,11 +1,13 @@
-Tutorial
-=========
+Tutorial (PAD)
+================
 
 .. toctree::
    :maxdepth: 2
-   :caption: Tutorial
+   :caption: Tutorial (PAD)
 
 In this section, we present a case study of conducting a novel usefulness assessment via APLUS of ML models for the early detection of PAD.
+
+The full ``.ipynb`` notebook for this tutorial can be found `at this link <https://github.com/som-shahlab/aplusml/blob/main/tutorials/pad.ipynb>`_.
 
 🏥 Clinical Motivation
 ----------------------
@@ -815,7 +817,7 @@ The full config file is shown below for reference.
 And the config file for the **nurse-driven workflow** can be found at this link: https://github.com/som-shahlab/aplusml/blob/main/workflows/pad_nurse.yaml
 
 📏 Baselines
-----------
+-------------
 
 We evaluated each PAD model's utility relative to three baselines: 
 

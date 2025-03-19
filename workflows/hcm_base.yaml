@@ -1,0 +1,92 @@
+# NOTE: This workflow is the base for the random / current / optimistic workflows.
+#   To convert to 'random', do nothing
+#   To convert to 'current', add a new variable `current_hcm_diagnosis` that is a property with the column `current_hcm_diagnosis`
+#   To convert to 'optimistic', set `n_patients_screened` to 1_000_000 (i.e. remove the capacity constraint)
+
+  metadata:
+    name: "HCM (Base for random / current / optimistic)"
+
+  variables:
+    # Patient properties
+    has_hcm:
+      type: property # Boolean property that is true if the patient has HCM
+      value: None # this will be overwritten
+    patient_screen_idx:
+      type: property # Random index of the patient; used for determining which patients get screened given a capacity constraint. All patients with ``patient_random_idx <= n_patients_screened`` will be screened.
+      value: None # this will be overwritten
+    clinical_result:
+      type: property
+      distribution: uniform
+      start: 0
+      end: 1
+    # Fixed constants
+    hcm_prevalence:
+      value: 1/350 # Prevalence of HCM in the population ('p' in the diagram)
+    n_patients_screened:
+      value: 1_000 # Capacity constraint on the number of patients screened ('C' in the diagram)
+    clinical_sensitivity:
+      value: 0.95 # Sensitivity of clinical screening ('s' in the diagram)
+    clinical_specificity:
+      value: 0.95 # Specificity of clinical screening ('r' in the diagram)
+
+  states:
+    start:
+      type: start
+      label: "Start"
+      transitions:
+        - dest: prescreen_patients
+    prescreen_patients: # Clinical pre-screening
+      label: "Clinical screening"
+      transitions:
+        - dest: screen_patients
+          if: (has_hcm and (clinical_result <=  clinical_sensitivity)) or (not has_hcm and (clinical_result >= clinical_specificity))
+        - dest: undiagnosed
+    screen_patients:
+      label: "Screened patients"
+      transitions:
+        - dest: visit_hcm_clinic
+          if: patient_screen_idx <= n_patients_screened # Capacity constrain of 'C' in the diagram
+        - dest: undiagnosed
+    visit_hcm_clinic:
+      label: "Patients worked up at HCM clinic"
+      transitions:
+        - dest: diagnosed
+          if: has_hcm
+        - dest: undiagnosed
+    diagnosed:
+      label: "Diagnosed"
+      transitions:
+        - dest: true_positive
+          if: has_hcm
+        - dest: false_positive
+          if: not has_hcm
+    undiagnosed:
+      label: "Undiagnosed"
+      transitions:
+        - dest: true_negative
+          if: not has_hcm
+        - dest: false_negative
+    true_positive:
+      type: end
+      label: "True Positive"
+      utilities:
+        - value: 0.995**5 # 0.5% annual ortality for 5 years
+          unit: five_year_life_expectancy
+    false_positive:
+      type: end
+      label: "False Positive"
+      utilities:
+        - value: 0
+          unit: five_year_life_expectancy
+    true_negative:
+      type: end
+      label: "True Negative"
+      utilities:
+        - value: 0
+          unit: five_year_life_expectancy
+    false_negative:
+      type: end
+      label: "False Negative"
+      utilities:
+        - value: 0.95**5 # 5% annual mortality for 5 years
+          unit: five_year_life_expectancy

@@ -34,17 +34,24 @@ The schema of this YAML configuration file is as follows:
       type: Enum(scalar, resource, property, simulation)  # Type of variable. Default: "scalar".
       
       # If type == 'scalar'
+      #   This is a scalar value that is shared across all patients.
+      #   It can be used to model things like the sensitivity of a screening test, the prevalence of a disease, etc.
       value: Union[int, float, bool, str, list, dict, set]  # Scalar value. Use '!!set' tag for sets.
 
       # If type == 'resource'
+      #   This is a finite resource that is shared across all patients. 
+      #   It can be decremented, incremented, and reset by the simulation. 
+      #   It can be used to model things like hospital beds, lab capacity, etc.
       init_amount: int  # Initial amount of the resource.
       max_amount: int  # Maximum amount of resource allowed.
       refill_amount: int  # Amount added per refill.
       refill_duration: int  # Time interval between refills.
 
       # If type == 'property'
+      #   This is a property that is UNIQUE to each patient (i.e. each patient may have a different value for this property).
+      #   It can be used to model things like the age of a patient, the gender of a patient, etc.
       ## Either load from file...
-      column: str  # If loaded from a CSV file, specify the column name.
+      column: str  # If loaded from a CSV file, specify the column name (e.g. 'y' or 'y_hat_dl'). Each row of the CSV will be a patient, and the value of this property for each patient will be the value of the column in the CSV file.
       ## or constant...
       value: Any  # If constant, specify value.
       ## or randomly sample...

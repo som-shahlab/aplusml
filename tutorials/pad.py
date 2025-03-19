@@ -110,11 +110,10 @@ def generate_patient_list(simulation: aplusml.Simulation,
                 len(all_patients), # ID
                 timestep, # Start timestep
             ))
-    all_patients = aplusml.create_patients_for_simulation(simulation, 
-                                                        all_patients,
-                                                        # Ignore p.id since we want to randomly sample patients from our CSV
-                                                        lambda p_id, random_idx, df, col: df.iloc[random_idx][col],
-                                                        random_seed = 0)
+    all_patients = simulation.create_patients_for_simulation(all_patients,
+                                                                # Ignore p.id since we want to randomly sample patients from our CSV
+                                                                lambda p_id, random_idx, df, col: df.iloc[random_idx][col],
+                                                                random_seed = 0)
     return all_patients
 
 def generate_patient_list_seismometer(simulation: aplusml.Simulation,
