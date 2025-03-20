@@ -62,16 +62,14 @@ Documentation
    :maxdepth: 2
    :caption: 🚦 Introduction
 
-   intro/background
    intro/installation
-   intro/definitions
+   intro/background
 
 .. toctree::
    :maxdepth: 2
    :caption: 📚 User Guide
 
    usage/quick
-   usage/config
    usage/tutorial_pad
    usage/tutorial_hcm
 
@@ -79,6 +77,7 @@ Documentation
    :maxdepth: 2
    :caption: 📖 API
 
+   api/config
    api/api
 
 Citation

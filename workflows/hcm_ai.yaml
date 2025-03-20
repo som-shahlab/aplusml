@@ -7,12 +7,6 @@
     has_hcm:
       type: property # Boolean property that is true if the patient has HCM
       value: None # this will be overwritten
-    patient_screen_idx:
-      type: property  # Random index of the patient; used for determining which patients get screened given a capacity constraint. All patients with ``patient_random_idx <= n_patients_screened`` will be screened.
-      value: None # this will be overwritten
-    patient_delayed_screen_idx:
-      type: property # Random index of the patient; used for determining which patients get screened given a capacity constraint. All patients with ``patient_random_idx <= n_patients_delayed_screened`` will be screened.
-      value: None # this will be overwritten
     ecg_result: # Used for determining if the patient is positive for ECG screening
       type: property
       distribution: uniform
@@ -24,12 +18,6 @@
       start: 0
       end: 1
     # Fixed constants
-    hcm_prevalence:
-      value: 1/350 # Prevalence of HCM in the population ('p' in the diagram)
-    n_patients_screened:
-      value: 1_000 # Capacity constraint on the number of patients screened ('C' in the diagram)
-    n_patients_delayed_screened:
-      value: 100 # Capacity constraint on the number of patients worked up at HCM clinic with delay after failing initial HCM triage, aka flex capacity ('F' in the diagram)
     ecg_sensitivity:
       value: 0.95 # Sensitivity of ECG screening ('g' in the diagram)
     ecg_specificity:
@@ -38,6 +26,19 @@
       value: 0.95 # Sensitivity of Echo screening ('h' in the diagram)
     echo_specificity:
       value: 0.95 # Specificity of Echo screening ('j' in the diagram)
+    # Resources
+    hcm_clinic_capacity:
+      type: resource
+      init_amount: 2
+      max_amount: 2 # HCM clinic can only see 2 patients per day ('C' in the diagram)
+      refill_amount: 2
+      refill_duration: 1 # Resets every day
+    hcm_delayed_clinic_capacity:
+      type: resource
+      init_amount: 100
+      max_amount: 100 # HCM clinic can only see 100 patients in a year with delay after failing initial HCM triage, aka flex capacity ('F' in the diagram)
+      refill_amount: 100
+      refill_duration: 365 # Resets every year
 
   states:
     start:
@@ -67,7 +68,9 @@
       label: "HCM triage"
       transitions:
         - dest: visit_hcm_clinic
-          if: patient_screen_idx <= n_patients_screened
+          if: hcm_clinic_capacity > 0
+          resource_deltas: # Decrement the capacity of the HCM clinic when a patient is seen
+            hcm_clinic_capacity: -1
         - dest: hcm_flex_waitlist
     visit_hcm_clinic:
       label: "Patients worked up at HCM clinic"
@@ -79,7 +82,9 @@
       label: "Patients not worked up at HCM clinic with minimal delay"
       transitions:
         - dest: visit_hcm_clinic_delayed
-          if: patient_delayed_screen_idx <= n_patients_delayed_screened
+          if: hcm_delayed_clinic_capacity > 0
+          resource_deltas: # Decrement the capacity of the HCM clinic when a patient is seen
+            hcm_delayed_clinic_capacity: -1
         - dest: undiagnosed
     visit_hcm_clinic_delayed:
       label: "Patients worked up at HCM clinic (delay up to 1 year)"
@@ -120,13 +125,13 @@
       type: end
       label: "False Positive"
       utilities:
-        - value: 0
+        - value: 1
           unit: five_year_life_expectancy
     true_negative:
       type: end
       label: "True Negative"
       utilities:
-        - value: 0
+        - value: 1
           unit: five_year_life_expectancy
     false_negative:
       type: end

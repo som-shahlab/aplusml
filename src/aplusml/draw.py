@@ -5,6 +5,8 @@ This module provides utilities for creating and formatting graphviz diagrams
 of workflows, including HTML table generation and text escaping.
 """
 
+from typing import Optional
+
 def _html_escape(text: str) -> str:
     """Escape HTML special characters for use in HTML tables in graphviz.
 
@@ -24,7 +26,7 @@ def _html_escape(text: str) -> str:
     text = str(text)
     return text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('\n', '<br align="left"/>')
 
-def create_node_label(title: str, duration: float, utilities: list, resource_deltas: dict, is_edge: bool = False) -> str:
+def create_node_label(title: str, id: Optional[str], duration: float, utilities: list, resource_deltas: dict, is_edge: bool = False) -> str:
     """Creates an HTML-formatted label string for use in graphviz diagrams, containing
     information about the node's title, duration, utilities, and resource changes.
     
@@ -51,6 +53,12 @@ def create_node_label(title: str, duration: float, utilities: list, resource_del
     dur: str = _html_escape('+' + str(duration) if isinstance(duration, int) and duration > 0 else (str(duration) if duration else '--'))
     utils: str = ('<br align="left"/>' + '<br align="left"/>'.join([ str(idx + 1) + ') ' + _html_escape(x.value) for idx, x in enumerate(utilities) ])) if len(utilities) > 0 else '--' 
     resources: str = ('<br align="left"/>' + '<br align="left"/>'.join([ str(idx + 1) + ') ' + _html_escape(f"{'+' if v > 0 else ''}{round(v, 3)} {k}") for idx, (k, v) in enumerate(resource_deltas.items()) ])) if len(resource_deltas) > 0 else '--'
+    id_str: str = (('<tr>'
+                        '<td align="left">'
+                            f'ID: {id}'
+                        '</td>'
+                    '</tr>') 
+                if id is not None else '')
     return ('<<table ' + (edge_table_styles if is_edge else node_table_styles) + '>'
                 '<tr><td height="2"></td></tr>'
                 '<tr>'
@@ -61,6 +69,7 @@ def create_node_label(title: str, duration: float, utilities: list, resource_del
                     '</td>'
                 '</tr>'
                 '<tr><td height="5"></td></tr>'
+                f'{id_str}'
                 '<tr>'
                     '<td align="left">'
                         f'Duration: {dur}'

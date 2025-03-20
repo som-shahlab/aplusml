@@ -15,10 +15,10 @@ Code Example
    pip install aplusml
 
 
-2\. Create your YAML configuration file and patient properties CSV file following the specifications in :doc:`config`.
+2\. Create your workflow YAML file and patient properties CSV file following the specifications in :doc:`config`.
 
 
-3\. Create a simulation object by loading your YAML configuration file and patient properties CSV file.
+3\. Create a simulation object by loading your workflow YAML file and patient properties CSV file.
 
 .. code-block:: python
 

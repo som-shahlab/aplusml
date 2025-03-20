@@ -4,13 +4,14 @@ Core simulation engine which progresses patients through a given workflow
 import io
 import random
 from types import CodeType
-from typing import Any, Callable, Tuple, Dict, List
+from typing import Any, Callable, Optional, Tuple, Dict, List
 import numpy as np
 import pandas as pd
 import pickle
 import pydot
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
+from tqdm import tqdm
 
 import aplusml.draw as draw
 from aplusml.models import Patient, State, Transition, History, Utility
@@ -108,10 +109,11 @@ class Simulation(object):
         assert len(variable_to_value) == len(self.variables)
         return variable_to_value
 
-    def evaluate_expression(self, patient: Patient, 
+    def evaluate_expression(self, 
+                            patient: Patient, 
                             expression: Any,
                             variables: dict,
-                            expression_compiled: CodeType = None) -> Any:
+                            expression_compiled: Optional[CodeType] = None) -> Any:
         """Evaluates a Python expression in the context of a patient and variables.
         
         Handles evaluation of:
@@ -146,6 +148,11 @@ class Simulation(object):
                 return eval(expression, {}, variables)
         except NameError as e:
             print(f"ERROR - Missing variable ({e}) for expression: {expression}")
+            return None
+        except Exception as e:
+            print(f"ERROR - Error evaluating expression: {expression}")
+            print(f"    - Error: {e}")
+            print(f"    - Variables: {variables}")
             return None
         
     def evaluate_transition_if(self, patient: Patient, 
@@ -369,12 +376,15 @@ class Simulation(object):
 
     def log(self, string: str):
         """Logs a message if logging is enabled.
+        
+        Format:
+            t=<current timestep of simulation> | {string}
     
         Args:
             string (str): Message to log
         """
         if self.is_print_log:
-            print(f"{self.current_timestep} | {string}")
+            print(f"t={self.current_timestep} | {string}")
 
     def run(self, 
             all_patients: List[Patient],
@@ -408,6 +418,11 @@ class Simulation(object):
         """
         self.is_print_log = is_print_log
 
+        # Deep copy patients
+        print(f"Deep copying patients...")
+        all_patients = pickle.loads(pickle.dumps(all_patients))
+        print(f"Done deep copying patients")
+
         # Track patients admitted after current value of 'self.current_timestep'
         admitted_patients: List[Patient] = []
         # Track patients waiting some # of timesteps
@@ -417,6 +432,10 @@ class Simulation(object):
         # Track patients who hit an end state
         finished_patients: dict[bool] = {} # [key] = patient ID, [value] = TRUE if patient hit an end state
         
+        # Initialize progress bar
+        pbar = tqdm(total=len(all_patients), desc='Simulating patients')
+        prev_finished_count = 0
+
         # Reset simulation to initialize for run
         self.init_patients(all_patients)
         self.init_run(random_seed)
@@ -444,16 +463,16 @@ class Simulation(object):
             #
             if max_timesteps is not None and self.current_timestep >= max_timesteps:
                 self.current_timestep -= 1 # NOTE: Don't change this
-                self.log(f"Max timestep exceeded @ {self.current_timestep}")
+                self.log(f"Max timestep exceeded @ t={self.current_timestep}")
                 break
             if len(all_patients) <= len(finished_patients):
                 self.current_timestep -= 1 # NOTE: Don't change this
-                self.log(f"All patients are finished @ {self.current_timestep}")
+                self.log(f"All patients are finished @ t={self.current_timestep}")
                 break
-            self.log(f"Timestep: {self.current_timestep}")
+            self.log(f"Top of sim loop")
             
             #
-            # Replenish resources
+            # Replenish resources
             #
             for v_id, v in self.variables.items():
                 if v.get('type', 'scalar') == 'resource':
@@ -490,7 +509,7 @@ class Simulation(object):
             patient_sort_preference_variable: str = self.metadata['patient_sort_preference_property'].get('variable') if self.metadata['patient_sort_preference_property'] else None
             patient_sort_preference_is_ascending: str = self.metadata['patient_sort_preference_property'].get('is_ascending') if self.metadata['patient_sort_preference_property'] else None
             sorted_indices = sort_patient_by_preference(admitted_patients, property_to_sort_by=patient_sort_preference_variable, is_ascending=patient_sort_preference_is_ascending)
-            self.log(f"{self.current_timestep} | admitted_patients_idxs=[{admitted_patients_start_idx}:{admitted_patients_end_idx}] | earliest unfinished tuple={earliest_unfinished_patient_tuple} | finished={len(finished_patients)} paused={len(paused_patients)} unpaused={len(unpaused_patients)}")
+            self.log(f"admitted_patients_idxs=[{admitted_patients_start_idx}:{admitted_patients_end_idx}] | earliest unfinished tuple={earliest_unfinished_patient_tuple} | finished={len(finished_patients)} paused={len(paused_patients)} unpaused={len(unpaused_patients)}")
             for p_idx in sorted_indices:
                 p = admitted_patients[p_idx]
                 while True:
@@ -528,10 +547,14 @@ class Simulation(object):
                     if current_state.type == 'end':
                         # If this is an END state, add patient to 'finished_patients'
                         finished_patients[p.id] = 1
+                        # Update progress bar when a new patient finishes
+                        if len(finished_patients) > prev_finished_count:
+                            pbar.update(len(finished_patients) - prev_finished_count)
+                            prev_finished_count = len(finished_patients)
                     else:
                         # Select transition
                         transition_idx = self.select_transition(p, current_state.transitions, variables)
-                        assert transition_idx is not None, f"ERROR - No transition conditional is TRUE for patient '{p.id}' given transitions: {current_state.transitions}"
+                        assert transition_idx is not None, f"ERROR - No transition conditional is TRUE for patient '{p.id}' given transitions: {current_state.transitions}"
                         transition = current_state.transitions[transition_idx]
                     # Determine STATE / TRANSITION utilities
                     state_utility_idxs, transition_utility_idxs = [], []
@@ -582,7 +605,7 @@ class Simulation(object):
                         self.variables[v_id]['level'] = min(self.variables[v_id]['max_amount'], self.variables[v_id]['level'])
                         self.variable_history[v_id].append((self.current_timestep, self.variables[v_id]['level']))
                         assert self.variables[v_id]['level'] <= self.variables[v_id]['max_amount'], f"ERROR - Variable '{v_id}' value for 'level' exceeded 'max_amount' "
-                    self.log(f"({p.id}) => {transition.dest if transition else 'N/A'}")
+                    self.log(f"Transition: ({p.id}) => {transition.dest if transition else 'N/A'}")
             #
             # By this point, all patients are either finished or paused
             # Now, we take a timestep forward
@@ -601,7 +624,12 @@ class Simulation(object):
                 else:
                     paused_patients[p_id] = (time_left, paused_state)
             self.current_timestep += 1
-    
+
+        # Close progress bar at end of simulation
+        pbar.close()
+
+        return all_patients
+
     def get_all_utility_units(self) -> List[str]:
         """Gets all unique utility unit types used in the workflow.
     
@@ -673,7 +701,7 @@ class Simulation(object):
                     title = 'Always'
                 else: 
                     title = 'Otherwise'
-                label: str = draw.create_node_label(title, t.duration, t.utilities, t.resource_deltas, is_edge=True)
+                label: str = draw.create_node_label(title, None, t.duration, t.utilities, t.resource_deltas, is_edge=True)
                 # Turn this edge into a node for visualization purposes
                 node_name: str = state.id + '-' + t.dest
                 node = pydot.Node(node_name, label=label)
@@ -687,7 +715,7 @@ class Simulation(object):
                     edge.set_fontcolor(color)
                     dot_graph.add_edge(edge)
             # Generate node (default to intermediate node)
-            label: str = draw.create_node_label(state.label, state.duration, state.utilities, state.resource_deltas)
+            label: str = draw.create_node_label(state.label, state.id, state.duration, state.utilities, state.resource_deltas)
             # Shape/color
             node = pydot.Node(state.id, label=label)
             node.set_shape('plain')
@@ -714,6 +742,7 @@ class Simulation(object):
     def create_patients_for_simulation(self, 
                                         patients: List[Patient],
                                         func_match_patient_to_property_column: Callable = None,
+                                        is_overwrite_existing_properties: bool = True,
                                         random_seed: int = 0) -> List[Patient]:
         """Creates a deep copy of patients and initializes their properties.
     
@@ -729,6 +758,9 @@ class Simulation(object):
             func_match_patient_to_property_column (Callable, optional): Function to match patients
                 to rows in properties CSV. Takes ``(patient_id, random_idx, df, column)``.
                 Required if using CSV properties without ID column. Defaults to ``None``.
+            is_overwrite_existing_properties (bool, optional): If TRUE, then overwrite each patient's existing properties with their default values, as specified in `self.variables`.
+                If FALSE, then only initialize properties that are not already set.
+                Defaults to ``True``.
             random_seed (int, optional): Random seed for reproducibility. Defaults to ``0``.
 
         Returns:
@@ -737,6 +769,10 @@ class Simulation(object):
         Raises:
             ValueError: If property configuration is invalid or required matching function missing
         """
+        if is_overwrite_existing_properties:
+            print("WARNING - Overwriting each patient's existing properties (i.e. patient.properties) with default values from `simulation.variables`. " 
+                  "If this is UNDESIRED, i.e. you already defined each patient's properties manually and want to keep them as currently defined, "
+                  "then set `is_overwrite_existing_properties` to FALSE.")
         # create deep copy of the `patients` object using pickle
         patients = pickle.loads(pickle.dumps(patients))
         patients = sorted(patients, key = lambda x: x.id)
@@ -766,7 +802,11 @@ class Simulation(object):
             if 'value' in v:
                 # Set to constant
                 for p in patients:
-                    p.properties[v_id] = v['value']
+                    if is_overwrite_existing_properties:
+                        p.properties[v_id] = v['value']
+                    else:
+                        if v_id not in p.properties:
+                            p.properties[v_id] = v['value']
             elif 'column' in v:
                 # Load from 'path_to_properties' file
                 if not path_to_properties:
@@ -780,13 +820,20 @@ class Simulation(object):
                     ## But its a necessary performance optimization that actually helps speed up the program a lot
                     sorted_properties = _df[v['column']].values
                     for p_idx, p in enumerate(patients):
-                        p.properties[v_id] = sorted_properties[p_idx]
+                        if is_overwrite_existing_properties:
+                            p.properties[v_id] = sorted_properties[p_idx]
+                        else:
+                            if v_id not in p.properties:
+                                p.properties[v_id] = sorted_properties[p_idx]
                 else:
                     if func_match_patient_to_property_column is None and properties_col_for_patient_id is None:
-                        print(f"ERROR - You need to either specify a `func_match_patient_to_property_column` when calling this function, or the `properties_col_for_patient_id` metadata property in your YAML file (otherwise we have no idea how to match patients to rows in the file)")
-                        return None
+                        raise ValueError(f"ERROR - You need to either specify a `func_match_patient_to_property_column` when calling this function, or the `properties_col_for_patient_id` metadata property in your YAML file (otherwise we have no idea how to match patients to rows in the file)")
                     for p in patients:
-                        p.properties[v_id] = func_match_patient_to_property_column(p.id, map_pid_to_random_df_idx[p.id], _df, v['column'])
+                        if is_overwrite_existing_properties:
+                            p.properties[v_id] = func_match_patient_to_property_column(p.id, map_pid_to_random_df_idx[p.id], _df, v['column'])
+                        else:
+                            if v_id not in p.properties:
+                                p.properties[v_id] = func_match_patient_to_property_column(p.id, map_pid_to_random_df_idx[p.id], _df, v['column'])
             elif 'distribution' in v:
                 # Distribution
                 if v['distribution'] == 'bernoulli':
@@ -808,13 +855,15 @@ class Simulation(object):
                     assert 'start' in v and 'end' in v, f"ERROR - Uniform variable '{v_id}' missing 'start' or 'end' property"
                     values = np.random.uniform(v['start'], v['end'], size = len(patients))
                 else:
-                    print(f"ERROR - Unrecognized 'distribution' in variable '{v_id}'")
-                    return None
+                    raise ValueError(f"ERROR - Unrecognized 'distribution' in variable '{v_id}'")
                 for idx, p in enumerate(patients):
-                    p.properties[v_id] = values[idx]
+                    if is_overwrite_existing_properties:
+                        p.properties[v_id] = values[idx]
+                    else:
+                        if v_id not in p.properties:
+                            p.properties[v_id] = values[idx]
             else:
-                print(f"ERROR - Unrecognized properties for variable '{v_id}'")
-                return None
+                raise ValueError(f"ERROR - Unrecognized properties for variable '{v_id}'")
         return patients
 
     def load_patients_for_simulation(self, 

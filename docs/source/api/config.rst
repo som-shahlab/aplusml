@@ -5,18 +5,19 @@ Configuration
    :maxdepth: 2
    :caption: Configuration
 
-APLUS takes two main inputs:
+APLUS simulations are specified via a **(1) Workflow YAML** and an (optional) **(2) Patient Properties CSV**.
 
-1. **Configuration YAML**: Specifies your workflow + simulation parameters
-2. **Patient Properties CSV**: Specifies individual-level properties for each patient that will be run through your workflow.
+1. **Workflow YAML** specifies the states, transitions, utilities, resources, and other parameters of your workflow.
+2. **Patient Properties CSV** contains individual-level properties for each patient that will be run through your workflow.
 
-
-🔧 Configuration YAML
+🔧 Workflow YAML
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This configuration file specifies the states, transitions, utilities, resources, and other parameters of your workflow.
+* *Format:* YAML
+* *Purpose:* Specifies the states, transitions, utilities, resources, and other parameters of your workflow
+* *Schema:* Listed below
 
-The schema of this YAML configuration file is as follows:
+The YAML must be formatted as follows:
 
 .. code-block:: yaml
   
@@ -100,7 +101,11 @@ The schema of this YAML configuration file is as follows:
 📄 Patient Properties CSV
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This CSV file contains individual-level properties for each patient that will be run through your workflow.
+* *Format:* CSV
+* *Purpose:* Contains individual-level properties for each patient that will be run through your workflow
+* *Schema:* Listed below
+
+The CSV must be formatted as follows:
 
 Each row is a unique patient, and each column is a property. Properties can be anything -- e.g. demographic information, model predictions, clinical measurements, etc.
 

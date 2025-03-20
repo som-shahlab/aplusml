@@ -285,8 +285,12 @@ class Patient(object):
         self.history: List[History]= [] # Track history of (state, transition, utility)
         self.current_state: str = None # ID of current state
     
-    def print_state_history(self, is_show_timesteps: bool = False):
-        """Print the state history in a human-readable format."""
+    def get_state_history(self):
+        """Get the state history."""
+        return [ h.state_id for h in self.history]
+        
+    def repr_state_history(self, is_show_timesteps: bool = False):
+        """Get the state history in a human-readable format."""
         if is_show_timesteps:
             return " > ".join([ f"({h.current_timestep}) {h.state_id}" for h in self.history])
         else:

@@ -827,8 +827,8 @@ We evaluated each PAD model's utility relative to three baselines:
 
 Concretely, we measured each model's expected utility achieved per patient above the **Treat None** baseline as a percentage of the utility achieved under the **Optimistic** scenario. In other words, we measured how much of the total possible utility gained from using a model was actually achieved under each workflow's constraints, relative to simply doing nothing. 
 
-📊 Results
-----------
+📊 Run Simulation
+-----------------
 
 Let's now write some code to run the simulation and plot the results!
 
