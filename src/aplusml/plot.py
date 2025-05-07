@@ -654,6 +654,7 @@ def plot_work_v_utility(df_preds: pd.DataFrame, utilities: dict, ax: plt.Axes = 
 
 def plot_work_v_ppv_tpr_fpr(df_preds: pd.DataFrame, utilities: dict, ax: plt.Axes = None) -> plt.figure:
     """Generate Work v. PPV/TPR/FPR curve where:
+    
         - x-axis = work (%)
         - y-axis = PPV/TPR/FPR
         
