@@ -1,6 +1,5 @@
 metadata:
   name: "Test 1"
-  path_to_functions: 'functions.py'
   path_to_properties: 'properties.csv'
 
 variables:

@@ -1,5 +1,5 @@
 metadata:
-  name: "Test 6"
+  name: "Test 7"
 
 variables:
   property:
@@ -44,6 +44,7 @@ states:
       - dest: no_acp
         label: No ACP
         utilities: 6
+        if: true
   no_acp:
     label: Don't deliver ACP
     type: end

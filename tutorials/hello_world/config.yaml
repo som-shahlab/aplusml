@@ -1,0 +1,42 @@
+metadata:
+  name: "Hello World Workflow"
+  path_to_properties: "patient_properties.csv"
+  properties_col_for_patient_id: "patient_id"
+
+variables:
+  patient_property_1:
+    type: "property"
+    column: "patient_property_1"
+  patient_property_2:
+    type: "property"
+    column: "patient_property_2"
+  some_constant:
+    type: "scalar"
+    value: 10
+  
+states:
+  start:
+    label: "Start"
+    type: "start"
+    transitions:
+      - dest: "state_2"
+  state_2:
+    label: "Switch"
+    type: "intermediate"
+    transitions:
+      - dest: "state_3"
+        if: patient_property_1 > patient_property_2
+      - dest: "state_4"
+        if: patient_property_1 <= patient_property_2
+  state_3:
+    label: "Good End"
+    type: "end"
+    utilities:
+      - value: 100
+        unit: "USD"
+  state_4:
+    label: "Bad End"
+    type: "end"
+    utilities:
+      - value: 0
+        unit: "USD"

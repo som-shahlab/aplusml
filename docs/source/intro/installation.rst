@@ -5,9 +5,6 @@ Installation
    :maxdepth: 2
    :caption: Installation
 
-⚡️ Basic
-------------------
-
 You can install **aplusml** using pip:
 
 .. code-block:: bash

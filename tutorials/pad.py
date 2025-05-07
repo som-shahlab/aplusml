@@ -118,8 +118,8 @@ def generate_patient_list(simulation: aplusml.Simulation,
 
 def generate_patient_list_seismometer(simulation: aplusml.Simulation,
                                       seismometer_patients : pd.DataFrame,
-                            mean_admits_per_day: int = 35, 
-                          num_days: int = 500) -> List[aplusml.Patient]:
+                                      mean_admits_per_day: int = 35, 
+                                      num_days: int = 500) -> List[aplusml.Patient]:
     """Generate list of Patient objects fed into Simulation
         These patients have the model predictions from Elsie's original files,
         plus a `start_timestep` (so that their admittance is properly staggered)
@@ -147,10 +147,10 @@ def generate_patient_list_seismometer(simulation: aplusml.Simulation,
                 timestep, # Start timestep
             ))
 
-    all_patients = simulation.load_patients_for_simulation(all_patients, 
-                                                            seismometer_patients,
-                                                            lambda p_id, random_idx, df, col: df.iloc[random_idx][col],
-                                                            random_seed = 0)
+    all_patients = simulation.load_seismometer_patients_for_simulation(all_patients, 
+                                                                    seismometer_patients,
+                                                                    lambda p_id, random_idx, df, col: df.iloc[random_idx][col],
+                                                                    random_seed = 0)
     return all_patients
 
 def setup_simulation_for_model(simulation: aplusml.Simulation, 
@@ -163,7 +163,7 @@ def setup_simulation_for_model(simulation: aplusml.Simulation,
         model (str, optional): String (dl|lr|rf). Defaults to 'dl'.
         is_patient_sort_by_y_hat (bool, optional): If TRUE, then prioritize patients from HIGHEST y_hat -> LOWEST y_hat
     """    
-    simulation.states['model_pred'].transitions[0]._if = f"y_hat_{model} >= model_threshold"
+    simulation.states['model_pred'].transitions[0].if_ = f"y_hat_{model} >= model_threshold"
     if is_patient_sort_by_y_hat:
         simulation.metadata['patient_sort_preference_property']['variable'] = f"y_hat_{model}"
         simulation.metadata['patient_sort_preference_property']['is_ascending'] = False
@@ -188,7 +188,7 @@ def load_simulation_for_model(path_to_yaml: str,
     Returns:
         aplusml.Simulation: Simulation object
     """    
-    simulation = aplusml.load_simulation(path_to_yaml, path_to_properties)
+    simulation = aplusml.Simulation.create_from_yaml(path_to_yaml, path_to_properties)
     setup_simulation_for_model(simulation, model, is_patient_sort_by_y_hat)
     if func_setup_optimistic:
         func_setup_optimistic(simulation)
@@ -226,19 +226,19 @@ def run_test(patients: List[aplusml.Patient],
     # Save Treat All / None / Perfect baselines under optimistic conditions
     baselines = [
         # Treat All - treat everyone as if y_hat == 1
-        { 'label' : 'all', '_if' : True },
+        { 'label' : 'all', 'if_' : True },
         # Treat None - treat everyone as if y_hat == 0
-        { 'label' : 'none', '_if' : False },
+        { 'label' : 'none', 'if_' : False },
         # Treat Perfect - treat everyone as if y_hat == y
-        { 'label' : 'perfect', '_if' : 'y == 1' },
+        { 'label' : 'perfect', 'if_' : 'y == 1' },
     ]
     baseline_2_result = {}
     for b in baselines:
         label = b['label']
-        _if = b['_if']
+        if_ = b['if_']
         # This is INDEPENDENT of any model (MODELS[0] used for simplicity here)
         simulation = load_simulation_for_model(PATH_TO_YAML, PATH_TO_PROPERTIES, MODELS[0], is_patient_sort_by_y_hat=False, func_setup_optimistic=func_setup_optimistic)
-        simulation.states['model_pred'].transitions[0]._if = _if
+        simulation.states['model_pred'].transitions[0].if_ = if_
         # This only has one threshold (at 0) since this is independent of the model (and thus the threshold of the model)
         df_result = aplusml.run_test(simulation, patients,
                                 labels + [f"optimistic"], settings + [{}],

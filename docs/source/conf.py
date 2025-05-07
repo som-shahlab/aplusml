@@ -47,6 +47,9 @@ autodoc_mock_imports = [
 import sphinx_rtd_theme
 html_theme = "sphinx_rtd_theme"
 html_static_path = ['_static']
+html_css_files = [
+    'css/custom.css',
+]
 
 # -- Options for search output ----------------------------------------------
 html_search_language = 'en'

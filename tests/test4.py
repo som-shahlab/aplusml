@@ -1,8 +1,5 @@
-import sys
 from utils import check_history
-sys.path.append("..")
-import sim
-import parse
+import aplusml
 
 ################################################
 # Goal: Test 'run' function of Simulation object
@@ -12,22 +9,21 @@ import parse
 PATH_TO_YAML = 'test4.yaml'
 
 # Parse simulation
-yaml = parse.load_yaml(PATH_TO_YAML)
-simulation = parse.create_simulation_from_yaml(yaml)
+simulation = aplusml.Simulation.create_from_yaml(PATH_TO_YAML)
 
 patients = [
-    sim.Patient(0,0, properties={
+    aplusml.Patient(0,0, properties={
     }),
-    sim.Patient(1,1, properties={
+    aplusml.Patient(1,1, properties={
     }),
-    sim.Patient(2,2, properties={
+    aplusml.Patient(2,2, properties={
     }),
 ]
 #
 # Test 'run()'
 #
 ## 'max_timestep' break condition
-simulation.run(patients, 2)
+patients = simulation.run(patients, 2)
 assert simulation.current_timestep == 1
 ## patient started at t = 0
 check_history(simulation,
@@ -47,7 +43,7 @@ check_history(simulation,
               history=[])
 
 ## 'max_timestep' break condition
-simulation.run(patients, 4)
+patients = simulation.run(patients, 4)
 assert simulation.current_timestep == 3
 ## patient started at t = 0
 assert patients[0].current_state == None
@@ -69,7 +65,7 @@ check_history(simulation,
               history=['start', 'send_nurse', ])
 
 ## full run
-simulation.run(patients)
+patients = simulation.run(patients)
 assert simulation.current_timestep == 5
 ## patient started at t = 0
 check_history(simulation,

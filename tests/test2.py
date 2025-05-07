@@ -1,7 +1,4 @@
-import sys
-sys.path.append("..")
-import sim
-import parse
+import aplusml
 
 ################################################
 # Goal: Test 'init_*' functions 
@@ -11,21 +8,20 @@ import parse
 PATH_TO_YAML = 'test2.yaml'
 
 # Parse simulation
-yaml = parse.load_yaml(PATH_TO_YAML)
-simulation = parse.create_simulation_from_yaml(yaml)
+simulation = aplusml.Simulation.create_from_yaml(PATH_TO_YAML)
 
 patients = [
-    sim.Patient(0,0, properties={
+    aplusml.Patient(0,0, properties={
         'property_file' : 1,
         'property_dist' : 0.3,
         'total_duration_in_sim' : 3,
     }),
-    sim.Patient(1,1, properties={
+    aplusml.Patient(1,1, properties={
         'property_file' : 0,
         'property_dist' : 0.4,
         'total_duration_in_sim' : 4,
     }),
-    sim.Patient(2,1, properties={
+    aplusml.Patient(2,1, properties={
         'property_file' : 1,
         'property_dist' : 0.8,
         'total_duration_in_sim' : 2,

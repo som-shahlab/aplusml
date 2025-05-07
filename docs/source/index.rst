@@ -5,22 +5,9 @@
 
 Welcome to APLUS ML's documentation!
 ====================================
-
-APLUS ML (**A** **P**\ ython **L**\ ibrary for **U**\ sefulness **S**\ imulations of **M**\ achine **L**\ earning Models) is a simulation framework for conducting usefulness assessments of machine learning models in workflows, as originally published in this `2023 JBI paper <https://www.sciencedirect.com/science/article/pii/S1532046423000400?via%3Dihub>`_.
-
-It aims to quantitatively answer the question: *If I use this ML model within this workflow, will the benefits outweigh the costs, and by how much?*
-
 .. image:: _static/graphical_abstract.png
    :width: 700
    :alt: APLUS graphical abstract
-
-Key Features
-------------
-
-* Easy-to-use simulation framework
-* Comprehensive model evaluation tools
-* Extensible architecture for custom simulations
-* Built-in visualization capabilities
 
 🧑‍💻 Installation
 ---------------------
@@ -45,15 +32,62 @@ Please see the :doc:`intro/background` for a high-level conceptual overview of A
 .. code-block:: python
 
    import aplusml
+
+   # Create config
+   config = aplusml.config.Config(
+      metadata = aplusml.config.ConfigMetadata(
+         name = 'My Simulation',
+      ),
+      states = {
+         'start' : aplusml.config.ConfigState(
+            type = 'start',
+            transitions = [
+               aplusml.config.ConfigTransition(dest = 'end_1', prob = 0.5),
+               aplusml.config.ConfigTransition(dest = 'end_2', prob = 0.5),
+            ],
+         ),
+         'end_1' : aplusml.config.ConfigState(
+            type = 'end',
+            utilities = [
+               aplusml.config.ConfigUtility(
+                  value = 1,
+                  unit = 'qaly',
+               ),
+            ],
+         ),
+         'end_2' : aplusml.config.ConfigState(
+            type = 'end',
+            utilities = [
+               aplusml.config.ConfigUtility(
+                  value = 2,
+                  unit = 'qaly',
+               ),
+            ],
+         ),
+      },
+   )
    
-   # Create a simulation
-   sim = aplusml.Simulation()
+   # Create simulation
+   sim = aplusml.Simulation.create_from_config(config)
    
-   # Run evaluation
-   results = sim.evaluate_model(model)
+   # Run simulation
+   patients = sim.create_patients_for_simulation([ aplusml.Patient(id=1, start_timestep=0) ])
+   patients = sim.run(patients)
    
-   # Visualize results
-   sim.plot_results(results)
+   # Visualize first patient's trajectory through workflow
+   print(patients[0].history)
+
+Key Features
+------------
+
+APLUS ML (**A** **P**\ ython **L**\ ibrary for **U**\ sefulness **S**\ imulations of **M**\ achine **L**\ earning Models) is a simulation framework for conducting usefulness assessments of machine learning models in workflows, as originally published in this `2023 JBI paper <https://www.sciencedirect.com/science/article/pii/S1532046423000400?via%3Dihub>`_.
+
+It aims to quantitatively answer the question: *If I use this ML model within this workflow, will the benefits outweigh the costs, and by how much?*
+
+* Easy-to-use simulation framework
+* Comprehensive model evaluation tools
+* Extensible architecture for custom simulations
+* Built-in visualization capabilities
 
 Documentation
 =============
@@ -70,6 +104,8 @@ Documentation
    :caption: 📚 User Guide
 
    usage/quick
+   usage/models
+   usage/tutorial_hello
    usage/tutorial_pad
    usage/tutorial_hcm
 

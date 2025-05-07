@@ -18,10 +18,11 @@ def _html_escape(text: str) -> str:
 
     Returns:
         str: The escaped text with the following replacements:
+        
             - ``&`` → ``&amp;``
             - ``<`` → ``&lt;``
             - ``>`` → ``&gt;``
-            - ``\n`` → ``<br align="left"/>``
+            - ``Newline`` → ``<br align="left"/>``
     """
     text = str(text)
     return text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('\n', '<br align="left"/>')

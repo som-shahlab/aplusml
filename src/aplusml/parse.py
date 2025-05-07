@@ -3,8 +3,9 @@ Functions to parse APLUS config YAML files into Python objects for use in `sim.p
 Contains a list of required and optional keys for each config section.
 """
 from ruamel.yaml import YAML
-import aplusml.sim as sim
-from typing import Optional
+from aplusml.config import Config
+from typing import Any
+import yaml
 
 VALID_METADATA_KEYS = {
     'name' : 'optional', 
@@ -71,27 +72,8 @@ VALID_UTILITY_KEYS = {
     'unit' : 'optional',
 }
 
-def load_simulation(path_to_yaml: str, path_to_patient_properties: Optional[str] = None) -> sim.Simulation:
-    """Loads YAML into an APLUS :class:`~aplusml.sim.Simulation` object.
-    
-    If ``path_to_patient_properties`` is provided, then it overwrites the current Metadata section's ``path_to_properties`` key.
-    
-    Under the hood this basically just calls :func:`~aplusml.parse.create_simulation_from_config`
 
-    Args:
-        path_to_yaml (str): Path to YAML file
-        path_to_patient_properties (str): Path to patient properties file
-
-    Returns:
-        :class:`~aplusml.sim.Simulation`: Simulation object
-    """    
-    yaml: dict = load_config(path_to_yaml)
-    simulation: sim.Simulation = create_simulation_from_config(yaml)
-    if path_to_patient_properties:
-        simulation.metadata['path_to_properties'] = path_to_patient_properties
-    return simulation
-
-def load_config(path_to_yaml: str) -> dict:
+def load_yaml(path_to_yaml: str) -> dict:
     """Loads YAML file into a Python dictionary.
 
     Args:
@@ -114,7 +96,20 @@ def is_keys_valid(yaml_entry: dict,
                     yaml_entry_type: str, 
                     valid_keys: dict[str],
                     is_check_required_keys: bool = True,
-                    is_check_optional_keys: bool = True):
+                    is_check_optional_keys: bool = True) -> bool:
+    """Check that the keys in a given YAML entry are valid (i.e. all required keys are present, and no extraneous keys are present).
+    
+    Args:
+        yaml_entry (dict): The YAML entry to check
+        yaml_entry_id (str): The ID of the YAML entry
+        yaml_entry_type (str): The type of YAML entry
+        valid_keys (dict): A dictionary of valid keys for the YAML entry
+        is_check_required_keys (bool): Whether to check that all required keys are present
+        is_check_optional_keys (bool): Whether to check that no extraneous keys are present
+
+    Returns:
+        bool: True if the keys are valid, False otherwise
+    """
     yaml_entry_keys = set(yaml_entry.keys())
     # 1. Make sure no extraneous keys
     if is_check_optional_keys:
@@ -131,7 +126,21 @@ def is_keys_valid(yaml_entry: dict,
             return False
     return True
 
+def _replace_if_with_if_(obj: Any) -> Any:
+    """Recursively replace 'if' keys with 'if_' in dicts and lists."""
+    if isinstance(obj, dict):
+        new_obj = {}
+        for k, v in obj.items():
+            new_key = "if_" if k == "if" else k
+            new_obj[new_key] = _replace_if_with_if_(v)
+        return new_obj
+    elif isinstance(obj, list):
+        return [_replace_if_with_if_(item) for item in obj]
+    else:
+        return obj
+
 def is_valid_config_yaml(yaml: dict) -> bool:
+    """Return TRUE if the provided YAML config is valid, FALSE otherwise."""
     #
     # Metadata
     metadata = yaml.get('metadata', {})
@@ -231,7 +240,7 @@ def is_valid_config_yaml(yaml: dict) -> bool:
                 return False
             # Ensure that 'if' and 'prob' aren't intermixed
             if 'prob' in t and 'if' in t:
-                print(f"ERROR - If you have both 'if' and 'prob' statements in the same transition, then all 'if' statements must precede the 'prob' statements for transition in state '{s_id}")
+                print(f"ERROR - If you have both 'if' and 'prob' statements in the same transition, then all 'if' statements must precede the 'prob' statements for transition in state '{s_id}'")
                 return False
             # Ensure that all variables in resource_deltas are in the 'variables' section of the YAML
             for v_id in t.get('resource_deltas', {}).keys():
@@ -269,80 +278,27 @@ def is_valid_config_yaml(yaml: dict) -> bool:
         return False
     return True
 
-def create_simulation_from_config(yaml: dict) -> sim.Simulation:
-    """Create a :class:`~aplusml.sim.Simulation` object from YAML
+def parse_yaml_into_config(path_to_yaml: str) -> Config:
+    """
+    Parse a YAML file into a Config object, printing errors if parsing or validation fails.
 
     Args:
-        yaml (dict): From :func:`~aplusml.parse.load_config`
+        path_to_yaml (str): Path to YAML file.
 
     Returns:
-        Simulation: A :class:`~aplusml.sim.Simulation` object that contains all of the metadata, variables, states, and transitions from the YAML file
+        Config: Config object.
     """
-    if not is_valid_config_yaml(yaml):
-        raise ValueError("ERROR - Invalid YAML")
-    
-    # Create new Simulation
-    simulation = sim.Simulation()
-    
-    #
-    # Metadata
-    metadata = yaml.get('metadata', {})
-    for key in metadata:
-        simulation.metadata[key] = metadata[key]
-    ## Set defaults
-    simulation.metadata['name'] = simulation.metadata.get('name', '')
-    simulation.metadata['path_to_properties'] = simulation.metadata.get('path_to_properties', None)
-    simulation.metadata['properties_col_for_patient_id'] = simulation.metadata.get('properties_col_for_patient_id', None)
-    simulation.metadata['path_to_functions'] = simulation.metadata.get('path_to_functions', None)
-    simulation.metadata['patient_sort_preference_property'] = simulation.metadata.get('patient_sort_preference_property', None)
-    
-    #
-    # Variables
-    variables = yaml.get('variables', {})
-    for v_id, v in variables.items():
-        simulation.variables[v_id] = {
-            'type' : v.get('type', 'scalar'),
-            **v,
-        }
-    #
-    # States
-    states = yaml.get('states', {})
-    for s_id, s in states.items():
-        transitions: list[sim.Transition] = []
-        for t in s.get('transitions', []):
-            raw_utils = t.get('utilities', [])
-            if type(raw_utils) != list:
-                # Handle 'utilities' value being a float|int|str (i.e. non-list)
-                raw_utils = [{ 'value' : raw_utils }]
-            utilities: list[sim.Utility] = []
-            for u in raw_utils:
-                utilities.append(sim.Utility(u.get('value', 0.0), u.get('unit', ''), u.get('if')))
-            transitions.append(sim.Transition(
-                t['dest'],
-                t.get('label', ''),
-                t.get('duration', 0),
-                utilities,
-                { key: float(val) for key, val in t.get('resource_deltas', {}).items() },
-                _if = t.get('if'),
-                prob = t.get('prob'),
-            ))
-        raw_utils = s.get('utilities', [])
-        if type(raw_utils) != list:
-            # Handle 'utilities' value being a float|int|str (i.e. non-list)
-            raw_utils = [{ 'value' : raw_utils }]
-        utilities: list[sim.Utility] = []
-        for u in raw_utils:
-            utilities.append(sim.Utility(u.get('value', 0.0), u.get('unit', ''), u.get('if')))
-        simulation.states[s_id] = sim.State(
-            s_id,
-            s.get('label', s_id),
-            s.get('type', 'intermediate'),
-            s.get('duration', 0),
-            utilities,
-            transitions,
-            { key: float(val) for key, val in s.get('resource_deltas', {}).items() }
-        )
-    return simulation
+    try:
+        with open(path_to_yaml, "r") as f:
+            config_dict = yaml.safe_load(f)
+        config_dict = _replace_if_with_if_(config_dict)
+        return Config(**config_dict)
+    except FileNotFoundError:
+        print(f"Error: File not found: {path_to_yaml}")
+    except yaml.YAMLError as e:
+        print(f"Error parsing YAML file: {e}")
+    except Exception as e:
+        print(f"Unexpected error: {e}")
 
 if __name__ == "__main__":
     pass

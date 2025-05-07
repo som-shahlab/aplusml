@@ -782,7 +782,7 @@ Note that we set ``is_overwrite_existing_properties=False`` because we already m
 .. code-block:: python
 
   # Load AI-guided workflow
-  ai_simulation = aplusml.load_simulation(PATH_TO_AI_YAML)
+  ai_simulation = aplusml.Simulation.create_from_yaml(PATH_TO_AI_YAML)
   # Initialize patients
   patients = ai_simulation.create_patients_for_simulation(patients, random_seed=0, is_overwrite_existing_properties=False)
 

@@ -1,6 +1,4 @@
-import sys
-sys.path.append("..")
-import parse
+import aplusml
 
 ################################################
 # Goal: Test 'parse_yaml'
@@ -8,12 +6,10 @@ import parse
 PATH_TO_YAML = 'test1.yaml'
 
 # Parse simulation
-yaml = parse.load_yaml(PATH_TO_YAML)
-simulation = parse.create_simulation_from_yaml(yaml)
+simulation = aplusml.Simulation.create_from_yaml(PATH_TO_YAML)
 
 # Metadata
 assert simulation.metadata['name'] == 'Test 1'
-assert simulation.metadata['path_to_functions'] == 'functions.py'
 assert simulation.metadata['path_to_properties'] == 'properties.csv'
 
 # Variables
@@ -106,19 +102,19 @@ assert (s.transitions[0].dest == 'send_nurse'
         and s.transitions[0].label == 'Send Nurse')
 s = simulation.states['send_nurse']
 assert (s.transitions[0].dest == 'no_acp'
-        and s.transitions[0]._if == 'nurse_capacity < 1'
+        and s.transitions[0].if_ == 'nurse_capacity < 1'
         and s.transitions[1].dest == 'complete_acp')
 s = simulation.states['no_acp']
 assert (s.type == 'end'
         and s.utilities[0].value == -10
-        and s.utilities[0]._if == False
+        and s.utilities[0].if_ == False
         and s.utilities[1].value == -3
-        and s.utilities[1]._if == True)
+        and s.utilities[1].if_ == True)
 s = simulation.states['complete_acp']
 assert (s.type == 'end'
         and s.utilities[0].value == -30
-        and s.utilities[0]._if == True
+        and s.utilities[0].if_ == True
         and s.utilities[1].value == -15
-        and s.utilities[1]._if == False)
+        and s.utilities[1].if_ == False)
         
 print("SUCCESSFULLY PASSED TEST 1")

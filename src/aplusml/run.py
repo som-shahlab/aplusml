@@ -47,7 +47,7 @@ def test_diff_thresholds(simulation: sim.Simulation,
     assert 'model_threshold' in simulation.variables, "ERROR - The key 'model_threshold' must exist in 'simulation.variables' but is currently missing"
     for x in thresholds:
         simulation.variables['model_threshold']['value'] = x
-        simulation.run(all_patients, **kwargs)
+        all_patients = simulation.run(all_patients, **kwargs)
         utilities = [ p.get_sum_utilities(simulation)[utility_unit] for p in all_patients ]
         mean_work_per_timestep = len([p for p in all_patients if p.history[-1].state_id in positive_outcome_state_ids ]) / (simulation.current_timestep + 1)
         rows.append({
@@ -62,7 +62,7 @@ def test_diff_thresholds(simulation: sim.Simulation,
     max_threshold = df['threshold'].iloc[df['mean_utility'].argmax()]
     simulation.variables['model_threshold']['value'] = max_threshold
     # Set patients to correspond to best utility
-    simulation.run(all_patients)
+    all_patients = simulation.run(all_patients)
     return df
 
 def _run_test(simulation: sim.Simulation,
@@ -111,7 +111,7 @@ def _run_test(simulation: sim.Simulation,
         _df: pd.DataFrame = func_run_test(simulation, all_patients, l)
         _df['label'] = l
     else:
-        simulation.run(all_patients)
+        all_patients = simulation.run(all_patients)
         _df = collections.defaultdict(float)
         for p in all_patients:
             _u: dict = p.get_sum_utilities(simulation)

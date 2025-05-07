@@ -1,6 +1,4 @@
-import sys
-sys.path.append("..")
-import sim
+import aplusml.sim as sim
 
 def check_history(simulation: sim.Simulation,
                   patient: sim.Patient,

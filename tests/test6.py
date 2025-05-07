@@ -1,7 +1,4 @@
-import sys
-sys.path.append("..")
-import sim
-import parse
+import aplusml
 
 ################################################
 # Goal: Test 'run' function of Simulation object
@@ -11,29 +8,28 @@ import parse
 PATH_TO_YAML = 'test6.yaml'
 
 # Parse simulation
-yaml = parse.load_yaml(PATH_TO_YAML)
-simulation = parse.create_simulation_from_yaml(yaml)
+simulation = aplusml.Simulation.create_from_yaml(PATH_TO_YAML)
 
 patients = [
-    sim.Patient(0,0, properties={
+    aplusml.Patient(0,0, properties={
         'property' : 0,
     }),
-    sim.Patient(1,1, properties={
+    aplusml.Patient(1,1, properties={
         'property' : 1,
     }),
-    sim.Patient(2,2, properties={
+    aplusml.Patient(2,2, properties={
         'property' : 2,
     }),
 ]
 
-def check_state_utility_match(simulation: sim.Simulation, history: sim.History, utility_idx: int, value: float, unit: str = ''):
+def check_state_utility_match(simulation: aplusml.Simulation, history: aplusml.History, utility_idx: int, value: float, unit: str = ''):
     utility = simulation.states[history.state_id].utilities[history.state_utility_idxs[utility_idx]]
-    assert utility.value == value and utility.unit == unit
+    assert utility.value == value and utility.unit == unit, f"utility.value = {utility.value}, utility.unit = {utility.unit}, value = {value}, unit = {unit}"
 
-def check_transition_utility_match(simulation: sim.Simulation, history: sim.History, utility_idx: int, value: float, unit: str = ''):
+def check_transition_utility_match(simulation: aplusml.Simulation, history: aplusml.History, utility_idx: int, value: float, unit: str = ''):
     state = simulation.states[history.state_id]
     utility = state.transitions[history.transition_idx].utilities[history.transition_utility_idxs[utility_idx]]
-    assert utility.value == value and utility.unit == unit
+    assert utility.value == value and utility.unit == unit, f"utility.value = {utility.value}, utility.unit = {utility.unit}, value = {value}, unit = {unit}"
 
 #
 # Test state utilities
@@ -41,7 +37,7 @@ def check_transition_utility_match(simulation: sim.Simulation, history: sim.Hist
 utility_val1 = -1
 utility_val2 = -2
 simulation.init_run()
-simulation.run(patients)
+patients = simulation.run(patients, random_seed=0)
 # patient starting at t = 0
 ## STATE = 'start'
 check_state_utility_match(simulation, patients[0].history[0], 0, utility_val1, '')

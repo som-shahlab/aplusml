@@ -13,8 +13,10 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from tqdm import tqdm
 
+from aplusml.config import Config, ConfigUtility
 import aplusml.draw as draw
 from aplusml.models import Patient, State, Transition, History, Utility
+from aplusml.parse import is_valid_config_yaml, load_yaml
 
 class Simulation(object):
     """The core APLUS simulation engine which progresses patients through a given workflow.
@@ -59,7 +61,7 @@ class Simulation(object):
             for t in self.states[state].transitions:
                 states_str += f"        - {t.dest}\n"
                 if t.is_conditional_if():
-                    states_str += f"            if: {t._if}\n"
+                    states_str += f"            if: {t.if_}\n"
                 elif t.is_conditional_prob():
                     states_str += f"            prob: {t.prob}\n"
         
@@ -103,7 +105,8 @@ class Simulation(object):
                     variable_to_value[v_id] = self.current_timestep
             elif v['type'] == 'function':
                 # TODO
-                variable_to_value[v_id] = v_id()
+                # variable_to_value[v_id] = v_id()
+                raise NotImplementedError("Function variables are not yet implemented")
             else:
                 print("ERROR - Invalid 'type' for variable:", v_id)
         assert len(variable_to_value) == len(self.variables)
@@ -174,7 +177,7 @@ class Simulation(object):
         if not transition.is_conditional_if():
             # If there is no 'if', return TRUE
             return True
-        return self.evaluate_expression(patient, transition._if, variables, transition._if_compiled)
+        return self.evaluate_expression(patient, transition.if_, variables, transition.if_compiled)
 
     def evaluate_transition_prob(self, patient: Patient, transition: Transition, variables: dict) -> float:
         """Evaluates whether a probabilistic transition should be taken.
@@ -214,7 +217,7 @@ class Simulation(object):
         if not utility.is_conditional_if():
             # If there is no 'if', return TRUE
             return True
-        return self.evaluate_expression(patient, utility._if, variables, utility._if_compiled)
+        return self.evaluate_expression(patient, utility.if_, variables, utility.if_compiled)
 
     def evaluate_utility_value(self, patient: Patient, utility: Utility, variables: dict) -> Any:
         """Evaluates the actual value of a utility.
@@ -390,7 +393,8 @@ class Simulation(object):
             all_patients: List[Patient],
             max_timesteps: int = None,
             random_seed: int = 0,
-            is_print_log: bool = False) -> List[Patient]:
+            is_print_log: bool = False,
+            is_print_tqdm: bool = True) -> List[Patient]:
         """Runs the simulation by progressing all patients through the workflow.
     
         Core simulation loop that:
@@ -409,6 +413,7 @@ class Simulation(object):
                 with current_timestep = max_timesteps - 1. Defaults to None.
             random_seed (int, optional): Random seed for reproducibility. Defaults to 0.
             is_print_log (bool, optional): Whether to print debug logs. Defaults to False.
+            is_print_tqdm (bool, optional): Whether to print a progress bar. Defaults to True.
 
         Returns:
             List[Patient]: The patients after simulation with updated histories.
@@ -416,12 +421,22 @@ class Simulation(object):
         Raises:
             AssertionError: If patients are invalid or simulation state becomes invalid
         """
+        assert isinstance(all_patients, list), f"ERROR - 'all_patients' must be a list, but instead got: {type(all_patients)}"
+        assert isinstance(random_seed, int), f"ERROR - 'random_seed' must be an int, but instead got: {type(random_seed)}"
         self.is_print_log = is_print_log
 
         # Deep copy patients
-        print(f"Deep copying patients...")
+        if is_print_log:
+            print(f"Deep copying patients...")
         all_patients = pickle.loads(pickle.dumps(all_patients))
-        print(f"Done deep copying patients")
+        if is_print_log:
+            print(f"Done deep copying patients")
+        
+        # Double check that all patients have all properties set
+        for p in all_patients:
+            for v_id, v in self.variables.items():
+                if v['type'] == 'property':
+                    assert v_id in p.properties, f"ERROR - Patient '{p.id}' does not have property '{v_id}' set"
 
         # Track patients admitted after current value of 'self.current_timestep'
         admitted_patients: List[Patient] = []
@@ -433,7 +448,10 @@ class Simulation(object):
         finished_patients: dict[bool] = {} # [key] = patient ID, [value] = TRUE if patient hit an end state
         
         # Initialize progress bar
-        pbar = tqdm(total=len(all_patients), desc='Simulating patients')
+        if is_print_tqdm:
+            pbar = tqdm(total=len(all_patients), desc='Simulating patients')
+        else:
+            pbar = None
         prev_finished_count = 0
 
         # Reset simulation to initialize for run
@@ -549,7 +567,8 @@ class Simulation(object):
                         finished_patients[p.id] = 1
                         # Update progress bar when a new patient finishes
                         if len(finished_patients) > prev_finished_count:
-                            pbar.update(len(finished_patients) - prev_finished_count)
+                            if is_print_tqdm:
+                                pbar.update(len(finished_patients) - prev_finished_count)
                             prev_finished_count = len(finished_patients)
                     else:
                         # Select transition
@@ -626,7 +645,8 @@ class Simulation(object):
             self.current_timestep += 1
 
         # Close progress bar at end of simulation
-        pbar.close()
+        if is_print_tqdm:
+            pbar.close()
 
         return all_patients
 
@@ -696,7 +716,7 @@ class Simulation(object):
                 if t.is_conditional_prob():
                     title = 'Prob = ' + str(t.prob)
                 elif t.is_conditional_if():
-                    title = 'If ' + str(t._if)
+                    title = 'If ' + str(t.if_)
                 elif len(state.transitions) == 1:
                     title = 'Always'
                 else: 
@@ -770,9 +790,9 @@ class Simulation(object):
             ValueError: If property configuration is invalid or required matching function missing
         """
         if is_overwrite_existing_properties:
-            print("WARNING - Overwriting each patient's existing properties (i.e. patient.properties) with default values from `simulation.variables`. " 
+            print("\n!! WARNING - Because `is_overwrite_existing_properties` is TRUE, we are OVERWRITING each patient's existing properties (i.e. patient.properties) with default values from `simulation.variables`. " 
                   "If this is UNDESIRED, i.e. you already defined each patient's properties manually and want to keep them as currently defined, "
-                  "then set `is_overwrite_existing_properties` to FALSE.")
+                  "then set `is_overwrite_existing_properties` to FALSE.\n")
         # create deep copy of the `patients` object using pickle
         patients = pickle.loads(pickle.dumps(patients))
         patients = sorted(patients, key = lambda x: x.id)
@@ -866,14 +886,14 @@ class Simulation(object):
                 raise ValueError(f"ERROR - Unrecognized properties for variable '{v_id}'")
         return patients
 
-    def load_patients_for_simulation(self, 
-                                        patients: List[Patient],
-                                        df_patients_seismometer: pd.DataFrame,
-                                        func_match_patient_to_property_column: Callable = None,
-                                        random_seed: int = 0) -> List[Patient]:
-        """Loads patient properties from a Seismometer dataframe.
+    def load_seismometer_patients_for_simulation(self, 
+                                                patients: List[Patient],
+                                                df_patients_seismometer: pd.DataFrame,
+                                                func_match_patient_to_property_column: Callable = None,
+                                                random_seed: int = 0) -> List[Patient]:
+        """Loads patient properties from an Epic Seismometer dataframe.
     
-        Similar to create_patients_for_simulation but loads properties from a provided
+        Similar to `create_patients_for_simulation` but loads properties from a provided
         dataframe instead of CSV file.
         
         Args:
@@ -936,6 +956,167 @@ class Simulation(object):
                         p.properties[v_id] = func_match_patient_to_property_column(p.id, map_pid_to_random_df_idx[p.id], df_patients_seismometer, v['column'])
         return patients
 
+    @classmethod
+    def create_from_yaml(cls, path_to_yaml: str, path_to_patient_properties: Optional[str] = None) -> 'aplusml.sim.Simulation':
+        """Create a :class:`~aplusml.sim.Simulation` object from YAML
+
+        If ``path_to_patient_properties`` is provided, then it overwrites the current Metadata section's ``path_to_properties`` key.
+        
+        Args:
+            path_to_yaml (str): Path to YAML file
+            path_to_patient_properties (str): Path to patient properties CSV file. Optional.
+
+        Returns:
+            :class:`~aplusml.sim.Simulation`: A :class:`~aplusml.sim.Simulation` object that contains all of the metadata, variables, states, and transitions from the YAML file
+        """    
+        yaml: dict = load_yaml(path_to_yaml)
+        if not is_valid_config_yaml(yaml):
+            raise ValueError("ERROR - Invalid YAML")
+        
+        # Create new Simulation
+        simulation = cls()
+        
+        #
+        # Metadata
+        metadata = yaml.get('metadata', {})
+        for key in metadata:
+            simulation.metadata[key] = metadata[key]
+        ## Set defaults
+        simulation.metadata['name'] = simulation.metadata.get('name', '')
+        simulation.metadata['path_to_properties'] = simulation.metadata.get('path_to_properties', None)
+        simulation.metadata['properties_col_for_patient_id'] = simulation.metadata.get('properties_col_for_patient_id', None)
+        simulation.metadata['patient_sort_preference_property'] = simulation.metadata.get('patient_sort_preference_property', None)
+        
+        #
+        # Variables
+        variables = yaml.get('variables', {})
+        for v_id, v in variables.items():
+            simulation.variables[v_id] = {
+                'type' : v.get('type', 'scalar'),
+                'value' : v.get('value', None),
+                **v,
+            }
+        #
+        # States
+        states = yaml.get('states', {})
+        for s_id, s in states.items():
+            transitions: list[Transition] = []
+            for t in s.get('transitions', []):
+                raw_utils = t.get('utilities', [])
+                if type(raw_utils) != list:
+                    # Handle 'utilities' value being a float|int|str (i.e. non-list)
+                    raw_utils = [{ 'value' : raw_utils }]
+                utilities: list[Utility] = []
+                for u in raw_utils:
+                    utilities.append(Utility(u.get('value', 0.0), u.get('unit', ''), u.get('if')))
+                transitions.append(Transition(
+                    t['dest'],
+                    t.get('label', ''),
+                    t.get('duration', 0),
+                    utilities,
+                    { key: float(val) for key, val in t.get('resource_deltas', {}).items() },
+                    if_ = t.get('if'),
+                    prob = t.get('prob'),
+                ))
+            raw_utils = s.get('utilities', [])
+            if type(raw_utils) != list:
+                # Handle 'utilities' value being a float|int|str (i.e. non-list)
+                raw_utils = [{ 'value' : raw_utils }]
+            utilities: list[Utility] = []
+            for u in raw_utils:
+                utilities.append(Utility(u.get('value', 0.0), u.get('unit', ''), u.get('if')))
+            simulation.states[s_id] = State(
+                s_id,
+                s.get('label', s_id),
+                s.get('type', 'intermediate'),
+                s.get('duration', 0),
+                utilities,
+                transitions,
+                { key: float(val) for key, val in s.get('resource_deltas', {}).items() }
+            )
+        if path_to_patient_properties:
+            simulation.metadata['path_to_properties'] = path_to_patient_properties
+        return simulation
+    
+    @classmethod
+    def create_from_config(cls, config: Config, path_to_patient_properties: Optional[str] = None) -> 'aplusml.sim.Simulation':
+        """Create a :class:`~aplusml.sim.Simulation` object from a :class:`~aplusml.config.Config` object.
+        
+        If ``path_to_patient_properties`` is provided, then it overwrites the current Metadata section's ``path_to_properties`` key.
+        
+        Args:
+            config (Config): A Python :class:`~aplusml.config.Config` object
+            path_to_patient_properties (str): Path to patient properties CSV file. Optional.
+
+        Returns:
+            :class:`~aplusml.sim.Simulation`: A :class:`~aplusml.sim.Simulation` object that contains all of the metadata, variables, states, and transitions from the YAML file
+        """
+        if not config.is_valid():
+            raise ValueError("ERROR - Invalid Config")
+    
+        # Create new Simulation
+        simulation = cls()
+
+        #
+        # Metadata
+        metadata = config.metadata
+        ## Set defaults
+        simulation.metadata['name'] = metadata.name
+        simulation.metadata['path_to_properties'] = metadata.path_to_properties
+        simulation.metadata['properties_col_for_patient_id'] = metadata.properties_col_for_patient_id
+        simulation.metadata['patient_sort_preference_property'] = metadata.patient_sort_preference_property
+        
+        #
+        # Variables
+        variables = config.variables
+        for v_id, v in variables.items():
+            simulation.variables[v_id] = {
+                'type' : v.type,
+                'value' : v.value,
+                **{ key: val for key, val in v.model_dump().items() if val is not None }, # ignore `None` values (for clarity)
+            }
+        #
+        # States
+        states = config.states
+        for s_id, s in states.items():
+            transitions: list[Transition] = []
+            for t in s.transitions:
+                raw_utils = t.utilities
+                if not isinstance(raw_utils, list):
+                    # Handle 'utilities' value being a float|int|str (i.e. non-list)
+                    raw_utils = [ ConfigUtility(value=raw_utils) ]
+                utilities: list[Utility] = []
+                for u in raw_utils:
+                    utilities.append(Utility(u.value, u.unit, u.if_))
+                transitions.append(Transition(
+                    t.dest,
+                    t.label,
+                    t.duration,
+                    utilities,
+                    t.resource_deltas,
+                    if_ = t.if_,
+                    prob = t.prob,
+                ))
+            raw_utils = s.utilities
+            if not isinstance(raw_utils, list):
+                # Handle 'utilities' value being a float|int|str (i.e. non-list)
+                raw_utils = [ ConfigUtility(value=raw_utils) ]
+            utilities: list[Utility] = []
+            for u in raw_utils:
+                utilities.append(Utility(u.value, u.unit, u.if_))
+            simulation.states[s_id] = State(
+                s_id,
+                s.label if s.label is not None else s_id,
+                s.type,
+                s.duration,
+                utilities,
+                transitions,
+                s.resource_deltas
+            )
+        if path_to_patient_properties:
+            simulation.metadata['path_to_properties'] = path_to_patient_properties
+        return simulation
+
 def sort_patient_by_preference(patients: List[Patient], 
                                property_to_sort_by: str = None, 
                                is_ascending: bool = True) -> List[int]:
@@ -967,7 +1148,6 @@ def sort_patient_by_preference(patients: List[Patient],
         return sorted(range(len(patients)), key=properties.__getitem__, reverse = not is_ascending)
     else:
         return range(len(patients))
-
 
 def get_unit_utility_baselines(patients: List[Patient],
                                utilities: Dict[str, float],

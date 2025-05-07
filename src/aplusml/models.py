@@ -14,23 +14,23 @@ class Utility(object):
     def __init__(self,
                  value: str,
                  unit: str = '',
-                 _if: str = None):
+                 if_: str = None):
         """
         Args:
             value (str): The value of the utility. Example: '100000'
             unit (str, optional): The unit of the utility. Defaults to ''. Example: 'USD', 'days', 'kg', 'cm', etc.
-            _if (str, optional): The condition for the utility, specified as a Python expression. Defaults to None. Example: 'y_hat > 0.5'
+            if_ (str, optional): The condition for the utility, specified as a Python expression. Defaults to None. Example: 'y_hat > 0.5'
         """
         self.value: str = value
         self.unit: str = unit
-        self._if: str = _if
-        self._if_compiled: CodeType = compile(_if, '<string>', 'eval', optimize=2) if type(_if) == str else None
+        self.if_: str = if_
+        self.if_compiled: CodeType = compile(if_, '<string>', 'eval', optimize=2) if type(if_) == str else None
         self.value_compiled: CodeType = compile(value, '<string>', 'eval', optimize=2) if type(value) == str else None
 
     def __setattr__(self, name, value):
         # Update compiled versions of if/value
-        if name == '_if':
-            super().__setattr__('_if_compiled', compile(value, '<string>', 'eval', optimize=2) if type(value) == str else None)
+        if name == 'if_':
+            super().__setattr__('if_compiled', compile(value, '<string>', 'eval', optimize=2) if type(value) == str else None)
         if name == 'value':
             super().__setattr__('value_compiled', compile(value, '<string>', 'eval', optimize=2) if type(value) == str else None)
         super().__setattr__(name, value)
@@ -39,21 +39,24 @@ class Utility(object):
         """
         Returns True if the utility is conditional on a Python expression.
         """
-        return self._if is not None
+        return self.if_ is not None
     
     def __repr__(self):
-        return str({
+        return 'Utility(' + str({
             'value' : self.value,
             'unit' : self.unit,
-            '_if' : self._if,
-        })
+            'if_' : self.if_,
+        }) + ')'
     
     def serialize(self):
         return {
             'value' : self.value,
             'unit' : self.unit,
-            '_if' : self._if,
+            'if_' : self.if_,
         }
+    
+    def __eq__(self, other):
+        return self.__repr__() == other.__repr__()
 
 class Transition(object):
     """
@@ -66,7 +69,7 @@ class Transition(object):
                  duration: int,
                  utilities: List[Utility],
                  resource_deltas: Dict[str, float],
-                 _if: Union[str, bool] = None,
+                 if_: Union[str, bool] = None,
                  prob: Union[str, float] = None):
         """
         Args:
@@ -75,7 +78,7 @@ class Transition(object):
             duration (int): The duration of the transition. Example: 1
             utilities (List[Utility]): The utilities of the transition. Example: [Utility(value='100000', unit='USD')]
             resource_deltas (Dict[str, float]): The resource deltas of the transition. Example: {'MRI': -1}
-            _if (Union[str, bool], optional): The condition for the transition, specified as a Python expression. Defaults to None. Example: 'y_hat > 0.5'
+            if_ (Union[str, bool], optional): The condition for the transition, specified as a Python expression. Defaults to None. Example: 'y_hat > 0.5'
             prob (Union[str, float], optional): The probability of the transition. Defaults to None. Example: 0.5
         """
         self.dest: str = dest
@@ -83,15 +86,15 @@ class Transition(object):
         self.duration: int = duration
         self.utilities: List[Utility] = utilities
         self.resource_deltas: Dict[str, float] = resource_deltas
-        self._if: Union[str, bool] = _if # NOTE: This is referred to as 'if' outside of this object
+        self.if_: Union[str, bool] = if_ # NOTE: This is referred to as 'if' outside of this object
         self.prob: Union[str, float] = prob
-        self._if_compiled: CodeType = compile(_if, '<string>', 'eval', optimize=2) if type(_if) == str else None
+        self.if_compiled: CodeType = compile(if_, '<string>', 'eval', optimize=2) if type(if_) == str else None
         self.prob_compiled: CodeType = compile(prob, '<string>', 'eval', optimize=2) if type(prob) == str else None
 
     def __setattr__(self, name, value):
         # Update compiled versions of if/prob
-        if name == '_if':
-            super().__setattr__('_if_compiled', compile(value, '<string>', 'eval', optimize=2) if type(value) == str else None)
+        if name == 'if_':
+            super().__setattr__('if_compiled', compile(value, '<string>', 'eval', optimize=2) if type(value) == str else None)
         if name == 'prob':
             super().__setattr__('prob_compiled', compile(value, '<string>', 'eval', optimize=2) if type(value) == str else None)
         super().__setattr__(name, value)
@@ -106,7 +109,7 @@ class Transition(object):
         """
         Returns True if the transition is conditional on a Python expression.
         """
-        return self._if is not None
+        return self.if_ is not None
     
     def get_variables_in_conditional(self) -> List[str]:
         """
@@ -117,7 +120,7 @@ class Transition(object):
         if self.is_conditional_prob():
             expression = self.prob
         elif self.is_conditional_if():
-            expression = self._if
+            expression = self.if_
         else:
             # If there is not a conditional, then there can't be any variables involved
             return []
@@ -138,14 +141,14 @@ class Transition(object):
 
     def __repr__(self):
         """Return a string representation of the transition."""
-        return str({
+        return 'Transition(' + str({
             'dest' : self.dest,
             'label' : self.label,
             'duration' : self.duration,
             'utilities' : self.utilities,
-            'if' : self._if,
+            'if_' : self.if_,
             'prob' : self.prob,
-        })
+        }) + ')'
     
     def serialize(self):
         """Serialize the transition into a dictionary."""
@@ -155,9 +158,12 @@ class Transition(object):
             'duration' : self.duration,
             'utilities' : [ u.serialize() for u in self.utilities ],
             'resource_deltas' : self.resource_deltas,
-            '_if' : self._if,
+            'if_' : self.if_,
             'prob' : self.prob,
         }
+
+    def __eq__(self, other):
+        return self.__repr__() == other.__repr__()
 
 class State(object):
     """
@@ -196,14 +202,14 @@ class State(object):
 
     def __repr__(self):
         """Return a string representation of the state."""
-        return str({
+        return 'State(' + str({
             'id' : self.id,
             'label' : self.label,
             'type' : self.type,
             'duration' : self.duration,
             'utilities' : self.utilities,
             'transitions' : [ x.print() for x in self.transitions ],
-        })
+        }) + ')'
 
     def serialize(self):
         """Serialize the state into a dictionary."""
@@ -216,6 +222,13 @@ class State(object):
             'transitions' : [ x.serialize() for x in self.transitions ],
             'resource_deltas' : self.resource_deltas,
         }
+
+    def __eq__(self, other):
+        return (
+            self.__repr__() == other.__repr__()
+            and all([ x == y for x, y in zip(self.utilities, other.utilities) ])
+            and all([ x == y for x, y in zip(self.transitions, other.transitions) ])
+        )
 
 class History(object):
     """
@@ -253,7 +266,7 @@ class History(object):
 
     def __repr__(self):
         """Return a string representation of the history."""
-        return str({
+        return 'History(' + str({
             'current_timestep' : self.current_timestep,
             'state_id' : self.state_id,
             'transition_idx' : self.transition_idx,
@@ -261,7 +274,7 @@ class History(object):
             'transition_utility_idxs' : self.transition_utility_idxs,
             'state_utility_vals' : self.state_utility_vals,
             'transition_utility_vals' : self.transition_utility_vals,
-        })
+        }) + ')'
 
 class Patient(object):
     """
@@ -275,9 +288,9 @@ class Patient(object):
                  properties: dict = None):
         """
         Args:
-            id (str): The ID of the patient. Example: 'patient1'
-            start_timestep (int): The start timestep of the patient. Example: 1
-            properties (dict, optional): The properties of the patient. Example: {'y_hat': 0.5}
+            id (str): The ID of the patient. Example: ``patient1``
+            start_timestep (int): The start timestep of the patient. Example: ``1``
+            properties (dict, optional): The properties of the patient. Example: ``{'y_hat': 0.5}``
         """
         self.id: str = id
         self.start_timestep: int = int(start_timestep) # Start time for this patient (i.e. admitted date)
@@ -286,11 +299,15 @@ class Patient(object):
         self.current_state: str = None # ID of current state
     
     def get_state_history(self):
-        """Get the state history."""
+        """Get the state history of this patient. Returns a list of state IDs (in chronological order) that the patient has visited."""
         return [ h.state_id for h in self.history]
         
     def repr_state_history(self, is_show_timesteps: bool = False):
-        """Get the state history in a human-readable format."""
+        """Get the state history in a human-readable format.
+        
+        Args:
+            is_show_timesteps (bool, optional): If TRUE, then show the timestep of each state transition. Defaults to FALSE.
+        """
         if is_show_timesteps:
             return " > ".join([ f"({h.current_timestep}) {h.state_id}" for h in self.history])
         else:
@@ -304,7 +321,7 @@ class Patient(object):
             simulation (Simulation): The simulation.
 
         Returns:
-            Dict[str, float]: A dictionary of the sum of the utilities of the patient's history. Example: {'USD': 100000}
+            Dict[str, float]: A dictionary where each [key] is a unit, and each [value] is the sum of the utilities of the patient's history for that unit. Example: {'USD': 100000}
         """
         sums: Dict[str, float] = collections.defaultdict(float) # [key] = unit, [value] = sum of that unit's utility across entire Patient's history
         for h in self.history:
@@ -323,10 +340,10 @@ class Patient(object):
 
     def __repr__(self):
         """Return a string representation of the patient."""
-        return str({
+        return 'Patient(' + str({
             'id' : self.id,
             'start_timestep' : self.start_timestep,
             'properties' : self.properties,
             'history' : self.history,
             'current_state' : self.current_state,
-        })
+        }) + ')'

@@ -5,8 +5,7 @@ Quick Start
    :maxdepth: 2
    :caption: Quick Start
 
-Code Example
-------------
+Get up-and-running with APLUS in <5 minutes with this walkthrough!
 
 1\. Install the APLUS package:
 
@@ -15,25 +14,78 @@ Code Example
    pip install aplusml
 
 
-2\. Create your workflow YAML file and patient properties CSV file following the specifications in :doc:`config`.
-
-
-3\. Create a simulation object by loading your workflow YAML file and patient properties CSV file.
+2\. Create your workflow configuration:
 
 .. code-block:: python
+  :caption: `script.py
+  :linenos:
 
   import aplusml
 
-  PATH_TO_CONFIG_YAML: str = "path/to/config.yaml"
-  PATH_TO_PATIENT_PROPERTIES: str = "path/to/patient_properties.csv"
+  # Create Config object. You must specify three things:
+  # 1. Metadata -- basic information about the simulation
+  # 2. Variables -- variables used in the simulation
+  # 3. States -- states in the workflow that your patients will progress through
+  config = aplusml.config.Config(
+    metadata = aplusml.config.ConfigMetadata(
+      name = 'My Simulation',
+    ),
+    variables = {
+      'some_constant': aplusml.config.ConfigVariable(
+        type = 'scalar',
+        value = -12.03,
+      ),
+      'some_resource': aplusml.config.ConfigVariable(
+        type = 'resource',
+        init_amount = 0,
+        max_amount = 10,
+        refill_amount = 3,
+        refill_duration = 1,
+      ),
+    },
+    states = {
+      'start' : aplusml.config.ConfigState(
+        type = 'start',
+        transitions = [
+          aplusml.config.ConfigTransition(dest = 'end_1', prob = 0.5),
+          aplusml.config.ConfigTransition(dest = 'end_2', prob = 0.5),
+        ],
+      ),
+      'end_1' : aplusml.config.ConfigState(
+        type = 'end',
+        utilities = {
+          'qalys': aplusml.config.ConfigUtility(
+            value = 1,
+          ),
+        },
+      ),
+      'end_2' : aplusml.config.ConfigState(
+        type = 'end',
+        utilities = {
+          'qalys': aplusml.config.ConfigUtility(
+            value = 2,
+          ),
+        },
+      ),
+    },
+  )
 
-  # Create simulation. Loads workflow + simulation parameters from YAML file, patient properties from CSV file.
-  # If `path_to_patient_properties` is None, then the default `metadata.path_to_properties` key in the YAML file is used. Here, we explicitly override it.
-  simulation: aplusml.Simulation = aplusml.load_simulation(PATH_TO_CONFIG_YAML, PATH_TO_PATIENT_PROPERTIES)
+
+3\. Create a :class:`~aplusml.sim.Simulation` object.
+
+.. code-block:: python
+  :caption: `script.py`
+  :linenos:
+  :lineno-start: 50
+
+  simulation: aplusml.Simulation = aplusml.Simulation.create_from_config(config)
 
 4\. Visualize the workflow via a **graphviz** diagram:
 
 .. code-block:: python
+  :caption: `script.py`
+  :linenos:
+  :lineno-start: 51
 
   # Draws workflow diagram. This will save the diagram to './output.png' and print it to your terminal.
   simulation.draw_workflow_diagram(figsize=(30,30), path_to_file='./output.png', is_display=True)
@@ -44,7 +96,13 @@ Code Example
   * :math:`N` total days will be simulated, where :math:`N=500`
 
 .. code-block:: python
+  :caption: `script.py`
+  :linenos:
+  :lineno-start: 53
 
+  import numpy as np
+
+  # Set random seed for reproducibility
   np.random.seed(0)
 
   # Simulate number of patients per day
@@ -71,14 +129,20 @@ Code Example
 6\. Run the simulation:
 
 .. code-block:: python
+  :caption: `script.py`
+  :linenos:
+  :lineno-start: 78
   
-  # Runsimulation
-  simulation.run(patients)
+  # Run simulation
+  patients = simulation.run(patients)
 
 
-7\. Sum up the utilities achieved across all patient histories to ascertain the total utility achieved by the workflow:
+7\. Calculate the total utility achieved by the workflow by summing all patients' achieved utilities:
 
 .. code-block:: python
+  :caption: `script.py`
+  :linenos:
+  :lineno-start: 80
   
   # Sum up the utilities achieved across all patient histories
   sum_utilities: Dict[str, float] = collections.defaultdict(float)
@@ -90,37 +154,118 @@ Code Example
   # Print results
   print(sum_utilities)
 
+Putting it all together, we have the following APLUS script:
 
-Useful Concepts
-----------------
+.. code-block:: python
+  :caption: `script.py`
+  :linenos:
 
-Transitions
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Patients move between states through **transitions**. There are three types of transitions:
+  import aplusml
+  import numpy as np
+  from typing import List, Dict
+  import collections
 
-  * **Deterministic** – A single, predefined transition per state.  
-  * **Probabilistic** – Transitions occur with specified probabilities (e.g., 30% "high-risk", 70% "low-risk").  
-  * **Conditional** – Transitions based on Boolean expressions evaluating patient-level or system-level conditions (e.g., a gene therapy succeeding only for patients with a specific mutation).  
+  ############################################################
+  # 1. Initialize simulation
+  ############################################################
+  
+  # Create Config object. You must specify three things:
+  # 1. Metadata -- basic information about the simulation
+  # 2. Variables -- variables used in the simulation
+  # 3. States -- states in the workflow that your patients will progress through
+  config = aplusml.config.Config(
+    metadata = aplusml.config.ConfigMetadata(
+      name = 'My Simulation',
+    ),
+    variables = {
+      'some_constant': aplusml.config.ConfigVariable(
+        type = 'scalar',
+        value = -12.03,
+      ),
+      'some_resource': aplusml.config.ConfigVariable(
+        type = 'resource',
+        init_amount = 0,
+        max_amount = 10,
+        refill_amount = 3,
+        refill_duration = 1,
+      ),
+    },
+    states = {
+      'start' : aplusml.config.ConfigState(
+        type = 'start',
+        transitions = [
+          aplusml.config.ConfigTransition(dest = 'end_1', prob = 0.5),
+          aplusml.config.ConfigTransition(dest = 'end_2', prob = 0.5),
+        ],
+      ),
+      'end_1' : aplusml.config.ConfigState(
+          type = 'end',
+          utilities = [
+              aplusml.config.ConfigUtility(
+                  value = .5,
+                  unit = 'qaly',
+              ),
+          ],
+      ),
+      'end_2' : aplusml.config.ConfigState(
+          type = 'end',
+          utilities = [
+              aplusml.config.ConfigUtility(
+                  value = 2,
+                  unit = 'qaly',
+              ),
+          ],
+      ),
+    },
+  )
 
-Utilities and Performance Metrics
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-APLUS supports tracking **multiple utility measures** to evaluate workflow effectiveness:
+  # Create Simulation object
+  simulation: aplusml.Simulation = aplusml.Simulation.create_from_config(config)
 
-  * **Time-based** (e.g., patient length-of-stay)  
-  * **Clinical** (e.g., patient outcomes)  
-  * **Financial** (e.g., cost impact)  
-  * **Resource-related** (e.g., staff utilization)  
+  # Set random seed for reproducibility
+  np.random.seed(0)
 
-Utilities can be **conditioned on expressions**, allowing individual-level utility analyses based on patient properties [29]. These values must be derived from literature, expert consultation, or financial modeling [32].  
+  ############################################################
+  # 2. Initialize patients
+  ############################################################
 
-Temporal and Resource Modeling
-""""""""""""""""""""""""""""""""
+  # Simulate number of patients per day
+  n_admits_per_day = np.random.poisson(lam=35, size=500)
 
-**Time Duration:** Each state and transition can have an associated **time duration**, defining the number of simulation time steps before progression. Example:  
+  # Create empty Patient objects (with proper start timesteps according to our Poisson distribution)
+  patients: List[aplusml.Patient] = []
+  for timestep, n_admits in enumerate(n_admits_per_day):
+      for x in range(n_admits):
+          patients.append(aplusml.Patient(
+              len(patients), # Unique ID
+              timestep, # Start timestep
+          ))
 
-  * A hospital workflow where post-surgery patients stay in a "rest" state before daily evaluations.  
+  # Function which matches a patient to a row in the CSV file.
+  func_match_patient_to_property_column = lambda p_id, random_idx, df, col: df.iloc[random_idx][col]
 
-**Resource Constraints:** Transitions can alter **system-level resources** via **resource deltas**, simulating real-world capacity limits. Example:  
+  # Initialize patients for simulation. 
+  # This creates a deep copy of each object in the `patients` array using pickle, sorts them by ID, and then initializes their properties
+  patients: List[aplusml.Patient] = simulation.create_patients_for_simulation(patients, 
+                                                                            func_match_patient_to_property_column,
+                                                                            random_seed = 0)
+  
+  ############################################################
+  # 3. Run simulation
+  ############################################################
 
-  * A transition directing a patient to an MRI scan may decrease **MRI capacity by 1**.  
+  patients = simulation.run(patients)
 
+  ############################################################
+  # 4. Analyze results
+  ############################################################
+
+  # Sum up the utilities achieved across all patient histories
+  sum_utilities: Dict[str, float] = collections.defaultdict(float)
+  for p in patients:
+      _u: dict = p.get_sum_utilities(simulation)
+      for key, val in _u.items():
+          sum_utilities[key] += val
+
+  # Print results
+  print(sum_utilities)

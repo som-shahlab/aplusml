@@ -870,7 +870,7 @@ Next, load the doctor-driven workflow config YAML file and display the workflow 
 .. code-block:: python
 
   # Load nurse-driven workflow
-  simulation = aplusml.load_simulation(PATH_TO_DOCTOR_YAML, PATH_TO_PATIENT_PROPERTIES)
+  simulation = aplusml.Simulation.create_from_yaml(PATH_TO_DOCTOR_YAML, PATH_TO_PATIENT_PROPERTIES)
   simulation.draw_workflow_diagram(figsize=(30,30))
 
 
@@ -907,19 +907,19 @@ Finally, define some helper functions to help us run the simulation...
     # Save Treat All / None / Perfect baselines under optimistic conditions
     baselines = [
         # Treat All - treat everyone as if y_hat == 1
-        { 'label' : 'all', '_if' : True },
+        { 'label' : 'all', 'if_' : True },
         # Treat None - treat everyone as if y_hat == 0
-        { 'label' : 'none', '_if' : False },
+        { 'label' : 'none', 'if_' : False },
         # Treat Perfect - treat everyone as if y_hat == y
-        { 'label' : 'perfect', '_if' : 'y == 1' },
+        { 'label' : 'perfect', 'if_' : 'y == 1' },
     ]
     baseline_2_result = {}
     for b in baselines:
         label = b['label']
-        _if = b['_if']
+        if_ = b['if_']
         # This is INDEPENDENT of any model (MODELS[0] used for simplicity here)
         simulation = load_simulation_for_model(PATH_TO_YAML, PATH_TO_PROPERTIES, MODELS[0], is_patient_sort_by_y_hat=False, func_setup_optimistic=func_setup_optimistic)
-        simulation.states['model_pred'].transitions[0]._if = _if
+        simulation.states['model_pred'].transitions[0].if_ = if_
         # This only has one threshold (at 0) since this is independent of the model (and thus the threshold of the model)
         df_result = aplusml.run_test(simulation, patients,
                                 labels + [f"optimistic"], settings + [{}],

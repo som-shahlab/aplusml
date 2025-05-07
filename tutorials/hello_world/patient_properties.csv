@@ -1,0 +1,7 @@
+patient_id,patient_property_1,patient_property_2,start_timestep
+1,1,2,0
+2,1,5,1
+3,6,5,2
+4,6,1,0
+5,2,1,1
+6,2,8,0

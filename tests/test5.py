@@ -1,9 +1,6 @@
 import collections
-import sys
 from utils import check_history, check_probabilistic_outcomes_are_within_margin_of_error
-sys.path.append("..")
-import sim
-import parse
+import aplusml
 import pickle
 
 ################################################
@@ -13,21 +10,20 @@ import pickle
 PATH_TO_YAML = 'test5.yaml'
 
 # Parse simulation
-yaml = parse.load_yaml(PATH_TO_YAML)
-simulation = parse.create_simulation_from_yaml(yaml)
+simulation = aplusml.Simulation.create_from_yaml(PATH_TO_YAML)
 
 all_patients = [
-    sim.Patient(0,0, properties={
+    aplusml.Patient(0,0, properties={
         'property' : 0,
         'property2' : 0,
         'total_duration_in_sim' : 4,
     }),
-    sim.Patient(1,1, properties={
+    aplusml.Patient(1,1, properties={
         'property' : 0,
         'property2' : 1,
         'total_duration_in_sim' : 4,
     }),
-    sim.Patient(2,2, properties={
+    aplusml.Patient(2,2, properties={
         'property' : 1,
         'property2' : 2,
         'total_duration_in_sim' : 4,
@@ -39,7 +35,7 @@ all_patients = [
 #
 patient_runs = []
 for i in range(2000):
-    simulation.run(all_patients[:1], random_seed=i)
+    patients = simulation.run(all_patients[:1], random_seed=i, is_print_tqdm=False)
     patient_runs.append(pickle.loads(pickle.dumps(all_patients[0])))
 ## Test 'prob' conditional
 counts = collections.defaultdict(int)
@@ -63,13 +59,13 @@ for p in patient_runs:
 ## Test 'if' + 'property' (multiple vars)
 for i in [ .1, .2, .3, .4, .5, .6, .7, .8, .9, 1, ]:
     patients = [
-        sim.Patient(0,0, properties={
+        aplusml.Patient(0,0, properties={
             'property' : i,
             'property2' : i,
             'total_duration_in_sim' : 4,
         }),
     ]
-    simulation.run(patients, random_seed=0)
+    patients = simulation.run(patients, random_seed=0)
     if i < 0.5:
         assert patients[0].history[5].state_id == 'property_threshold1'
     else:
@@ -77,13 +73,13 @@ for i in [ .1, .2, .3, .4, .5, .6, .7, .8, .9, 1, ]:
 ## Test 'if' + 'simulation' (multiple vars)
 for los in range(0, 10):
     patients = [
-        sim.Patient(0,0, properties={
+        aplusml.Patient(0,0, properties={
             'property' : 1,
             'property2' : 1,
             'total_duration_in_sim' : los,
         }),
     ]
-    simulation.run(patients, random_seed=0)
+    patients = simulation.run(patients, random_seed=0)
     if los > 8 or (los - 1) < 2:
         assert patients[0].history[7].state_id == 'sim1'
     else:
@@ -92,7 +88,7 @@ for los in range(0, 10):
 ## Test 'resource'
 simulation.init_run()
 assert simulation.variables['capacity']['level'] == simulation.variables['capacity']['init_amount']
-simulation.run(all_patients, random_seed=0)
+patients = simulation.run(all_patients, random_seed=0)
 assert simulation.variables['capacity']['level'] == simulation.variables['capacity']['init_amount'] - 2
 ## Test 'if' + 'resource'
 for p in all_patients:
@@ -103,7 +99,7 @@ assert all_patients[1].history[-4].state_id == 's1'
 assert all_patients[2].history[-4].state_id == 's2'
 
 ## full run
-simulation.run(all_patients, random_seed=0)
+patients = simulation.run(all_patients, random_seed=0)
 assert simulation.current_timestep == 3
 ## patient started at t = 0
 check_history(simulation, 
@@ -161,7 +157,7 @@ check_history(simulation,
                        ])
 # randomness
 for i in range(2000):
-    simulation.run(all_patients, random_seed=0)
+    patients = simulation.run(all_patients, random_seed=0)
     assert all_patients[0].history[1].state_id == 'bin4'
     assert all_patients[1].history[1].state_id == 'bin4'
     assert all_patients[2].history[1].state_id == 'bin2'
