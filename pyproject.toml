@@ -1,6 +1,6 @@
 [project]
 name = "aplusml"
-version = "0.3.0"
+version = "0.3.1"
 description = "Conduct usefulness simulations of ML models embedded in workflows"
 readme = "README.md"
 license = { text = "Apache 2.0" }
