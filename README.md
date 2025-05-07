@@ -8,7 +8,7 @@
 
 ----
 
-![Graphical Abstract](assets/graphical%20abstract.png)
+![Graphical Abstract](https://github.com/som-shahlab/aplusml/blob/bc3fba49257092f038a862e870b4cae86f9eb659/assets/graphical%20abstract.png)
 
 
 ## Installation
@@ -98,7 +98,7 @@ cd tests
 python3 run_tests.py
 ```
 
-## Documentation
+### Documentation
 
 We use [Sphinx](https://www.sphinx-doc.org/en/master/) to build the documentation, and host it on [Read the Docs](https://readthedocs.org/).
 
@@ -111,6 +111,14 @@ sphinx-autobuild docs/source docs/build/html
 # Build for dist
 make html
 ```
+
+### Deploy to PyPi
+
+```bash
+poetry build
+poetry publish
+```
+
 
 ## Citation
 
