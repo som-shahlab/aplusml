@@ -305,10 +305,10 @@
 <span class="sd">    A state in the workflow.</span>
 <span class="sd">    </span>
 <span class="sd">    Attributes:</span>
-<span class="sd">        id (str): The ID of the state.</span>
+<span class="sd">        id (str): The ID of the state. Must be unique across all states.</span>
 <span class="sd">        label (str): The label of the state.</span>
 <span class="sd">        type (str): The type of the state. Must be one of: &#39;start&#39;, &#39;intermediate&#39;, &#39;end&#39;</span>
-<span class="sd">        duration (int): The duration of the state.</span>
+<span class="sd">        duration (int): The duration of the state. Must be a non-negative integer.</span>
 <span class="sd">        utilities (List[Utility]): The utilities of the state.</span>
 <span class="sd">        transitions (List[Transition]): The transitions of the state.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -451,11 +451,11 @@
 <span class="sd">    A patient in the simulation.</span>
 <span class="sd">    </span>
 <span class="sd">    Attributes:</span>
-<span class="sd">        id (str): The ID of the patient.</span>
-<span class="sd">        start_timestep (int): The start timestep of the patient.</span>
+<span class="sd">        id (str): The ID of the patient. IMPORTANT: Must be unique across all patients.</span>
+<span class="sd">        start_timestep (int): The start timestep of the patient, i.e. at which timestep in the simulation this patient starts their workflow.</span>
 <span class="sd">        properties (dict): The properties of the patient.</span>
-<span class="sd">        history (List[History]): The history of the patient.</span>
-<span class="sd">        current_state (str): The ID of the current state.</span>
+<span class="sd">        history (List[History]): The history of the patient, i.e. all past states, transitions, and utilities the patient has experienced.</span>
+<span class="sd">        current_state (str): The ID of the current state the patient is in.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="Patient.__init__">

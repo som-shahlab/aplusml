@@ -186,10 +186,10 @@ class State(object):
     A state in the workflow.
     
     Attributes:
-        id (str): The ID of the state.
+        id (str): The ID of the state. Must be unique across all states.
         label (str): The label of the state.
         type (str): The type of the state. Must be one of: 'start', 'intermediate', 'end'
-        duration (int): The duration of the state.
+        duration (int): The duration of the state. Must be a non-negative integer.
         utilities (List[Utility]): The utilities of the state.
         transitions (List[Transition]): The transitions of the state.
     """
@@ -314,11 +314,11 @@ class Patient(object):
     A patient in the simulation.
     
     Attributes:
-        id (str): The ID of the patient.
-        start_timestep (int): The start timestep of the patient.
+        id (str): The ID of the patient. IMPORTANT: Must be unique across all patients.
+        start_timestep (int): The start timestep of the patient, i.e. at which timestep in the simulation this patient starts their workflow.
         properties (dict): The properties of the patient.
-        history (List[History]): The history of the patient.
-        current_state (str): The ID of the current state.
+        history (List[History]): The history of the patient, i.e. all past states, transitions, and utilities the patient has experienced.
+        current_state (str): The ID of the current state the patient is in.
     """
 
     def __init__(self, 

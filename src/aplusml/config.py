@@ -178,6 +178,9 @@ class ConfigTransition(BaseModel):
     
     def is_valid(self, state_id: str) -> bool:
         """Return TRUE if the ConfigTransition is valid, FALSE otherwise."""
+        if self.duration < 0:
+            print(f"ERROR - Transition for state='{state_id}' must have a non-negative duration, but has duration={self.duration}")
+            return False
         return True
 
 class ConfigState(BaseModel):
@@ -202,6 +205,9 @@ class ConfigState(BaseModel):
         """Return TRUE if the ConfigState is valid, FALSE otherwise."""
         if self.type not in get_args(VALID_STATE_TYPES):
             print(f"ERROR - Invalid state type. Must be one of: {VALID_STATE_TYPES}")
+            return False
+        if self.duration < 0:
+            print(f"ERROR - State='{id}' must have a non-negative duration, but has duration={self.duration}")
             return False
         return True
 

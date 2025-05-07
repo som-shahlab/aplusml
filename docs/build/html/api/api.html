@@ -569,7 +569,7 @@
 <dl class="py attribute">
 <dt class="sig sig-object py" id="aplusml.models.Patient.id">
 <span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#aplusml.models.Patient.id" title="Link to this definition"></a></dt>
-<dd><p>The ID of the patient.</p>
+<dd><p>The ID of the patient. IMPORTANT: Must be unique across all patients.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
@@ -580,7 +580,7 @@
 <dl class="py attribute">
 <dt class="sig sig-object py" id="aplusml.models.Patient.start_timestep">
 <span class="sig-name descname"><span class="pre">start_timestep</span></span><a class="headerlink" href="#aplusml.models.Patient.start_timestep" title="Link to this definition"></a></dt>
-<dd><p>The start timestep of the patient.</p>
+<dd><p>The start timestep of the patient, i.e. at which timestep in the simulation this patient starts their workflow.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>int</p>
@@ -602,7 +602,7 @@
 <dl class="py attribute">
 <dt class="sig sig-object py" id="aplusml.models.Patient.history">
 <span class="sig-name descname"><span class="pre">history</span></span><a class="headerlink" href="#aplusml.models.Patient.history" title="Link to this definition"></a></dt>
-<dd><p>The history of the patient.</p>
+<dd><p>The history of the patient, i.e. all past states, transitions, and utilities the patient has experienced.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>List[<a class="reference internal" href="#aplusml.models.History" title="aplusml.models.History">History</a>]</p>
@@ -613,7 +613,7 @@
 <dl class="py attribute">
 <dt class="sig sig-object py" id="aplusml.models.Patient.current_state">
 <span class="sig-name descname"><span class="pre">current_state</span></span><a class="headerlink" href="#aplusml.models.Patient.current_state" title="Link to this definition"></a></dt>
-<dd><p>The ID of the current state.</p>
+<dd><p>The ID of the current state the patient is in.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
@@ -678,7 +678,7 @@
 <dl class="py attribute">
 <dt class="sig sig-object py" id="aplusml.models.State.id">
 <span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#aplusml.models.State.id" title="Link to this definition"></a></dt>
-<dd><p>The ID of the state.</p>
+<dd><p>The ID of the state. Must be unique across all states.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
@@ -711,7 +711,7 @@
 <dl class="py attribute">
 <dt class="sig sig-object py" id="aplusml.models.State.duration">
 <span class="sig-name descname"><span class="pre">duration</span></span><a class="headerlink" href="#aplusml.models.State.duration" title="Link to this definition"></a></dt>
-<dd><p>The duration of the state.</p>
+<dd><p>The duration of the state. Must be a non-negative integer.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>int</p>
