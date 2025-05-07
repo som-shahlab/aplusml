@@ -5,12 +5,10 @@ API Reference
    :maxdepth: 2
    :caption: Contents:
 
-Draw
-^^^^^^^^^^^^^
-.. automodule:: aplusml.draw
+Config
+^^^^^^^^^^^^^^
+.. automodule:: aplusml.config
    :members:
-   :undoc-members:
-   :private-members:
    :show-inheritance:
    :special-members: __init__
 
@@ -21,17 +19,9 @@ Models
    :show-inheritance:
    :special-members: __init__
 
-Parse
-^^^^^^^^^^^^^
-.. automodule:: aplusml.parse
-   :members:
-   :undoc-members:
-   :show-inheritance:
-   :special-members: __init__
-
-Plot
-^^^^^^^^^^^^
-.. automodule:: aplusml.plot
+Simulation
+^^^^^^^^^^^^^^^^^^
+.. automodule:: aplusml.sim
    :members:
    :undoc-members:
    :show-inheritance:
@@ -45,9 +35,26 @@ Run
    :show-inheritance:
    :special-members: __init__
 
-Simulation
-^^^^^^^^^^^^^^^^^^
-.. automodule:: aplusml.sim
+Draw
+^^^^^^^^^^^^^
+.. automodule:: aplusml.draw
+   :members:
+   :undoc-members:
+   :private-members:
+   :show-inheritance:
+   :special-members: __init__
+
+Plot
+^^^^^^^^^^^^
+.. automodule:: aplusml.plot
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :special-members: __init__
+
+Parse
+^^^^^^^^^^^^^
+.. automodule:: aplusml.parse
    :members:
    :undoc-members:
    :show-inheritance:

@@ -133,6 +133,13 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li>
+    aplusml.config
+
+      <ul>
+        <li><a href="api/api.html#module-aplusml.config">module</a>
+</li>
+      </ul></li>
+      <li>
     aplusml.draw
 
       <ul>
@@ -188,10 +195,24 @@
 </li>
       <li><a href="api/api.html#aplusml.plot.calc_spearmanr">calc_spearmanr() (in module aplusml.plot)</a>
 </li>
-      <li><a href="api/api.html#aplusml.sim.Simulation.create_from_config">create_from_config() (aplusml.sim.Simulation class method)</a>
+      <li><a href="api/api.html#aplusml.config.Config">Config (class in aplusml.config)</a>
+</li>
+      <li><a href="api/api.html#aplusml.config.ConfigMetadata">ConfigMetadata (class in aplusml.config)</a>
+</li>
+      <li><a href="api/api.html#aplusml.config.ConfigPatientSortPreferenceProperty">ConfigPatientSortPreferenceProperty (class in aplusml.config)</a>
+</li>
+      <li><a href="api/api.html#aplusml.config.ConfigState">ConfigState (class in aplusml.config)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/api.html#aplusml.config.ConfigTransition">ConfigTransition (class in aplusml.config)</a>
+</li>
+      <li><a href="api/api.html#aplusml.config.ConfigUtility">ConfigUtility (class in aplusml.config)</a>
+</li>
+      <li><a href="api/api.html#aplusml.config.ConfigVariable">ConfigVariable (class in aplusml.config)</a>
+</li>
+      <li><a href="api/api.html#aplusml.sim.Simulation.create_from_config">create_from_config() (aplusml.sim.Simulation class method)</a>
+</li>
       <li><a href="api/api.html#aplusml.sim.Simulation.create_from_yaml">create_from_yaml() (aplusml.sim.Simulation class method)</a>
 </li>
       <li><a href="api/api.html#aplusml.draw.create_node_label">create_node_label() (in module aplusml.draw)</a>
@@ -276,12 +297,26 @@
         <li><a href="api/api.html#aplusml.models.Utility.is_conditional_if">(aplusml.models.Utility method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/api.html#aplusml.models.Transition.is_conditional_prob">is_conditional_prob() (aplusml.models.Transition method)</a>
 </li>
       <li><a href="api/api.html#aplusml.parse.is_keys_valid">is_keys_valid() (in module aplusml.parse)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/api.html#aplusml.config.Config.is_valid">is_valid() (aplusml.config.Config method)</a>
+
+      <ul>
+        <li><a href="api/api.html#aplusml.config.ConfigMetadata.is_valid">(aplusml.config.ConfigMetadata method)</a>
+</li>
+        <li><a href="api/api.html#aplusml.config.ConfigState.is_valid">(aplusml.config.ConfigState method)</a>
+</li>
+        <li><a href="api/api.html#aplusml.config.ConfigTransition.is_valid">(aplusml.config.ConfigTransition method)</a>
+</li>
+        <li><a href="api/api.html#aplusml.config.ConfigUtility.is_valid">(aplusml.config.ConfigUtility method)</a>
+</li>
+        <li><a href="api/api.html#aplusml.config.ConfigVariable.is_valid">(aplusml.config.ConfigVariable method)</a>
+</li>
+      </ul></li>
       <li><a href="api/api.html#aplusml.parse.is_valid_config_yaml">is_valid_config_yaml() (in module aplusml.parse)</a>
 </li>
       <li><a href="api/api.html#aplusml.sim.Simulation.is_valid_patients">is_valid_patients() (aplusml.sim.Simulation method)</a>
@@ -312,10 +347,62 @@
 </li>
       <li><a href="api/api.html#aplusml.sim.Simulation.metadata">metadata (aplusml.sim.Simulation attribute)</a>
 </li>
+      <li><a href="api/api.html#aplusml.config.Config.model_computed_fields">model_computed_fields (aplusml.config.Config attribute)</a>
+
+      <ul>
+        <li><a href="api/api.html#aplusml.config.ConfigMetadata.model_computed_fields">(aplusml.config.ConfigMetadata attribute)</a>
+</li>
+        <li><a href="api/api.html#aplusml.config.ConfigPatientSortPreferenceProperty.model_computed_fields">(aplusml.config.ConfigPatientSortPreferenceProperty attribute)</a>
+</li>
+        <li><a href="api/api.html#aplusml.config.ConfigState.model_computed_fields">(aplusml.config.ConfigState attribute)</a>
+</li>
+        <li><a href="api/api.html#aplusml.config.ConfigTransition.model_computed_fields">(aplusml.config.ConfigTransition attribute)</a>
+</li>
+        <li><a href="api/api.html#aplusml.config.ConfigUtility.model_computed_fields">(aplusml.config.ConfigUtility attribute)</a>
+</li>
+        <li><a href="api/api.html#aplusml.config.ConfigVariable.model_computed_fields">(aplusml.config.ConfigVariable attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/api.html#aplusml.config.Config.model_config">model_config (aplusml.config.Config attribute)</a>
+
+      <ul>
+        <li><a href="api/api.html#aplusml.config.ConfigMetadata.model_config">(aplusml.config.ConfigMetadata attribute)</a>
+</li>
+        <li><a href="api/api.html#aplusml.config.ConfigPatientSortPreferenceProperty.model_config">(aplusml.config.ConfigPatientSortPreferenceProperty attribute)</a>
+</li>
+        <li><a href="api/api.html#aplusml.config.ConfigState.model_config">(aplusml.config.ConfigState attribute)</a>
+</li>
+        <li><a href="api/api.html#aplusml.config.ConfigTransition.model_config">(aplusml.config.ConfigTransition attribute)</a>
+</li>
+        <li><a href="api/api.html#aplusml.config.ConfigUtility.model_config">(aplusml.config.ConfigUtility attribute)</a>
+</li>
+        <li><a href="api/api.html#aplusml.config.ConfigVariable.model_config">(aplusml.config.ConfigVariable attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/api.html#aplusml.config.Config.model_fields">model_fields (aplusml.config.Config attribute)</a>
+
+      <ul>
+        <li><a href="api/api.html#aplusml.config.ConfigMetadata.model_fields">(aplusml.config.ConfigMetadata attribute)</a>
+</li>
+        <li><a href="api/api.html#aplusml.config.ConfigPatientSortPreferenceProperty.model_fields">(aplusml.config.ConfigPatientSortPreferenceProperty attribute)</a>
+</li>
+        <li><a href="api/api.html#aplusml.config.ConfigState.model_fields">(aplusml.config.ConfigState attribute)</a>
+</li>
+        <li><a href="api/api.html#aplusml.config.ConfigTransition.model_fields">(aplusml.config.ConfigTransition attribute)</a>
+</li>
+        <li><a href="api/api.html#aplusml.config.ConfigUtility.model_fields">(aplusml.config.ConfigUtility attribute)</a>
+</li>
+        <li><a href="api/api.html#aplusml.config.ConfigVariable.model_fields">(aplusml.config.ConfigVariable attribute)</a>
+</li>
+      </ul></li>
       <li>
     module
 
       <ul>
+        <li><a href="api/api.html#module-aplusml.config">aplusml.config</a>
+</li>
         <li><a href="api/api.html#module-aplusml.draw">aplusml.draw</a>
 </li>
         <li><a href="api/api.html#module-aplusml.models">aplusml.models</a>

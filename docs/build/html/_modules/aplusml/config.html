@@ -1,0 +1,510 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>aplusml.config &mdash; APLUS ML  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=ae483e34" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            APLUS ML
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">🚦 Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/background.html">Background</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">📚 User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/quick.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/tutorial_hello.html">Tutorial (Hello World)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/tutorial_pad.html">Tutorial (PAD)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/tutorial_hcm.html">Tutorial (HCM)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/concepts.html">Concept Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/templates.html">Config YAML Templates</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">📖 API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/config.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">APLUS ML</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">aplusml.config</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for aplusml.config</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Pydantic model for APLUS config YAML file.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">get_args</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+
+<span class="n">VALID_DISTRIBUTION_TYPES</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;bernoulli&quot;</span><span class="p">,</span> <span class="s2">&quot;exponential&quot;</span><span class="p">,</span> <span class="s2">&quot;binomial&quot;</span><span class="p">,</span> <span class="s2">&quot;normal&quot;</span><span class="p">,</span> <span class="s2">&quot;poisson&quot;</span><span class="p">,</span> <span class="s2">&quot;uniform&quot;</span><span class="p">]</span>
+<span class="n">VALID_VARIABLE_TYPES</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;scalar&quot;</span><span class="p">,</span> <span class="s2">&quot;resource&quot;</span><span class="p">,</span> <span class="s2">&quot;property&quot;</span><span class="p">,</span> <span class="s2">&quot;simulation&quot;</span><span class="p">]</span>
+<span class="n">VALID_STATE_TYPES</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="s2">&quot;intermediate&quot;</span><span class="p">]</span>
+<span class="n">VALID_SIMULATION_VARIABLE_IDS</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;time_left_in_sim&quot;</span><span class="p">,</span> <span class="s2">&quot;time_already_in_sim&quot;</span><span class="p">,</span> <span class="s2">&quot;sim_current_timestep&quot;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="ConfigPatientSortPreferenceProperty">
+<a class="viewcode-back" href="../../api/api.html#aplusml.config.ConfigPatientSortPreferenceProperty">[docs]</a>
+<span class="k">class</span> <span class="nc">ConfigPatientSortPreferenceProperty</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Specification for patient sort preference property section of config YAML file.</span>
+<span class="sd">    </span>
+<span class="sd">    :param variable: Name of a property (must be defined in `variables`) that will be used to sort patients when prioritizing allocation of a finite resource</span>
+<span class="sd">    :param is_ascending: True = ascending order, False = descending.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">variable</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">is_ascending</span><span class="p">:</span> <span class="nb">bool</span></div>
+
+
+<div class="viewcode-block" id="ConfigMetadata">
+<a class="viewcode-back" href="../../api/api.html#aplusml.config.ConfigMetadata">[docs]</a>
+<span class="k">class</span> <span class="nc">ConfigMetadata</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Specification for metadata section of config YAML file.</span>
+<span class="sd">    </span>
+<span class="sd">    :param name: Name of the simulation.</span>
+<span class="sd">    :param path_to_properties: Path to CSV file where each row is a patient, each column is a property. Note: Only properties explicitly enumerated in the &#39;variables&#39; section will be imported</span>
+<span class="sd">    :param properties_col_for_patient_id: Column name in the CSV that contains unique patient IDs.</span>
+<span class="sd">    :param patient_sort_preference_property: Property to sort patients by when prioritizing allocation of a finite resource.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">path_to_properties</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">properties_col_for_patient_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">patient_sort_preference_property</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ConfigPatientSortPreferenceProperty</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="ConfigMetadata.is_valid">
+<a class="viewcode-back" href="../../api/api.html#aplusml.config.ConfigMetadata.is_valid">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return TRUE if the ConfigMetadata is valid, FALSE otherwise.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties_col_for_patient_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_to_properties</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR - `path_to_properties` must be specified if `properties_col_for_patient_id` is specified&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_to_properties</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path_to_properties</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR - `path_to_properties` (path=&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path_to_properties</span><span class="si">}</span><span class="s2">&#39;) does not exist&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path_to_properties</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties_col_for_patient_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties_col_for_patient_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR - `properties_col_for_patient_id` (col_name=&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">properties_col_for_patient_id</span><span class="si">}</span><span class="s2">&#39;) not found in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path_to_properties</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+</div>
+
+
+<div class="viewcode-block" id="ConfigVariable">
+<a class="viewcode-back" href="../../api/api.html#aplusml.config.ConfigVariable">[docs]</a>
+<span class="k">class</span> <span class="nc">ConfigVariable</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Specification for variable section of config YAML file.</span>
+<span class="sd">    </span>
+<span class="sd">    :param type: Type of variable. Must be one of: &#39;scalar&#39;, &#39;resource&#39;, &#39;property&#39;, &#39;simulation&#39;.</span>
+
+<span class="sd">    # If type == &#39;scalar&#39;...</span>
+<span class="sd">    #   This is a scalar value that is shared across all patients.</span>
+<span class="sd">    #   It can be used to model things like the sensitivity of a screening test, the prevalence of a disease, etc.</span>
+<span class="sd">    #   It can be specified by the following parameters...</span>
+<span class="sd">            :param value: Scalar value. Must be a valid Python type. Use &#39;!!set&#39; tag for sets.</span>
+
+<span class="sd">    # If type == &#39;resource&#39;...</span>
+<span class="sd">    #   This is a finite resource that is shared across all patients.</span>
+<span class="sd">    #   It can be decremented, incremented, and reset by the simulation.</span>
+<span class="sd">    #   It can be used to model things like hospital beds, lab capacity, etc.</span>
+<span class="sd">    #   It can be specified by the following parameters...</span>
+<span class="sd">            :param init_amount: Initial amount of the resource.</span>
+<span class="sd">            :param max_amount: Maximum amount of resource allowed.</span>
+<span class="sd">            :param refill_amount: Amount added per refill.</span>
+<span class="sd">            :param refill_duration: Time interval between refills.</span>
+
+<span class="sd">    # If type == &#39;property&#39;...</span>
+<span class="sd">    #   This is a property that is UNIQUE to each patient (i.e. each patient may have a different value for this property).</span>
+<span class="sd">    #   It can be used to model things like the age of a patient, the gender of a patient, etc.</span>
+<span class="sd">    ##  Either load from file...</span>
+<span class="sd">            :param column: If loaded from a CSV file, specify the column name (e.g. &#39;y&#39; or &#39;y_hat_dl&#39;). Each row of the CSV will be a patient, and the value of this property for each patient will be the value of the column in the CSV file.</span>
+<span class="sd">    ##  Or specify a constant value...</span>
+<span class="sd">            :param value: Scalar value. Must be a valid Python type. Use &#39;!!set&#39; tag for sets.</span>
+<span class="sd">    ##  Or randomly sample from a distribution...</span>
+<span class="sd">            :param distribution: If randomly sampled.</span>
+<span class="sd">            :param mean: Mean value for distribution.</span>
+<span class="sd">            :param std: Standard deviation.</span>
+<span class="sd">            :param start: Minimum value.</span>
+<span class="sd">            :param end: Maximum value.</span>
+
+<span class="sd">    # If type == &#39;simulation&#39;, then `value` must be one of the following...</span>
+<span class="sd">            :param time_left_in_sim: The number of timesteps remaining in the simulation.</span>
+<span class="sd">            :param time_already_in_sim: The number of timesteps that have passed in the simulation.</span>
+<span class="sd">            :param sim_current_timestep: The current timestep of the simulation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="n">VALID_VARIABLE_TYPES</span> <span class="o">=</span> <span class="s2">&quot;scalar&quot;</span>
+    <span class="c1"># Scalar value</span>
+    <span class="n">value</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="nb">set</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="c1"># Resource value</span>
+    <span class="n">init_amount</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">max_amount</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">refill_amount</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">refill_duration</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="c1"># Property value</span>
+    <span class="n">column</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="c1"># Simulation value</span>
+    <span class="n">distribution</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">VALID_DISTRIBUTION_TYPES</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">mean</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">std</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">start</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">end</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="ConfigVariable.is_valid">
+<a class="viewcode-back" href="../../api/api.html#aplusml.config.ConfigVariable.is_valid">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return TRUE if the ConfigVariable is valid, FALSE otherwise.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;scalar&#39;</span><span class="p">:</span>
+            <span class="c1"># This is a scalar value that is shared across all patients.</span>
+            <span class="c1"># It can be used to model things like the sensitivity of a screening test, the prevalence of a disease, etc.</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR - `value` must be specified if `type` is &#39;scalar&#39; for variable &#39;</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;resource&#39;</span><span class="p">:</span>
+            <span class="c1"># This is a finite resource that is shared across all patients. </span>
+            <span class="c1"># It can be decremented, incremented, and reset by the simulation. </span>
+            <span class="c1"># It can be used to model things like hospital beds, lab capacity, etc.</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_amount</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR - `init_amount` must be specified if `type` is &#39;resource&#39; for variable &#39;</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_amount</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR - `max_amount` must be specified if `type` is &#39;resource&#39; for variable &#39;</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">refill_amount</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR - `refill_amount` must be specified if `type` is &#39;resource&#39; for variable &#39;</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">refill_duration</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR - `refill_duration` must be specified if `type` is &#39;resource&#39; for variable &#39;</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;property&#39;</span><span class="p">:</span>
+            <span class="c1"># This is a property that is UNIQUE to each patient (i.e. each patient may have a different value for this property).</span>
+            <span class="c1"># It can be used to model things like the age of a patient, the gender of a patient, etc.</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">([</span> <span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span> <span class="bp">self</span><span class="o">.</span><span class="n">column</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">distribution</span> <span class="p">]</span> <span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="p">])</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR - Can only have one of (&#39;column&#39;, &#39;value&#39;, &#39;distribution&#39;) keys for variable &#39;</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;simulation&#39;</span><span class="p">:</span>
+            <span class="c1"># This is a simulation variable that is shared across all patients.</span>
+            <span class="c1"># It can be used to model things like the time left in the simulation, the time already in the simulation, etc.</span>
+            <span class="c1"># It must be one of the pre-defined simulation variable IDs</span>
+            <span class="k">if</span> <span class="nb">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">get_args</span><span class="p">(</span><span class="n">VALID_SIMULATION_VARIABLE_IDS</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR - Invalid simulation variable name for variable &#39;</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">&#39;. Must be one of: </span><span class="si">{</span><span class="n">VALID_SIMULATION_VARIABLE_IDS</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+</div>
+
+
+<div class="viewcode-block" id="ConfigUtility">
+<a class="viewcode-back" href="../../api/api.html#aplusml.config.ConfigUtility">[docs]</a>
+<span class="k">class</span> <span class="nc">ConfigUtility</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Specification for utility section of config YAML file.</span>
+<span class="sd">    </span>
+<span class="sd">    :param value: If str, it&#39;s evaluated as a Python expression.</span>
+<span class="sd">    :param if_: A Python expression. If it evaluates to TRUE, then the `value` for this utility is set to this `value`. Note: These &#39;if&#39; statements are not mutually exclusive (i.e. if multiple conditions within the same State evaluate to TRUE, then they will simply be summed together)</span>
+<span class="sd">    :param unit: Measurement unit. Default: &#39;&#39;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">value</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">if_</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Utility(value=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">, if_=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">if_</span><span class="si">}</span><span class="s2">, unit=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+<div class="viewcode-block" id="ConfigUtility.is_valid">
+<a class="viewcode-back" href="../../api/api.html#aplusml.config.ConfigUtility.is_valid">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return TRUE if the ConfigUtility is valid, FALSE otherwise.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+</div>
+
+
+<div class="viewcode-block" id="ConfigTransition">
+<a class="viewcode-back" href="../../api/api.html#aplusml.config.ConfigTransition">[docs]</a>
+<span class="k">class</span> <span class="nc">ConfigTransition</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Specification for transition section of config YAML file.</span>
+<span class="sd">    </span>
+<span class="sd">    :param dest: ID of the destination state.</span>
+<span class="sd">    :param label: Human-readable label for the transition. Default: &quot;&quot;.</span>
+<span class="sd">    :param if_: A Python expression. If it evaluates to TRUE, then the transition is taken.</span>
+<span class="sd">    :param prob: Probability of the transition.</span>
+<span class="sd">    :param duration: Number of timesteps to wait before transitions are evaluated. Default: 0</span>
+<span class="sd">    :param utilities: If str, float, or bool, it&#39;s evaluated as a Python expression. Default: [].</span>
+<span class="sd">    :param resource_deltas: Changes to resource levels from taking this transition. Default: {}. [key] = name of a resource defined in `variables`. [value] = how much to change each resource level AS SOON AS this transition is taken</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dest</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">label</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="c1"># Transition conditions</span>
+    <span class="c1">## Can either have...</span>
+    <span class="c1">## - All transitions have an &#39;if&#39; condition (where if the last transition doesn&#39;t have an &#39;if&#39;, it defaults to always TRUE)</span>
+    <span class="c1">## - All transitions have a &#39;prob&#39; condition (where if the last transition doesn&#39;t have a &#39;prob&#39;, it defaults to = 1 - (sum of other probs))</span>
+    <span class="c1">## - The first set of transitions have an &#39;if&#39; condition, but the second set have a &#39;prob&#39;</span>
+    <span class="n">if_</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">prob</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">duration</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">utilities</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">ConfigUtility</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">resource_deltas</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    
+<div class="viewcode-block" id="ConfigTransition.is_valid">
+<a class="viewcode-back" href="../../api/api.html#aplusml.config.ConfigTransition.is_valid">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return TRUE if the ConfigTransition is valid, FALSE otherwise.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+</div>
+
+
+<div class="viewcode-block" id="ConfigState">
+<a class="viewcode-back" href="../../api/api.html#aplusml.config.ConfigState">[docs]</a>
+<span class="k">class</span> <span class="nc">ConfigState</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Specification for state section of config YAML file.</span>
+<span class="sd">    </span>
+<span class="sd">    :param type: Whether the state is a start, end, or intermediate state within the workflow. Default: &quot;intermediate&quot;.</span>
+<span class="sd">    :param label: Human-readable label for the state. Default: value of `key`.</span>
+<span class="sd">    :param transitions: List of possible state transitions.</span>
+<span class="sd">    :param duration: Number of timesteps to wait before transitions are evaluated. Default: 0</span>
+<span class="sd">    :param utilities: If str, float, or bool, it&#39;s evaluated as a Python expression. Default: [].</span>
+<span class="sd">    :param resource_deltas: Changes to resource levels from entering this state. Default: {}. [key] = name of a resource defined in `variables`. [value] = how much to change each resource level AS SOON AS this state is hit</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="n">VALID_STATE_TYPES</span> <span class="o">=</span> <span class="s2">&quot;intermediate&quot;</span>
+    <span class="n">label</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">transitions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ConfigTransition</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">duration</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">utilities</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">ConfigUtility</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">resource_deltas</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    
+<div class="viewcode-block" id="ConfigState.is_valid">
+<a class="viewcode-back" href="../../api/api.html#aplusml.config.ConfigState.is_valid">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return TRUE if the ConfigState is valid, FALSE otherwise.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">get_args</span><span class="p">(</span><span class="n">VALID_STATE_TYPES</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR - Invalid state type. Must be one of: </span><span class="si">{</span><span class="n">VALID_STATE_TYPES</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+</div>
+
+
+<div class="viewcode-block" id="Config">
+<a class="viewcode-back" href="../../api/api.html#aplusml.config.Config">[docs]</a>
+<span class="k">class</span> <span class="nc">Config</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Specification for config YAML file.&quot;&quot;&quot;</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="n">ConfigMetadata</span>
+    <span class="n">variables</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ConfigVariable</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span> <span class="c1"># [key] = variable id, [value] = variable value</span>
+    <span class="n">states</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ConfigState</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span> <span class="c1"># [key] = state id, [value] = state value</span>
+    
+<div class="viewcode-block" id="Config.is_valid">
+<a class="viewcode-back" href="../../api/api.html#aplusml.config.Config.is_valid">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return TRUE if the Config is valid, FALSE otherwise.&quot;&quot;&quot;</span>
+        <span class="c1">#</span>
+        <span class="c1"># Metadata</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="n">ConfigMetadata</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR - Metadata must be of type `ConfigMetadata`, but is of type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">metadata</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">metadata</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR - Metadata is invalid. Metadata: </span><span class="si">{</span><span class="n">metadata</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># Variables</span>
+        <span class="n">variables</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span>
+        <span class="n">all_variable_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">variables</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="c1"># Cast each variable to a dict from YAML parser</span>
+        <span class="k">for</span> <span class="n">v_id</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">variables</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># Check type</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">ConfigVariable</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR - Variable &#39;</span><span class="si">{</span><span class="n">v_id</span><span class="si">}</span><span class="s2">&#39; must be of type `ConfigVariable`, but is of type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="c1"># Check internal validity</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">v</span><span class="o">.</span><span class="n">is_valid</span><span class="p">(</span><span class="n">v_id</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR - Variable &#39;</span><span class="si">{</span><span class="n">v_id</span><span class="si">}</span><span class="s2">&#39; is invalid&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="c1"># Check variable names</span>
+            <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;simulation&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">v_id</span> <span class="o">==</span> <span class="s1">&#39;time_left_in_sim&#39;</span><span class="p">:</span>
+                    <span class="c1"># Require &#39;total_duration_in_sim&#39; variable (otherwise can&#39;t calculate)</span>
+                    <span class="k">if</span> <span class="s1">&#39;total_duration_in_sim&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_variable_ids</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR - A variable with the ID &#39;total_duration_in_sim&#39; is required to use the simulation variable &#39;time_left_in_sim&#39;&quot;</span><span class="p">)</span>
+                        <span class="k">return</span> <span class="kc">False</span>
+        <span class="c1"># Enforce unique variable IDs</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_variable_ids</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">all_variable_ids</span><span class="p">)):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR - Cannot have a repeated variable ID. Instead, found: </span><span class="si">{</span><span class="n">all_variable_ids</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        
+        <span class="c1"># Ensure &#39;patient_sort_preference_property&#39; is an actual property</span>
+        <span class="n">patient_sort_preference_property</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">patient_sort_preference_property</span>
+        <span class="k">if</span> <span class="n">patient_sort_preference_property</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">([</span> <span class="n">key</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">variables</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">val</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;property&#39;</span> <span class="ow">and</span> <span class="n">key</span> <span class="o">==</span> <span class="n">patient_sort_preference_property</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;variable&#39;</span><span class="p">)</span> <span class="p">])</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">patient_sort_preference_property</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;variable&#39;</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span> <span class="s1">&#39;start_timestep&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">]:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ERROR - The &#39;variable&#39; key in metadata&#39;s &#39;patient_sort_preference_property&#39; must be the name of a variable with the type &#39;property&#39; or must be an attribute of the &#39;Patient&#39; class&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        
+        <span class="c1">#</span>
+        <span class="c1"># States</span>
+        <span class="n">states</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span>
+        <span class="n">all_state_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">states</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">for</span> <span class="n">s_id</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">states</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">ConfigState</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR - State &#39;</span><span class="si">{</span><span class="n">s_id</span><span class="si">}</span><span class="s2">&#39; must be of type `ConfigState`, but is of type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="c1"># Check internal validity</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">s</span><span class="o">.</span><span class="n">is_valid</span><span class="p">(</span><span class="n">s_id</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR - State &#39;</span><span class="si">{</span><span class="n">s_id</span><span class="si">}</span><span class="s2">&#39; is invalid&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="c1"># Ensure that all variables in resource_deltas are in the &#39;variables&#39; section of the YAML</span>
+            <span class="n">resource_deltas</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">resource_deltas</span>
+            <span class="k">for</span> <span class="n">v_id</span> <span class="ow">in</span> <span class="n">resource_deltas</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">v_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_variable_ids</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR - The variable </span><span class="si">{</span><span class="n">v_id</span><span class="si">}</span><span class="s2"> is used in a state&#39;s &#39;resource_deltas&#39;, but isn&#39;t listed in the &#39;variables&#39; section&quot;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+            <span class="c1"># Utilities</span>
+            <span class="n">utilities</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">ConfigUtility</span><span class="p">]]</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">utilities</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">utilities</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">utilities</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">u</span><span class="o">.</span><span class="n">is_valid</span><span class="p">(</span><span class="n">s_id</span><span class="p">):</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR - Utility &#39;</span><span class="si">{</span><span class="n">u</span><span class="si">}</span><span class="s2">&#39; is invalid&quot;</span><span class="p">)</span>
+                        <span class="k">return</span> <span class="kc">False</span>
+            <span class="c1"># Transitions</span>
+            <span class="n">transitions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ConfigTransition</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">transitions</span>
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">transitions</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">ConfigTransition</span><span class="p">):</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR - Transition &#39;</span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2">&#39; must be of type `ConfigTransition`, but is of type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">t</span><span class="o">.</span><span class="n">is_valid</span><span class="p">(</span><span class="n">s_id</span><span class="p">):</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR - Transition &#39;</span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2">&#39; is invalid&quot;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+                <span class="c1"># Ensure that all variables in resource_deltas are in the &#39;variables&#39; section of the YAML</span>
+                <span class="k">for</span> <span class="n">v_id</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="n">resource_deltas</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">v_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_variable_ids</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR - The variable </span><span class="si">{</span><span class="n">v_id</span><span class="si">}</span><span class="s2"> is used in a transition&#39;s &#39;resource_deltas&#39;, but isn&#39;t listed in the &#39;variables&#39; section&quot;</span><span class="p">)</span>
+                        <span class="k">return</span> <span class="kc">False</span>
+                <span class="c1"># Utilities</span>
+                <span class="n">utilities</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">ConfigUtility</span><span class="p">]]</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">utilities</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">utilities</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">utilities</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">u</span><span class="o">.</span><span class="n">is_valid</span><span class="p">(</span><span class="n">s_id</span><span class="p">):</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR - Utility &#39;</span><span class="si">{</span><span class="n">u</span><span class="si">}</span><span class="s2">&#39; is invalid&quot;</span><span class="p">)</span>
+                            <span class="k">return</span> <span class="kc">False</span>
+            <span class="c1"># Enforce correct # of transitions for start/intermediate/end/ states</span>
+            <span class="n">type_</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">type</span>
+            <span class="k">if</span> <span class="n">type_</span> <span class="o">==</span> <span class="s1">&#39;start&#39;</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">transitions</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR - state &#39;</span><span class="si">{</span><span class="n">s_id</span><span class="si">}</span><span class="s2">&#39; must have at 1+ transitions because it has type = &#39;start&#39;&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">elif</span> <span class="n">type_</span> <span class="o">==</span> <span class="s1">&#39;intermediate&#39;</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">transitions</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR - state &#39;</span><span class="si">{</span><span class="n">s_id</span><span class="si">}</span><span class="s2">&#39; must have at 1+ transitions because it has type = &#39;intermediate&#39;&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="n">type_</span> <span class="o">==</span> <span class="s1">&#39;end&#39;</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">transitions</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR - state &#39;</span><span class="si">{</span><span class="n">s_id</span><span class="si">}</span><span class="s2">&#39; must have exactly 0 transitions because it has type = &#39;end&#39;&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+                
+        <span class="c1"># Enforce uniqueness</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_state_ids</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">all_state_ids</span><span class="p">)):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR - Cannot have a repeated state ID, but found: </span><span class="si">{</span><span class="n">all_state_ids</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+</div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="n">ConfigMetadata</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Hello World Workflow&quot;</span><span class="p">,</span>
+            <span class="n">path_to_properties</span><span class="o">=</span><span class="s2">&quot;patient_properties.csv&quot;</span><span class="p">,</span>
+            <span class="n">properties_col_for_patient_id</span><span class="o">=</span><span class="s2">&quot;patient_id&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">variables</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;patient_property_1&quot;</span><span class="p">:</span> <span class="n">ConfigVariable</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;property&quot;</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="s2">&quot;patient_property_1&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;patient_property_2&quot;</span><span class="p">:</span> <span class="n">ConfigVariable</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;property&quot;</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="s2">&quot;patient_property_2&quot;</span><span class="p">),</span>
+        <span class="p">},</span>
+        <span class="n">states</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="n">ConfigState</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;start&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;end&quot;</span><span class="p">:</span> <span class="n">ConfigState</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;end&quot;</span><span class="p">),</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Michael Wornow.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
