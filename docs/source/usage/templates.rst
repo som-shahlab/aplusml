@@ -1,5 +1,5 @@
 Config YAML Templates
-============
+======================
 
 .. toctree::
    :maxdepth: 2

@@ -34,6 +34,7 @@ def test_diff_thresholds(simulation: sim.Simulation,
 
     Returns:
         pd.DataFrame: Results for each threshold tested with columns
+        
             - ``threshold``: Threshold value tested
             - ``mean_utility``: Mean utility achieved across all patients
             - ``std_utility``: Standard deviation of utilities
@@ -78,6 +79,7 @@ def _run_test(simulation: sim.Simulation,
     This function is designed to be used by ``run_test()`` for both serial and parallel processing.
     
     It handles:
+    
         1. Creating a deep copy of the simulation to avoid state conflicts
         2. Updating simulation variables based on test settings
         3. Optionally refreshing patient properties
@@ -133,6 +135,7 @@ def run_test(simulation: sim.Simulation,
     """Runs multiple simulation tests with different variable settings.
 
     This is the main entry point for running simulation experiments. It supports:
+
         1. Testing multiple configurations in parallel or serial
         2. Custom test functions (e.g. threshold testing)
         3. Patient property refreshing between runs
@@ -165,7 +168,7 @@ def run_test(simulation: sim.Simulation,
 
     References:
         For usage examples, see:
-        - :doc:`/usage/tutorial` (lines 837-917)
+        - :doc:`/usage/tutorial_pad`
     """
     df = df.copy() if df is not None else pd.DataFrame()
 

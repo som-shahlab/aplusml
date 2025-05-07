@@ -24,7 +24,7 @@ Second, install **graphviz** to enable workflow visualization:
 
    brew install graphviz
 
-Please see the :doc:`intro/background` for a high-level conceptual overview of APLUS, or jump straight to :doc:`usage/tutorial` for a step-by-step walkthrough of using APLUS to model a clinical workflow.
+Please see the :doc:`intro/background` for a high-level conceptual overview of APLUS, or jump straight to :doc:`usage/quick` for a step-by-step walkthrough of using APLUS to model a clinical workflow.
 
 🚀 Quick Start
 ---------------
@@ -104,10 +104,11 @@ Documentation
    :caption: 📚 User Guide
 
    usage/quick
-   usage/models
    usage/tutorial_hello
    usage/tutorial_pad
    usage/tutorial_hcm
+   usage/concepts
+   usage/templates
 
 .. toctree::
    :maxdepth: 2

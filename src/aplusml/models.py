@@ -1,9 +1,6 @@
-"""
-Models for the APLUS simulation framework.
-"""
 import collections
 from types import CodeType
-from typing import Union, Dict, List
+from typing import Optional, Dict, List, Union
 import ast
 
 class Utility(object):
@@ -14,8 +11,10 @@ class Utility(object):
     def __init__(self,
                  value: str,
                  unit: str = '',
-                 if_: str = None):
+                 if_: Optional[str] = None):
         """
+        A utility is a value that is associated with being in a state or undergoing a transition.
+        
         Args:
             value (str): The value of the utility. Example: '100000'
             unit (str, optional): The unit of the utility. Defaults to ''. Example: 'USD', 'days', 'kg', 'cm', etc.
@@ -23,7 +22,7 @@ class Utility(object):
         """
         self.value: str = value
         self.unit: str = unit
-        self.if_: str = if_
+        self.if_: Optional[str] = if_
         self.if_compiled: CodeType = compile(if_, '<string>', 'eval', optimize=2) if type(if_) == str else None
         self.value_compiled: CodeType = compile(value, '<string>', 'eval', optimize=2) if type(value) == str else None
 
@@ -69,8 +68,8 @@ class Transition(object):
                  duration: int,
                  utilities: List[Utility],
                  resource_deltas: Dict[str, float],
-                 if_: Union[str, bool] = None,
-                 prob: Union[str, float] = None):
+                 if_: Optional[Union[str, bool]] = None,
+                 prob: Optional[Union[str, float]] = None):
         """
         Args:
             dest (str): The destination state.
@@ -86,8 +85,8 @@ class Transition(object):
         self.duration: int = duration
         self.utilities: List[Utility] = utilities
         self.resource_deltas: Dict[str, float] = resource_deltas
-        self.if_: Union[str, bool] = if_ # NOTE: This is referred to as 'if' outside of this object
-        self.prob: Union[str, float] = prob
+        self.if_: Optional[Union[str, bool]] = if_ # NOTE: This is referred to as 'if' outside of this object
+        self.prob: Optional[Union[str, float]] = prob
         self.if_compiled: CodeType = compile(if_, '<string>', 'eval', optimize=2) if type(if_) == str else None
         self.prob_compiled: CodeType = compile(prob, '<string>', 'eval', optimize=2) if type(prob) == str else None
 

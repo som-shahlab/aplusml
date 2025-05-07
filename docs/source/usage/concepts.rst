@@ -1,5 +1,5 @@
 Concept Guide
-============
+================
 
 .. toctree::
    :maxdepth: 2
@@ -7,8 +7,8 @@ Concept Guide
 
 This page describes the core models used by APLUS -- namely, :class:`~aplusml.sim.Simulation`, :class:`~aplusml.models.Patient`, :class:`~aplusml.models.Transition`, :class:`~aplusml.models.State`, and :class:`~aplusml.models.Utility`.
 
-:class:`Simulation`
-------------------
+:class:`~aplusml.sim.Simulation`
+------------------------------------
 
 For full documentation, see :class:`~aplusml.sim.Simulation`.
 
@@ -87,8 +87,8 @@ During the simulation, the following attributes will be automatically tracked:
   simulation.draw_workflow_diagram(figsize=(30,30), path_to_file='./output.png', is_display=True)
 
 
-:class:`Patient`
-------------------
+:class:`~aplusml.models.Patient`
+------------------------------------
 
 For full documentation, see :class:`~aplusml.models.Patient`.
 
@@ -119,8 +119,8 @@ The most useful attribute is the :attr:`history` attribute. It contains a list o
   print(patient.history)
 
 
-:class:`Transition`
-------------------
+:class:`~aplusml.models.Transition`
+------------------------------------
 
 For full documentation, see :class:`~aplusml.models.Transition`.
 
@@ -132,8 +132,8 @@ Patients move between states through **transitions**. There are three types of t
 
 You do not need to interact with this class directly.
 
-:class:`State`
-------------------
+:class:`~aplusml.models.State`
+------------------------------------
 
 For full documentation, see :class:`~aplusml.models.State`.
 
@@ -141,8 +141,8 @@ States are the building blocks of the workflow. Each state has a unique ID, a la
 
 You do not need to interact with this class directly.
 
-:class:`Utility`
-------------------
+:class:`~aplusml.models.Utility`
+------------------------------------
 
 For full documentation, see :class:`~aplusml.models.Utility`.
 

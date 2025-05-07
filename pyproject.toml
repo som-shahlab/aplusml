@@ -1,6 +1,6 @@
 [project]
 name = "aplusml"
-version = "0.1.0"
+version = "0.2.0"
 description = "Conduct usefulness simulations of ML models embedded in workflows"
 readme = "README.md"
 license = { text = "Apache 2.0" }
@@ -21,9 +21,9 @@ dependencies = [
   "mpire==2.6.0",
   "mpl-scatter-density==0.7",
   "multiprocess==0.70.14",
-  "numpy==1.23.5",
+  "numpy<2.0",
   "oyaml==1.0",
-  "packaging==23.0",
+  "packaging==25.0",
   "palettable==3.3.0",
   "pandas==2.2.0",
   "patsy==0.5.3",

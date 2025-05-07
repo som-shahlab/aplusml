@@ -13,6 +13,9 @@ from .run import (
 from .draw import (
     create_node_label,
 )
+from .config import (
+    Config, ConfigMetadata, ConfigVariable, ConfigState, ConfigTransition, ConfigUtility
+)
 from . import plot
 
 from importlib.metadata import version

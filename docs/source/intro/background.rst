@@ -28,7 +28,7 @@ These operational conditions can greatly distort the realized impact of introduc
 Components
 -----------
 
-Below, we provide a high-level overview of the **three components** of APLUS. We provide a more formal specification of the concepts underlying APLUS on the :doc:`/usage/config` page.
+Below, we provide a high-level overview of the **three components** of APLUS. We provide a more formal specification of the concepts underlying APLUS on the :doc:`/usage/concepts` page.
 
 1. Simulation
 ^^^^^^^^^^^^^^^^^^^^^^^

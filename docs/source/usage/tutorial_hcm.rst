@@ -385,6 +385,7 @@ Both of these states have a sensitivity and specificity, which we'll later defin
 
 If the patient is flagged as POSITIVE for either of these screens, they will be sent to the `hcm_triage` state.
 This state will either...
+
   * Send the patient to the `visit_hcm_clinic` state if the HCM clinic has capacity (i.e. `hcm_clinic_capacity > 0`), or 
   * Send the patient to the `hcm_flex_waitlist` state
 
@@ -418,6 +419,7 @@ If the patient makes it to the HCM clinic, they will be split into two groups: D
 
 If the HCM clinic was initially full, the patient will be sent to the ``hcm_flex_waitlist`` state.
 We will then either...
+
   * Send the patient to the ``visit_hcm_clinic_delayed`` state if the HCM clinic has capacity (i.e. ``hcm_delayed_clinic_capacity > 0``), or
   * Send the patient to the ``undiagnosed`` state
 

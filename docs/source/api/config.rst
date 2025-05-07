@@ -5,12 +5,12 @@ Configuration
    :maxdepth: 2
    :caption: Configuration
 
-APLUS simulations can be specified in two ways -- via the `:class:aplusml.config.Config` object or via a **(1) Workflow YAML** and **(2) Patient Properties CSV**.
+APLUS simulations can be specified in two ways -- via the :class:`~aplusml.config.Config` object or via a **(1) Workflow YAML** and **(2) Patient Properties CSV**.
 
 1. Pythonic Config object
 ---------------------------------------------
 
-Documentation for the `:class:aplusml.config.Config` object is available `:ref:aplusml.config`.
+Documentation for the :class:`~aplusml.config.Config` object is available :doc:`/api/api`
 
 .. code-block:: python
   :caption: `script.py`

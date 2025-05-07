@@ -1,5 +1,5 @@
 Tutorial (Hello World)
-================
+=======================
 
 .. toctree::
    :maxdepth: 2
@@ -198,7 +198,7 @@ For more complex configs, you might want to specify them as YAML + CSV files ins
           unit: "USD"
 
 
-.. code-block:: csv
+.. code-block:: text
   :caption: `patient_properties.csv`
 
    patient_id,patient_property_1,patient_property_2,start_timestep

@@ -17,7 +17,7 @@ Get up-and-running with APLUS in <5 minutes with this walkthrough!
 2\. Create your workflow configuration:
 
 .. code-block:: python
-  :caption: `script.py
+  :caption: `script.py`
   :linenos:
 
   import aplusml
