@@ -1,5 +1,5 @@
 """
-Pydantic model for APLUS config YAML file.
+Python Pydantic models for defining an APLUS simulation configuration.
 """
 import os
 from typing import Any, Dict, List, Literal, Optional, Union, get_args
@@ -13,22 +13,22 @@ VALID_SIMULATION_VARIABLE_IDS = Literal["time_left_in_sim", "time_already_in_sim
 
 class ConfigPatientSortPreferenceProperty(BaseModel):
     """
-    Specification for patient sort preference property section of config YAML file.
+    Patient sort preference property section of config.
     
-    :param variable: Name of a property (must be defined in `variables`) that will be used to sort patients when prioritizing allocation of a finite resource
-    :param is_ascending: True = ascending order, False = descending.
+    :param str variable: Name of a property (must be defined in the `variables` config section) that will be used to sort patients when prioritizing allocation of a finite resource
+    :param bool is_ascending: True = ascending order, False = descending. Default: True
     """
     variable: str
-    is_ascending: bool
+    is_ascending: bool = True
 
 class ConfigMetadata(BaseModel):
     """
-    Specification for metadata section of config YAML file.
+    Metadata section of config.
     
-    :param name: Name of the simulation.
-    :param path_to_properties: Path to CSV file where each row is a patient, each column is a property. Note: Only properties explicitly enumerated in the 'variables' section will be imported
-    :param properties_col_for_patient_id: Column name in the CSV that contains unique patient IDs.
-    :param patient_sort_preference_property: Property to sort patients by when prioritizing allocation of a finite resource.
+    :param Optional[str] name: Name of the simulation.
+    :param Optional[str] path_to_properties: Path to CSV file where each row is a patient, each column is a property. This is optional -- if you don't have a patient property CSV, you can leave this as `None`. Note: Only properties explicitly enumerated in the 'variables' config section will be imported.
+    :param Optional[str] properties_col_for_patient_id: Column name in the CSV that contains unique patient IDs.
+    :param Optional[ConfigPatientSortPreferenceProperty] patient_sort_preference_property: Property to sort patients by when prioritizing allocation of a finite resource.
     """
     name: Optional[str] = None
     path_to_properties: Optional[str] = None
@@ -53,44 +53,27 @@ class ConfigMetadata(BaseModel):
 
 class ConfigVariable(BaseModel):
     """
-    Specification for variable section of config YAML file.
+    Variable section of config -- i.e. a dictionary mapping variable IDs to variables.
     
-    :param type: Type of variable. Must be one of: 'scalar', 'resource', 'property', 'simulation'.
-
-    # If type == 'scalar'...
-    #   This is a scalar value that is shared across all patients.
-    #   It can be used to model things like the sensitivity of a screening test, the prevalence of a disease, etc.
-    #   It can be specified by the following parameters...
-            :param value: Scalar value. Must be a valid Python type. Use '!!set' tag for sets.
-
-    # If type == 'resource'...
-    #   This is a finite resource that is shared across all patients.
-    #   It can be decremented, incremented, and reset by the simulation.
-    #   It can be used to model things like hospital beds, lab capacity, etc.
-    #   It can be specified by the following parameters...
-            :param init_amount: Initial amount of the resource.
-            :param max_amount: Maximum amount of resource allowed.
-            :param refill_amount: Amount added per refill.
-            :param refill_duration: Time interval between refills.
-
-    # If type == 'property'...
-    #   This is a property that is UNIQUE to each patient (i.e. each patient may have a different value for this property).
-    #   It can be used to model things like the age of a patient, the gender of a patient, etc.
-    ##  Either load from file...
-            :param column: If loaded from a CSV file, specify the column name (e.g. 'y' or 'y_hat_dl'). Each row of the CSV will be a patient, and the value of this property for each patient will be the value of the column in the CSV file.
-    ##  Or specify a constant value...
-            :param value: Scalar value. Must be a valid Python type. Use '!!set' tag for sets.
-    ##  Or randomly sample from a distribution...
-            :param distribution: If randomly sampled.
-            :param mean: Mean value for distribution.
-            :param std: Standard deviation.
-            :param start: Minimum value.
-            :param end: Maximum value.
-
-    # If type == 'simulation', then `value` must be one of the following...
-            :param time_left_in_sim: The number of timesteps remaining in the simulation.
-            :param time_already_in_sim: The number of timesteps that have passed in the simulation.
-            :param sim_current_timestep: The current timestep of the simulation.
+    :param str type: Type of variable. Must be one of: 'scalar', 'resource', 'property', 'simulation'.
+    
+        * `scalar`: A scalar value that is shared across all patients. It can be used to model things like the sensitivity of a screening test, the prevalence of a disease, etc. If set, then ``value`` must be specified.
+        * `resource`: A finite resource that is shared across all patients. It can be decremented, incremented, and reset by the simulation. It can be used to model things like hospital beds, lab capacity, etc. If set, then ``init_amount``, ``max_amount``, ``refill_amount``, and ``refill_duration`` must be specified.
+        * `property`: A property that is unique to each patient. This is a property that is unique to each patient (i.e. each patient may have a different value for this property). It can be used to model things like the age of a patient, the gender of a patient, etc. If set, then ``column`` (if loaded from a CSV file), ``value`` (if specified as a constant), or ``distribution`` (if randomly sampled) must be specified.
+        * `simulation`: A simulation variable that is set and tracked automatically by APLUS. Must be one of: 'time_left_in_sim', 'time_already_in_sim', 'sim_current_timestep'.
+    
+    :param Optional[Union[int, float, bool, str, list, dict, set]] value: Scalar value. Must be a valid Python type. Use '!!set' tag for sets.
+    :param Optional[int] init_amount: Initial amount of the resource.
+    :param Optional[int] max_amount: Maximum amount of resource allowed.
+    :param Optional[int] refill_amount: Amount added per refill.
+    :param Optional[int] refill_duration: Time interval between refills.
+    :param Optional[str] column: If this property is loaded from a CSV file, use the `column` parameter to specify the column name (e.g. 'y' or 'y_hat_dl'). Each row of the CSV will be a patient, and the value of this property for each patient will be the value of the column in the CSV file.
+    :param Optional[Union[int, float, bool, str, list, dict, set]] value: Scalar value. Must be a valid Python type. Use '!!set' tag for sets.
+    :param Optional[VALID_DISTRIBUTION_TYPES] distribution: If randomly sampled, specify the distribution type.
+    :param Optional[Union[int, float]] mean: Mean value for distribution.
+    :param Optional[Union[int, float]] std: Standard deviation.
+    :param Optional[Union[int, float]] start: Minimum value.
+    :param Optional[Union[int, float]] end: Maximum value.
     """
     type: VALID_VARIABLE_TYPES = "scalar"
     # Scalar value
@@ -104,10 +87,10 @@ class ConfigVariable(BaseModel):
     column: Optional[str] = None
     # Simulation value
     distribution: Optional[VALID_DISTRIBUTION_TYPES] = None
-    mean: Optional[float] = None
-    std: Optional[float] = None
-    start: Optional[float] = None
-    end: Optional[float] = None
+    mean: Optional[Union[int, float]] = None
+    std: Optional[Union[int, float]] = None
+    start: Optional[Union[int, float]] = None
+    end: Optional[Union[int, float]] = None
 
     def is_valid(self, id: str) -> bool:
         """Return TRUE if the ConfigVariable is valid, FALSE otherwise."""
@@ -150,7 +133,7 @@ class ConfigVariable(BaseModel):
 
 class ConfigUtility(BaseModel):
     """
-    Specification for utility section of config YAML file.
+    Utility within a State or Transition.
     
     :param value: If str, it's evaluated as a Python expression.
     :param if_: A Python expression. If it evaluates to TRUE, then the `value` for this utility is set to this `value`. Note: These 'if' statements are not mutually exclusive (i.e. if multiple conditions within the same State evaluate to TRUE, then they will simply be summed together)
@@ -169,23 +152,24 @@ class ConfigUtility(BaseModel):
 
 class ConfigTransition(BaseModel):
     """
-    Specification for transition section of config YAML file.
+    Transition within a State.
     
-    :param dest: ID of the destination state.
-    :param label: Human-readable label for the transition. Default: "".
-    :param if_: A Python expression. If it evaluates to TRUE, then the transition is taken.
-    :param prob: Probability of the transition.
-    :param duration: Number of timesteps to wait before transitions are evaluated. Default: 0
-    :param utilities: If str, float, or bool, it's evaluated as a Python expression. Default: [].
-    :param resource_deltas: Changes to resource levels from taking this transition. Default: {}. [key] = name of a resource defined in `variables`. [value] = how much to change each resource level AS SOON AS this transition is taken
+    Transition conditions can either have...
+    
+    * All transitions have an 'if' condition (where if the last transition doesn't have an 'if', it defaults to always TRUE)
+    * All transitions have a 'prob' condition (where if the last transition doesn't have a 'prob', it defaults to = 1 - (sum of other probs))
+    * The first set of transitions have an 'if' condition, but the second set have a 'prob'
+    
+    :param str dest: ID of the destination state.
+    :param Optional[str] label: Human-readable label for the transition. Default: "".
+    :param Optional[Union[str, bool]] if_: A Python expression. If it evaluates to TRUE, then the transition is taken.
+    :param Optional[Union[str, float, int]] prob: Probability of the transition.
+    :param int duration: Number of timesteps to wait before transitions are evaluated. Default: 0
+    :param Union[str, int, float, bool, List[ConfigUtility]] utilities: If str, float, or bool, it's evaluated as a Python expression. Default: [].
+    :param Dict[str, float] resource_deltas: Changes to resource levels from taking this transition. Default: {}. [key] = name of a resource defined in `variables`. [value] = how much to change each resource level AS SOON AS this transition is taken
     """
     dest: str
     label: Optional[str] = ""
-    # Transition conditions
-    ## Can either have...
-    ## - All transitions have an 'if' condition (where if the last transition doesn't have an 'if', it defaults to always TRUE)
-    ## - All transitions have a 'prob' condition (where if the last transition doesn't have a 'prob', it defaults to = 1 - (sum of other probs))
-    ## - The first set of transitions have an 'if' condition, but the second set have a 'prob'
     if_: Optional[Union[str, bool]] = None
     prob: Optional[Union[str, float, int]] = None
     duration: int = 0
@@ -198,14 +182,14 @@ class ConfigTransition(BaseModel):
 
 class ConfigState(BaseModel):
     """
-    Specification for state section of config YAML file.
+    State section of config -- i.e. a dictionary mapping State IDs to States.
     
-    :param type: Whether the state is a start, end, or intermediate state within the workflow. Default: "intermediate".
-    :param label: Human-readable label for the state. Default: value of `key`.
-    :param transitions: List of possible state transitions.
-    :param duration: Number of timesteps to wait before transitions are evaluated. Default: 0
-    :param utilities: If str, float, or bool, it's evaluated as a Python expression. Default: [].
-    :param resource_deltas: Changes to resource levels from entering this state. Default: {}. [key] = name of a resource defined in `variables`. [value] = how much to change each resource level AS SOON AS this state is hit
+    :param str type: Whether the state is a start, end, or intermediate state within the workflow. Default: "intermediate".
+    :param Optional[str] label: Human-readable label for the state. Default: value of `key`.
+    :param List[ConfigTransition] transitions: List of possible state transitions.
+    :param int duration: Number of timesteps to wait before transitions are evaluated. Default: 0
+    :param Union[str, int, float, bool, List[ConfigUtility]] utilities: If str, float, or bool, it's evaluated as a Python expression. Default: [].
+    :param Dict[str, float] resource_deltas: Changes to resource levels from entering this state. Default: {}. [key] = name of a resource defined in `variables`. [value] = how much to change each resource level AS SOON AS this state is hit
     """
     type: VALID_STATE_TYPES = "intermediate"
     label: Optional[str] = None
@@ -222,7 +206,28 @@ class ConfigState(BaseModel):
         return True
 
 class Config(BaseModel):
-    """Specification for config YAML file."""
+    """Specification for an APLUS simulation. All three fields are required -- metadata, variables, and states.
+    
+    Each field is a Pydantic model, as defined in this API.
+    
+    Instead of specifying this Config object directly, you can use the :class:`~aplusml.sim.Simulation.create_from_yaml` method to load a YAML file that follows the schema in :doc:`/api/config`.
+    
+    Use via:
+    
+    .. code-block:: python
+
+        config = Config(
+            metadata=ConfigMetadata(...),
+            variables=ConfigVariable(...),
+            states=ConfigState(...),
+        )
+        simulation = aplusml.Simulation.create_from_config(config)
+    
+    Args:
+        metadata (ConfigMetadata): Metadata section of config.
+        variables (Dict[str, ConfigVariable]): Variables section of config.
+        states (Dict[str, ConfigState]): States section of config.
+    """
     metadata: ConfigMetadata
     variables: Dict[str, ConfigVariable] = {} # [key] = variable id, [value] = variable value
     states: Dict[str, ConfigState] = {} # [key] = state id, [value] = state value

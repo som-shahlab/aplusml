@@ -174,7 +174,7 @@ def run_test(simulation: sim.Simulation,
 
     if is_use_multi_processing:
         n_jobs = os.cpu_count() - 1
-        print('Processes:', n_jobs)
+        print('# of processes:', n_jobs)
         with WorkerPool(n_jobs, use_dill=True) as pool:
             results = pool.map(_run_test, [(copy.deepcopy(simulation),
                                                 all_patients,

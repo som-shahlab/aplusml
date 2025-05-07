@@ -86,7 +86,7 @@
              
   <h1>Source code for aplusml.config</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Pydantic model for APLUS config YAML file.</span>
+<span class="sd">Python Pydantic models for defining an APLUS simulation configuration.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">get_args</span>
@@ -102,25 +102,25 @@
 <a class="viewcode-back" href="../../api/api.html#aplusml.config.ConfigPatientSortPreferenceProperty">[docs]</a>
 <span class="k">class</span> <span class="nc">ConfigPatientSortPreferenceProperty</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Specification for patient sort preference property section of config YAML file.</span>
+<span class="sd">    Patient sort preference property section of config.</span>
 <span class="sd">    </span>
-<span class="sd">    :param variable: Name of a property (must be defined in `variables`) that will be used to sort patients when prioritizing allocation of a finite resource</span>
-<span class="sd">    :param is_ascending: True = ascending order, False = descending.</span>
+<span class="sd">    :param str variable: Name of a property (must be defined in the `variables` config section) that will be used to sort patients when prioritizing allocation of a finite resource</span>
+<span class="sd">    :param bool is_ascending: True = ascending order, False = descending. Default: True</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">variable</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">is_ascending</span><span class="p">:</span> <span class="nb">bool</span></div>
+    <span class="n">is_ascending</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 
 <div class="viewcode-block" id="ConfigMetadata">
 <a class="viewcode-back" href="../../api/api.html#aplusml.config.ConfigMetadata">[docs]</a>
 <span class="k">class</span> <span class="nc">ConfigMetadata</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Specification for metadata section of config YAML file.</span>
+<span class="sd">    Metadata section of config.</span>
 <span class="sd">    </span>
-<span class="sd">    :param name: Name of the simulation.</span>
-<span class="sd">    :param path_to_properties: Path to CSV file where each row is a patient, each column is a property. Note: Only properties explicitly enumerated in the &#39;variables&#39; section will be imported</span>
-<span class="sd">    :param properties_col_for_patient_id: Column name in the CSV that contains unique patient IDs.</span>
-<span class="sd">    :param patient_sort_preference_property: Property to sort patients by when prioritizing allocation of a finite resource.</span>
+<span class="sd">    :param Optional[str] name: Name of the simulation.</span>
+<span class="sd">    :param Optional[str] path_to_properties: Path to CSV file where each row is a patient, each column is a property. This is optional -- if you don&#39;t have a patient property CSV, you can leave this as `None`. Note: Only properties explicitly enumerated in the &#39;variables&#39; config section will be imported.</span>
+<span class="sd">    :param Optional[str] properties_col_for_patient_id: Column name in the CSV that contains unique patient IDs.</span>
+<span class="sd">    :param Optional[ConfigPatientSortPreferenceProperty] patient_sort_preference_property: Property to sort patients by when prioritizing allocation of a finite resource.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">path_to_properties</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
@@ -151,44 +151,27 @@
 <a class="viewcode-back" href="../../api/api.html#aplusml.config.ConfigVariable">[docs]</a>
 <span class="k">class</span> <span class="nc">ConfigVariable</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Specification for variable section of config YAML file.</span>
+<span class="sd">    Variable section of config -- i.e. a dictionary mapping variable IDs to variables.</span>
 <span class="sd">    </span>
-<span class="sd">    :param type: Type of variable. Must be one of: &#39;scalar&#39;, &#39;resource&#39;, &#39;property&#39;, &#39;simulation&#39;.</span>
-
-<span class="sd">    # If type == &#39;scalar&#39;...</span>
-<span class="sd">    #   This is a scalar value that is shared across all patients.</span>
-<span class="sd">    #   It can be used to model things like the sensitivity of a screening test, the prevalence of a disease, etc.</span>
-<span class="sd">    #   It can be specified by the following parameters...</span>
-<span class="sd">            :param value: Scalar value. Must be a valid Python type. Use &#39;!!set&#39; tag for sets.</span>
-
-<span class="sd">    # If type == &#39;resource&#39;...</span>
-<span class="sd">    #   This is a finite resource that is shared across all patients.</span>
-<span class="sd">    #   It can be decremented, incremented, and reset by the simulation.</span>
-<span class="sd">    #   It can be used to model things like hospital beds, lab capacity, etc.</span>
-<span class="sd">    #   It can be specified by the following parameters...</span>
-<span class="sd">            :param init_amount: Initial amount of the resource.</span>
-<span class="sd">            :param max_amount: Maximum amount of resource allowed.</span>
-<span class="sd">            :param refill_amount: Amount added per refill.</span>
-<span class="sd">            :param refill_duration: Time interval between refills.</span>
-
-<span class="sd">    # If type == &#39;property&#39;...</span>
-<span class="sd">    #   This is a property that is UNIQUE to each patient (i.e. each patient may have a different value for this property).</span>
-<span class="sd">    #   It can be used to model things like the age of a patient, the gender of a patient, etc.</span>
-<span class="sd">    ##  Either load from file...</span>
-<span class="sd">            :param column: If loaded from a CSV file, specify the column name (e.g. &#39;y&#39; or &#39;y_hat_dl&#39;). Each row of the CSV will be a patient, and the value of this property for each patient will be the value of the column in the CSV file.</span>
-<span class="sd">    ##  Or specify a constant value...</span>
-<span class="sd">            :param value: Scalar value. Must be a valid Python type. Use &#39;!!set&#39; tag for sets.</span>
-<span class="sd">    ##  Or randomly sample from a distribution...</span>
-<span class="sd">            :param distribution: If randomly sampled.</span>
-<span class="sd">            :param mean: Mean value for distribution.</span>
-<span class="sd">            :param std: Standard deviation.</span>
-<span class="sd">            :param start: Minimum value.</span>
-<span class="sd">            :param end: Maximum value.</span>
-
-<span class="sd">    # If type == &#39;simulation&#39;, then `value` must be one of the following...</span>
-<span class="sd">            :param time_left_in_sim: The number of timesteps remaining in the simulation.</span>
-<span class="sd">            :param time_already_in_sim: The number of timesteps that have passed in the simulation.</span>
-<span class="sd">            :param sim_current_timestep: The current timestep of the simulation.</span>
+<span class="sd">    :param str type: Type of variable. Must be one of: &#39;scalar&#39;, &#39;resource&#39;, &#39;property&#39;, &#39;simulation&#39;.</span>
+<span class="sd">    </span>
+<span class="sd">        * `scalar`: A scalar value that is shared across all patients. It can be used to model things like the sensitivity of a screening test, the prevalence of a disease, etc. If set, then ``value`` must be specified.</span>
+<span class="sd">        * `resource`: A finite resource that is shared across all patients. It can be decremented, incremented, and reset by the simulation. It can be used to model things like hospital beds, lab capacity, etc. If set, then ``init_amount``, ``max_amount``, ``refill_amount``, and ``refill_duration`` must be specified.</span>
+<span class="sd">        * `property`: A property that is unique to each patient. This is a property that is unique to each patient (i.e. each patient may have a different value for this property). It can be used to model things like the age of a patient, the gender of a patient, etc. If set, then ``column`` (if loaded from a CSV file), ``value`` (if specified as a constant), or ``distribution`` (if randomly sampled) must be specified.</span>
+<span class="sd">        * `simulation`: A simulation variable that is set and tracked automatically by APLUS. Must be one of: &#39;time_left_in_sim&#39;, &#39;time_already_in_sim&#39;, &#39;sim_current_timestep&#39;.</span>
+<span class="sd">    </span>
+<span class="sd">    :param Optional[Union[int, float, bool, str, list, dict, set]] value: Scalar value. Must be a valid Python type. Use &#39;!!set&#39; tag for sets.</span>
+<span class="sd">    :param Optional[int] init_amount: Initial amount of the resource.</span>
+<span class="sd">    :param Optional[int] max_amount: Maximum amount of resource allowed.</span>
+<span class="sd">    :param Optional[int] refill_amount: Amount added per refill.</span>
+<span class="sd">    :param Optional[int] refill_duration: Time interval between refills.</span>
+<span class="sd">    :param Optional[str] column: If this property is loaded from a CSV file, use the `column` parameter to specify the column name (e.g. &#39;y&#39; or &#39;y_hat_dl&#39;). Each row of the CSV will be a patient, and the value of this property for each patient will be the value of the column in the CSV file.</span>
+<span class="sd">    :param Optional[Union[int, float, bool, str, list, dict, set]] value: Scalar value. Must be a valid Python type. Use &#39;!!set&#39; tag for sets.</span>
+<span class="sd">    :param Optional[VALID_DISTRIBUTION_TYPES] distribution: If randomly sampled, specify the distribution type.</span>
+<span class="sd">    :param Optional[Union[int, float]] mean: Mean value for distribution.</span>
+<span class="sd">    :param Optional[Union[int, float]] std: Standard deviation.</span>
+<span class="sd">    :param Optional[Union[int, float]] start: Minimum value.</span>
+<span class="sd">    :param Optional[Union[int, float]] end: Maximum value.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="nb">type</span><span class="p">:</span> <span class="n">VALID_VARIABLE_TYPES</span> <span class="o">=</span> <span class="s2">&quot;scalar&quot;</span>
     <span class="c1"># Scalar value</span>
@@ -202,10 +185,10 @@
     <span class="n">column</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="c1"># Simulation value</span>
     <span class="n">distribution</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">VALID_DISTRIBUTION_TYPES</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">mean</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">std</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">start</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">end</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">mean</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">std</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">start</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">end</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="ConfigVariable.is_valid">
 <a class="viewcode-back" href="../../api/api.html#aplusml.config.ConfigVariable.is_valid">[docs]</a>
@@ -254,7 +237,7 @@
 <a class="viewcode-back" href="../../api/api.html#aplusml.config.ConfigUtility">[docs]</a>
 <span class="k">class</span> <span class="nc">ConfigUtility</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Specification for utility section of config YAML file.</span>
+<span class="sd">    Utility within a State or Transition.</span>
 <span class="sd">    </span>
 <span class="sd">    :param value: If str, it&#39;s evaluated as a Python expression.</span>
 <span class="sd">    :param if_: A Python expression. If it evaluates to TRUE, then the `value` for this utility is set to this `value`. Note: These &#39;if&#39; statements are not mutually exclusive (i.e. if multiple conditions within the same State evaluate to TRUE, then they will simply be summed together)</span>
@@ -279,23 +262,24 @@
 <a class="viewcode-back" href="../../api/api.html#aplusml.config.ConfigTransition">[docs]</a>
 <span class="k">class</span> <span class="nc">ConfigTransition</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Specification for transition section of config YAML file.</span>
+<span class="sd">    Transition within a State.</span>
 <span class="sd">    </span>
-<span class="sd">    :param dest: ID of the destination state.</span>
-<span class="sd">    :param label: Human-readable label for the transition. Default: &quot;&quot;.</span>
-<span class="sd">    :param if_: A Python expression. If it evaluates to TRUE, then the transition is taken.</span>
-<span class="sd">    :param prob: Probability of the transition.</span>
-<span class="sd">    :param duration: Number of timesteps to wait before transitions are evaluated. Default: 0</span>
-<span class="sd">    :param utilities: If str, float, or bool, it&#39;s evaluated as a Python expression. Default: [].</span>
-<span class="sd">    :param resource_deltas: Changes to resource levels from taking this transition. Default: {}. [key] = name of a resource defined in `variables`. [value] = how much to change each resource level AS SOON AS this transition is taken</span>
+<span class="sd">    Transition conditions can either have...</span>
+<span class="sd">    </span>
+<span class="sd">    * All transitions have an &#39;if&#39; condition (where if the last transition doesn&#39;t have an &#39;if&#39;, it defaults to always TRUE)</span>
+<span class="sd">    * All transitions have a &#39;prob&#39; condition (where if the last transition doesn&#39;t have a &#39;prob&#39;, it defaults to = 1 - (sum of other probs))</span>
+<span class="sd">    * The first set of transitions have an &#39;if&#39; condition, but the second set have a &#39;prob&#39;</span>
+<span class="sd">    </span>
+<span class="sd">    :param str dest: ID of the destination state.</span>
+<span class="sd">    :param Optional[str] label: Human-readable label for the transition. Default: &quot;&quot;.</span>
+<span class="sd">    :param Optional[Union[str, bool]] if_: A Python expression. If it evaluates to TRUE, then the transition is taken.</span>
+<span class="sd">    :param Optional[Union[str, float, int]] prob: Probability of the transition.</span>
+<span class="sd">    :param int duration: Number of timesteps to wait before transitions are evaluated. Default: 0</span>
+<span class="sd">    :param Union[str, int, float, bool, List[ConfigUtility]] utilities: If str, float, or bool, it&#39;s evaluated as a Python expression. Default: [].</span>
+<span class="sd">    :param Dict[str, float] resource_deltas: Changes to resource levels from taking this transition. Default: {}. [key] = name of a resource defined in `variables`. [value] = how much to change each resource level AS SOON AS this transition is taken</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">dest</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">label</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-    <span class="c1"># Transition conditions</span>
-    <span class="c1">## Can either have...</span>
-    <span class="c1">## - All transitions have an &#39;if&#39; condition (where if the last transition doesn&#39;t have an &#39;if&#39;, it defaults to always TRUE)</span>
-    <span class="c1">## - All transitions have a &#39;prob&#39; condition (where if the last transition doesn&#39;t have a &#39;prob&#39;, it defaults to = 1 - (sum of other probs))</span>
-    <span class="c1">## - The first set of transitions have an &#39;if&#39; condition, but the second set have a &#39;prob&#39;</span>
     <span class="n">if_</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">prob</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">duration</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
@@ -314,14 +298,14 @@
 <a class="viewcode-back" href="../../api/api.html#aplusml.config.ConfigState">[docs]</a>
 <span class="k">class</span> <span class="nc">ConfigState</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Specification for state section of config YAML file.</span>
+<span class="sd">    State section of config -- i.e. a dictionary mapping State IDs to States.</span>
 <span class="sd">    </span>
-<span class="sd">    :param type: Whether the state is a start, end, or intermediate state within the workflow. Default: &quot;intermediate&quot;.</span>
-<span class="sd">    :param label: Human-readable label for the state. Default: value of `key`.</span>
-<span class="sd">    :param transitions: List of possible state transitions.</span>
-<span class="sd">    :param duration: Number of timesteps to wait before transitions are evaluated. Default: 0</span>
-<span class="sd">    :param utilities: If str, float, or bool, it&#39;s evaluated as a Python expression. Default: [].</span>
-<span class="sd">    :param resource_deltas: Changes to resource levels from entering this state. Default: {}. [key] = name of a resource defined in `variables`. [value] = how much to change each resource level AS SOON AS this state is hit</span>
+<span class="sd">    :param str type: Whether the state is a start, end, or intermediate state within the workflow. Default: &quot;intermediate&quot;.</span>
+<span class="sd">    :param Optional[str] label: Human-readable label for the state. Default: value of `key`.</span>
+<span class="sd">    :param List[ConfigTransition] transitions: List of possible state transitions.</span>
+<span class="sd">    :param int duration: Number of timesteps to wait before transitions are evaluated. Default: 0</span>
+<span class="sd">    :param Union[str, int, float, bool, List[ConfigUtility]] utilities: If str, float, or bool, it&#39;s evaluated as a Python expression. Default: [].</span>
+<span class="sd">    :param Dict[str, float] resource_deltas: Changes to resource levels from entering this state. Default: {}. [key] = name of a resource defined in `variables`. [value] = how much to change each resource level AS SOON AS this state is hit</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="nb">type</span><span class="p">:</span> <span class="n">VALID_STATE_TYPES</span> <span class="o">=</span> <span class="s2">&quot;intermediate&quot;</span>
     <span class="n">label</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
@@ -344,7 +328,28 @@
 <div class="viewcode-block" id="Config">
 <a class="viewcode-back" href="../../api/api.html#aplusml.config.Config">[docs]</a>
 <span class="k">class</span> <span class="nc">Config</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Specification for config YAML file.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Specification for an APLUS simulation. All three fields are required -- metadata, variables, and states.</span>
+<span class="sd">    </span>
+<span class="sd">    Each field is a Pydantic model, as defined in this API.</span>
+<span class="sd">    </span>
+<span class="sd">    Instead of specifying this Config object directly, you can use the :class:`~aplusml.sim.Simulation.create_from_yaml` method to load a YAML file that follows the schema in :doc:`/api/config`.</span>
+<span class="sd">    </span>
+<span class="sd">    Use via:</span>
+<span class="sd">    </span>
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        config = Config(</span>
+<span class="sd">            metadata=ConfigMetadata(...),</span>
+<span class="sd">            variables=ConfigVariable(...),</span>
+<span class="sd">            states=ConfigState(...),</span>
+<span class="sd">        )</span>
+<span class="sd">        simulation = aplusml.Simulation.create_from_config(config)</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        metadata (ConfigMetadata): Metadata section of config.</span>
+<span class="sd">        variables (Dict[str, ConfigVariable]): Variables section of config.</span>
+<span class="sd">        states (Dict[str, ConfigState]): States section of config.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">metadata</span><span class="p">:</span> <span class="n">ConfigMetadata</span>
     <span class="n">variables</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ConfigVariable</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span> <span class="c1"># [key] = variable id, [value] = variable value</span>
     <span class="n">states</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ConfigState</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span> <span class="c1"># [key] = state id, [value] = state value</span>

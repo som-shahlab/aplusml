@@ -86,7 +86,7 @@
              
   <h1>Source code for aplusml.sim</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Core simulation engine which progresses patients through a given workflow</span>
+<span class="sd">Core APLUS simulation engine which progresses patients through a given workflow</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">io</span>
 <span class="kn">import</span> <span class="nn">random</span>
@@ -111,11 +111,12 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;The core APLUS simulation engine which progresses patients through a given workflow.</span>
 <span class="sd">    </span>
 <span class="sd">    This class manages the entire simulation process including:</span>
-<span class="sd">    - Patient state transitions and history tracking</span>
-<span class="sd">    - Variable evaluation and management</span>
-<span class="sd">    - Resource allocation and replenishment</span>
-<span class="sd">    - Utility calculations</span>
-<span class="sd">    - Workflow visualization</span>
+<span class="sd">    </span>
+<span class="sd">    * Patient state transitions and history tracking</span>
+<span class="sd">    * Variable evaluation and management</span>
+<span class="sd">    * Resource allocation and replenishment</span>
+<span class="sd">    * Utility calculations</span>
+<span class="sd">    * Workflow visualization</span>
 <span class="sd">    </span>
 <span class="sd">    The simulation operates on a timestep basis, processing patients through states and transitions</span>
 <span class="sd">    based on conditional and probabilistic rules defined in the workflow configuration.</span>
@@ -165,11 +166,12 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluates all variables for a given patient at the current timestep.</span>
 <span class="sd">        </span>
 <span class="sd">        Processes different variable types:</span>
-<span class="sd">        - scalar: Returns constant value</span>
-<span class="sd">        - resource: Returns current resource level</span>
-<span class="sd">        - property: Returns patient-specific property value</span>
-<span class="sd">        - simulation: Returns simulation-specific values (time remaining, elapsed time, current timestep)</span>
-<span class="sd">        - function: Executes and returns function result</span>
+<span class="sd">        </span>
+<span class="sd">        * `scalar`: Returns constant value</span>
+<span class="sd">        * `resource`: Returns current resource level</span>
+<span class="sd">        * `property`: Returns patient-specific property value</span>
+<span class="sd">        * `simulation`: Returns simulation-specific values (time remaining, elapsed time, current timestep)</span>
+<span class="sd">        * `function`: Executes and returns function result</span>
 <span class="sd">        </span>
 <span class="sd">        Args:</span>
 <span class="sd">            patient (Patient): The patient to evaluate variables for</span>
@@ -217,9 +219,10 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluates a Python expression in the context of a patient and variables.</span>
 <span class="sd">        </span>
 <span class="sd">        Handles evaluation of:</span>
-<span class="sd">        - Literal values (bool, int, float)</span>
-<span class="sd">        - String expressions using Python&#39;s eval()</span>
-<span class="sd">        - Pre-compiled expressions for better performance</span>
+
+<span class="sd">        * Literal values (bool, int, float)</span>
+<span class="sd">        * String expressions using Python&#39;s eval()</span>
+<span class="sd">        * Pre-compiled expressions for better performance</span>
 <span class="sd">        </span>
 <span class="sd">        The expression can reference any variables passed in the variables dict.</span>
 <span class="sd">        </span>
@@ -282,7 +285,7 @@
 
 <div class="viewcode-block" id="Simulation.evaluate_transition_prob">
 <a class="viewcode-back" href="../../api/api.html#aplusml.sim.Simulation.evaluate_transition_prob">[docs]</a>
-    <span class="k">def</span> <span class="nf">evaluate_transition_prob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">,</span> <span class="n">transition</span><span class="p">:</span> <span class="n">Transition</span><span class="p">,</span> <span class="n">variables</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">evaluate_transition_prob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">,</span> <span class="n">transition</span><span class="p">:</span> <span class="n">Transition</span><span class="p">,</span> <span class="n">variables</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluates whether a probabilistic transition should be taken.</span>
 <span class="sd">        </span>
 <span class="sd">        For transitions with a &#39;prob&#39; value, evaluates the probability expression.</span>
@@ -291,7 +294,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            patient (Patient): The patient attempting the transition</span>
 <span class="sd">            transition (Transition): The transition to evaluate</span>
-<span class="sd">            variables (dict): Variables available for probability evaluation</span>
+<span class="sd">            variables (Dict[str, Any]): Variables available for probability evaluation</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            float: Evaluated probability value between 0 and 1, or None if no probability specified</span>
@@ -305,7 +308,7 @@
 
 <div class="viewcode-block" id="Simulation.evaluate_utility_if">
 <a class="viewcode-back" href="../../api/api.html#aplusml.sim.Simulation.evaluate_utility_if">[docs]</a>
-    <span class="k">def</span> <span class="nf">evaluate_utility_if</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">,</span> <span class="n">utility</span><span class="p">:</span> <span class="n">Utility</span><span class="p">,</span> <span class="n">variables</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">evaluate_utility_if</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">,</span> <span class="n">utility</span><span class="p">:</span> <span class="n">Utility</span><span class="p">,</span> <span class="n">variables</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluates whether a utility should be applied based on its condition.</span>
 <span class="sd">        </span>
 <span class="sd">        Similar to evaluate_transition_if, but for utility conditions. Returns True</span>
@@ -314,7 +317,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            patient (Patient): The patient to evaluate utility for</span>
 <span class="sd">            utility (Utility): The utility to evaluate</span>
-<span class="sd">            variables (dict): Variables available for condition evaluation</span>
+<span class="sd">            variables (Dict[str, Any]): Variables available for condition evaluation</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            bool: True if utility should be applied, False otherwise</span>
@@ -328,7 +331,7 @@
 
 <div class="viewcode-block" id="Simulation.evaluate_utility_value">
 <a class="viewcode-back" href="../../api/api.html#aplusml.sim.Simulation.evaluate_utility_value">[docs]</a>
-    <span class="k">def</span> <span class="nf">evaluate_utility_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">,</span> <span class="n">utility</span><span class="p">:</span> <span class="n">Utility</span><span class="p">,</span> <span class="n">variables</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">evaluate_utility_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">,</span> <span class="n">utility</span><span class="p">:</span> <span class="n">Utility</span><span class="p">,</span> <span class="n">variables</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluates the actual value of a utility.</span>
 <span class="sd">        </span>
 <span class="sd">        Evaluates the utility&#39;s value expression in the context of the patient and variables.</span>
@@ -337,7 +340,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            patient (Patient): The patient context for evaluation</span>
 <span class="sd">            utility (Utility): The utility whose value should be evaluated</span>
-<span class="sd">            variables (dict): Variables available for value evaluation</span>
+<span class="sd">            variables (Dict[str, Any]): Variables available for value evaluation</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Any: The evaluated utility value</span>
@@ -347,7 +350,7 @@
     
 <div class="viewcode-block" id="Simulation.evaluate_duration">
 <a class="viewcode-back" href="../../api/api.html#aplusml.sim.Simulation.evaluate_duration">[docs]</a>
-    <span class="k">def</span> <span class="nf">evaluate_duration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">,</span> <span class="n">duration</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">variables</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">evaluate_duration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">,</span> <span class="n">duration</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">variables</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluates how long a patient should remain in a state or transition.</span>
 <span class="sd">        </span>
 <span class="sd">        Duration can be a constant or an expression using available variables.</span>
@@ -355,7 +358,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            patient (Patient): The patient to evaluate duration for</span>
 <span class="sd">            duration (str): The duration expression to evaluate</span>
-<span class="sd">            variables (dict): Variables available for duration evaluation</span>
+<span class="sd">            variables (Dict[str, Any]): Variables available for duration evaluation</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            int: Number of timesteps the duration should last</span>
@@ -367,7 +370,7 @@
 <a class="viewcode-back" href="../../api/api.html#aplusml.sim.Simulation.select_transition">[docs]</a>
     <span class="k">def</span> <span class="nf">select_transition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patient</span><span class="p">:</span> <span class="n">Patient</span><span class="p">,</span> 
                           <span class="n">transitions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Transition</span><span class="p">],</span>
-                          <span class="n">variables</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+                          <span class="n">variables</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Determines which transition a patient should take from their current state.</span>
 <span class="sd">        </span>
 <span class="sd">        First evaluates all conditional (&#39;if&#39;) transitions in order. If none are true,</span>
@@ -377,7 +380,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            patient (Patient): The patient attempting to transition</span>
 <span class="sd">            transitions (List[Transition]): Available transitions from current state</span>
-<span class="sd">            variables (dict): Variables available for transition evaluation</span>
+<span class="sd">            variables (Dict[str, Any]): Variables available for transition evaluation</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            int: Index of selected transition, or None if no valid transition found</span>
@@ -422,18 +425,19 @@
 
 <div class="viewcode-block" id="Simulation.init_variables">
 <a class="viewcode-back" href="../../api/api.html#aplusml.sim.Simulation.init_variables">[docs]</a>
-    <span class="k">def</span> <span class="nf">init_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variables</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]):</span>
+    <span class="k">def</span> <span class="nf">init_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variables</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initializes resource variables with their starting values.</span>
 <span class="sd">        </span>
 <span class="sd">        Note: Modifies &#39;variables&#39; in place</span>
 <span class="sd">    </span>
 <span class="sd">        For each resource variable, sets:</span>
-<span class="sd">        - Initial resource level from init_amount</span>
-<span class="sd">        - Last refill timestep to 0</span>
-<span class="sd">        - Empty history tracking list</span>
+<span class="sd">        </span>
+<span class="sd">        * Initial resource level from init_amount</span>
+<span class="sd">        * Last refill timestep to 0</span>
+<span class="sd">        * Empty history tracking list</span>
 <span class="sd">        </span>
 <span class="sd">        Args:</span>
-<span class="sd">            variables (List[dict]): Dictionary of variables from YAML config, modified in place</span>
+<span class="sd">            variables (Dict[str, dict]): Dictionary of variables from config, modified in place</span>
 <span class="sd">        &quot;&quot;&quot;</span>       
         <span class="c1"># Resource initial amounts</span>
         <span class="k">for</span> <span class="n">v_id</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">variables</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -510,8 +514,7 @@
     <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Logs a message if logging is enabled.</span>
 <span class="sd">        </span>
-<span class="sd">        Format:</span>
-<span class="sd">            t=&lt;current timestep of simulation&gt; | {string}</span>
+<span class="sd">        Format: t=&lt;current timestep of simulation&gt; | {string}</span>
 <span class="sd">    </span>
 <span class="sd">        Args:</span>
 <span class="sd">            string (str): Message to log</span>
@@ -531,6 +534,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Runs the simulation by progressing all patients through the workflow.</span>
 <span class="sd">    </span>
 <span class="sd">        Core simulation loop that:</span>
+<span class="sd">        </span>
 <span class="sd">        1. Processes patients in order of admission time and preference sorting</span>
 <span class="sd">        2. Moves each patient through states based on transitions</span>
 <span class="sd">        3. Tracks utilities and resource usage</span>
@@ -814,10 +818,11 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Visualizes the workflow as a directed graph using pydot.</span>
 <span class="sd">    </span>
 <span class="sd">        Creates a visual diagram showing:</span>
-<span class="sd">        - States as nodes</span>
-<span class="sd">        - Transitions as edges</span>
-<span class="sd">        - Transition conditions and probabilities</span>
-<span class="sd">        - State/transition utilities and durations</span>
+<span class="sd">        </span>
+<span class="sd">        * States as nodes</span>
+<span class="sd">        * Transitions as edges</span>
+<span class="sd">        * Transition conditions and probabilities</span>
+<span class="sd">        * State/transition utilities and durations</span>
 <span class="sd">        </span>
 <span class="sd">        Args:</span>
 <span class="sd">            path_to_file (str, optional): Path to save diagram. Must include supported file extension.</span>
@@ -1278,7 +1283,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns indices that would sort patients by specified property.</span>
 <span class="sd">    </span>
 <span class="sd">    Can sort by:</span>
-<span class="sd">        - Direct ``Patient`` attributes (``id``, ``start_timestep``)</span>
+<span class="sd">        - Direct :class:`~aplusml.models.Patient` attributes (``id``, ``start_timestep``)</span>
 <span class="sd">        - Patient properties dictionary values</span>
 <span class="sd">    </span>
 <span class="sd">    Args:</span>

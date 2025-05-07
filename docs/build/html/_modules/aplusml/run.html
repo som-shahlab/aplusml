@@ -266,7 +266,7 @@
 
     <span class="k">if</span> <span class="n">is_use_multi_processing</span><span class="p">:</span>
         <span class="n">n_jobs</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Processes:&#39;</span><span class="p">,</span> <span class="n">n_jobs</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;# of processes:&#39;</span><span class="p">,</span> <span class="n">n_jobs</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">WorkerPool</span><span class="p">(</span><span class="n">n_jobs</span><span class="p">,</span> <span class="n">use_dill</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
             <span class="n">results</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">_run_test</span><span class="p">,</span> <span class="p">[(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">simulation</span><span class="p">),</span>
                                                 <span class="n">all_patients</span><span class="p">,</span>

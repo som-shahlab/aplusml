@@ -1,5 +1,5 @@
 """
-Core simulation engine which progresses patients through a given workflow
+Core APLUS simulation engine which progresses patients through a given workflow
 """
 import io
 import random
@@ -22,11 +22,12 @@ class Simulation(object):
     """The core APLUS simulation engine which progresses patients through a given workflow.
     
     This class manages the entire simulation process including:
-    - Patient state transitions and history tracking
-    - Variable evaluation and management
-    - Resource allocation and replenishment
-    - Utility calculations
-    - Workflow visualization
+    
+    * Patient state transitions and history tracking
+    * Variable evaluation and management
+    * Resource allocation and replenishment
+    * Utility calculations
+    * Workflow visualization
     
     The simulation operates on a timestep basis, processing patients through states and transitions
     based on conditional and probabilistic rules defined in the workflow configuration.
@@ -71,11 +72,12 @@ class Simulation(object):
         """Evaluates all variables for a given patient at the current timestep.
         
         Processes different variable types:
-        - scalar: Returns constant value
-        - resource: Returns current resource level
-        - property: Returns patient-specific property value
-        - simulation: Returns simulation-specific values (time remaining, elapsed time, current timestep)
-        - function: Executes and returns function result
+        
+        * `scalar`: Returns constant value
+        * `resource`: Returns current resource level
+        * `property`: Returns patient-specific property value
+        * `simulation`: Returns simulation-specific values (time remaining, elapsed time, current timestep)
+        * `function`: Executes and returns function result
         
         Args:
             patient (Patient): The patient to evaluate variables for
@@ -120,9 +122,10 @@ class Simulation(object):
         """Evaluates a Python expression in the context of a patient and variables.
         
         Handles evaluation of:
-        - Literal values (bool, int, float)
-        - String expressions using Python's eval()
-        - Pre-compiled expressions for better performance
+
+        * Literal values (bool, int, float)
+        * String expressions using Python's eval()
+        * Pre-compiled expressions for better performance
         
         The expression can reference any variables passed in the variables dict.
         
@@ -179,7 +182,7 @@ class Simulation(object):
             return True
         return self.evaluate_expression(patient, transition.if_, variables, transition.if_compiled)
 
-    def evaluate_transition_prob(self, patient: Patient, transition: Transition, variables: dict) -> float:
+    def evaluate_transition_prob(self, patient: Patient, transition: Transition, variables: Dict[str, Any]) -> float:
         """Evaluates whether a probabilistic transition should be taken.
         
         For transitions with a 'prob' value, evaluates the probability expression.
@@ -188,7 +191,7 @@ class Simulation(object):
         Args:
             patient (Patient): The patient attempting the transition
             transition (Transition): The transition to evaluate
-            variables (dict): Variables available for probability evaluation
+            variables (Dict[str, Any]): Variables available for probability evaluation
 
         Returns:
             float: Evaluated probability value between 0 and 1, or None if no probability specified
@@ -199,7 +202,7 @@ class Simulation(object):
             return None
         return self.evaluate_expression(patient, transition.prob, variables, transition.prob_compiled)
 
-    def evaluate_utility_if(self, patient: Patient, utility: Utility, variables: dict) -> bool:
+    def evaluate_utility_if(self, patient: Patient, utility: Utility, variables: Dict[str, Any]) -> bool:
         """Evaluates whether a utility should be applied based on its condition.
         
         Similar to evaluate_transition_if, but for utility conditions. Returns True
@@ -208,7 +211,7 @@ class Simulation(object):
         Args:
             patient (Patient): The patient to evaluate utility for
             utility (Utility): The utility to evaluate
-            variables (dict): Variables available for condition evaluation
+            variables (Dict[str, Any]): Variables available for condition evaluation
 
         Returns:
             bool: True if utility should be applied, False otherwise
@@ -219,7 +222,7 @@ class Simulation(object):
             return True
         return self.evaluate_expression(patient, utility.if_, variables, utility.if_compiled)
 
-    def evaluate_utility_value(self, patient: Patient, utility: Utility, variables: dict) -> Any:
+    def evaluate_utility_value(self, patient: Patient, utility: Utility, variables: Dict[str, Any]) -> Any:
         """Evaluates the actual value of a utility.
         
         Evaluates the utility's value expression in the context of the patient and variables.
@@ -228,14 +231,14 @@ class Simulation(object):
         Args:
             patient (Patient): The patient context for evaluation
             utility (Utility): The utility whose value should be evaluated
-            variables (dict): Variables available for value evaluation
+            variables (Dict[str, Any]): Variables available for value evaluation
 
         Returns:
             Any: The evaluated utility value
         """
         return self.evaluate_expression(patient, utility.value, variables, utility.value_compiled)
     
-    def evaluate_duration(self, patient: Patient, duration: str, variables: dict) -> int:
+    def evaluate_duration(self, patient: Patient, duration: str, variables: Dict[str, Any]) -> int:
         """Evaluates how long a patient should remain in a state or transition.
         
         Duration can be a constant or an expression using available variables.
@@ -243,7 +246,7 @@ class Simulation(object):
         Args:
             patient (Patient): The patient to evaluate duration for
             duration (str): The duration expression to evaluate
-            variables (dict): Variables available for duration evaluation
+            variables (Dict[str, Any]): Variables available for duration evaluation
 
         Returns:
             int: Number of timesteps the duration should last
@@ -252,7 +255,7 @@ class Simulation(object):
 
     def select_transition(self, patient: Patient, 
                           transitions: List[Transition],
-                          variables: dict) -> int:
+                          variables: Dict[str, Any]) -> int:
         """Determines which transition a patient should take from their current state.
         
         First evaluates all conditional ('if') transitions in order. If none are true,
@@ -262,7 +265,7 @@ class Simulation(object):
         Args:
             patient (Patient): The patient attempting to transition
             transitions (List[Transition]): Available transitions from current state
-            variables (dict): Variables available for transition evaluation
+            variables (Dict[str, Any]): Variables available for transition evaluation
 
         Returns:
             int: Index of selected transition, or None if no valid transition found
@@ -304,18 +307,19 @@ class Simulation(object):
         t_idx = start_idx_for_probs + random.choices(range(len(prob_transitions)), weights = probs)[0]
         return t_idx
 
-    def init_variables(self, variables: List[dict]):
+    def init_variables(self, variables: Dict[str, dict]):
         """Initializes resource variables with their starting values.
         
         Note: Modifies 'variables' in place
     
         For each resource variable, sets:
-        - Initial resource level from init_amount
-        - Last refill timestep to 0
-        - Empty history tracking list
+        
+        * Initial resource level from init_amount
+        * Last refill timestep to 0
+        * Empty history tracking list
         
         Args:
-            variables (List[dict]): Dictionary of variables from YAML config, modified in place
+            variables (Dict[str, dict]): Dictionary of variables from config, modified in place
         """       
         # Resource initial amounts
         for v_id, v in variables.items():
@@ -380,8 +384,7 @@ class Simulation(object):
     def log(self, string: str):
         """Logs a message if logging is enabled.
         
-        Format:
-            t=<current timestep of simulation> | {string}
+        Format: t=<current timestep of simulation> | {string}
     
         Args:
             string (str): Message to log
@@ -398,6 +401,7 @@ class Simulation(object):
         """Runs the simulation by progressing all patients through the workflow.
     
         Core simulation loop that:
+        
         1. Processes patients in order of admission time and preference sorting
         2. Moves each patient through states based on transitions
         3. Tracks utilities and resource usage
@@ -675,10 +679,11 @@ class Simulation(object):
         """Visualizes the workflow as a directed graph using pydot.
     
         Creates a visual diagram showing:
-        - States as nodes
-        - Transitions as edges
-        - Transition conditions and probabilities
-        - State/transition utilities and durations
+        
+        * States as nodes
+        * Transitions as edges
+        * Transition conditions and probabilities
+        * State/transition utilities and durations
         
         Args:
             path_to_file (str, optional): Path to save diagram. Must include supported file extension.
@@ -1123,7 +1128,7 @@ def sort_patient_by_preference(patients: List[Patient],
     """Returns indices that would sort patients by specified property.
     
     Can sort by:
-        - Direct ``Patient`` attributes (``id``, ``start_timestep``)
+        - Direct :class:`~aplusml.models.Patient` attributes (``id``, ``start_timestep``)
         - Patient properties dictionary values
     
     Args:

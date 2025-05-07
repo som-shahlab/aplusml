@@ -1,3 +1,6 @@
+"""
+Classes used for modeling components of an APLUS simulation -- namely: :class:`~aplusml.models.Utility`, :class:`~aplusml.models.Transition`, :class:`~aplusml.models.State`, :class:`~aplusml.models.History`, and :class:`~aplusml.models.Patient`.
+"""
 import collections
 from types import CodeType
 from typing import Optional, Dict, List, Union
@@ -6,6 +9,11 @@ import ast
 class Utility(object):
     """
     A utility is a value that is associated with being in a state or undergoing a transition.
+
+    Attributes:
+        value (str): The value of the utility. Example: '100000'
+        unit (str, optional): The unit of the utility. Defaults to ''. Example: 'USD', 'days', 'kg', 'cm', etc.
+        if_ (str, optional): The condition for the utility, specified as a Python expression. Defaults to None. Example: 'y_hat > 0.5'
     """
 
     def __init__(self,
@@ -60,6 +68,15 @@ class Utility(object):
 class Transition(object):
     """
     A transition between states.
+    
+    Attributes:
+        dest (str): The destination state.
+        label (str): The label of the transition.
+        duration (int): The duration of the transition.
+        utilities (List[Utility]): The utilities of the transition.
+        resource_deltas (Dict[str, float]): The resource deltas of the transition.
+        if_ (Optional[Union[str, bool]]): The condition for the transition, specified as a Python expression.
+        prob (Optional[Union[str, float]]): The probability of the transition.
     """
 
     def __init__(self, 
@@ -167,6 +184,14 @@ class Transition(object):
 class State(object):
     """
     A state in the workflow.
+    
+    Attributes:
+        id (str): The ID of the state.
+        label (str): The label of the state.
+        type (str): The type of the state. Must be one of: 'start', 'intermediate', 'end'
+        duration (int): The duration of the state.
+        utilities (List[Utility]): The utilities of the state.
+        transitions (List[Transition]): The transitions of the state.
     """
 
     def __init__(self, 
@@ -232,6 +257,15 @@ class State(object):
 class History(object):
     """
     The history of a patient's states and transitions.
+    
+    Attributes:
+        current_timestep (int): The current timestep.
+        state_id (str): The ID of the current state.
+        transition_idx (int): The index of the current transition.
+        state_utility_idxs (List[int]): The indices of the utilities of the current state.
+        transition_utility_idxs (List[int]): The indices of the utilities of the current transition.
+        state_utility_vals (List[float]): The evaluated utility values of the current state.
+        transition_utility_vals (List[float]): The evaluated utility values of the current transition.
     """
 
     def __init__(self, 
@@ -278,8 +312,14 @@ class History(object):
 class Patient(object):
     """
     A patient in the simulation.
+    
+    Attributes:
+        id (str): The ID of the patient.
+        start_timestep (int): The start timestep of the patient.
+        properties (dict): The properties of the patient.
+        history (List[History]): The history of the patient.
+        current_state (str): The ID of the current state.
     """
-    __module__ = 'aplusml.models'
 
     def __init__(self, 
                  id: str, 

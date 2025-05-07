@@ -85,7 +85,10 @@
            <div itemprop="articleBody">
              
   <h1>Source code for aplusml.models</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">collections</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Classes used for modeling components of an APLUS simulation -- namely: :class:`~aplusml.models.Utility`, :class:`~aplusml.models.Transition`, :class:`~aplusml.models.State`, :class:`~aplusml.models.History`, and :class:`~aplusml.models.Patient`.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">collections</span>
 <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">CodeType</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">import</span> <span class="nn">ast</span>
@@ -95,6 +98,11 @@
 <span class="k">class</span> <span class="nc">Utility</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A utility is a value that is associated with being in a state or undergoing a transition.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        value (str): The value of the utility. Example: &#39;100000&#39;</span>
+<span class="sd">        unit (str, optional): The unit of the utility. Defaults to &#39;&#39;. Example: &#39;USD&#39;, &#39;days&#39;, &#39;kg&#39;, &#39;cm&#39;, etc.</span>
+<span class="sd">        if_ (str, optional): The condition for the utility, specified as a Python expression. Defaults to None. Example: &#39;y_hat &gt; 0.5&#39;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="Utility.__init__">
@@ -158,6 +166,15 @@
 <span class="k">class</span> <span class="nc">Transition</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A transition between states.</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        dest (str): The destination state.</span>
+<span class="sd">        label (str): The label of the transition.</span>
+<span class="sd">        duration (int): The duration of the transition.</span>
+<span class="sd">        utilities (List[Utility]): The utilities of the transition.</span>
+<span class="sd">        resource_deltas (Dict[str, float]): The resource deltas of the transition.</span>
+<span class="sd">        if_ (Optional[Union[str, bool]]): The condition for the transition, specified as a Python expression.</span>
+<span class="sd">        prob (Optional[Union[str, float]]): The probability of the transition.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="Transition.__init__">
@@ -286,6 +303,14 @@
 <span class="k">class</span> <span class="nc">State</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A state in the workflow.</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        id (str): The ID of the state.</span>
+<span class="sd">        label (str): The label of the state.</span>
+<span class="sd">        type (str): The type of the state. Must be one of: &#39;start&#39;, &#39;intermediate&#39;, &#39;end&#39;</span>
+<span class="sd">        duration (int): The duration of the state.</span>
+<span class="sd">        utilities (List[Utility]): The utilities of the state.</span>
+<span class="sd">        transitions (List[Transition]): The transitions of the state.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="State.__init__">
@@ -363,6 +388,15 @@
 <span class="k">class</span> <span class="nc">History</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The history of a patient&#39;s states and transitions.</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        current_timestep (int): The current timestep.</span>
+<span class="sd">        state_id (str): The ID of the current state.</span>
+<span class="sd">        transition_idx (int): The index of the current transition.</span>
+<span class="sd">        state_utility_idxs (List[int]): The indices of the utilities of the current state.</span>
+<span class="sd">        transition_utility_idxs (List[int]): The indices of the utilities of the current transition.</span>
+<span class="sd">        state_utility_vals (List[float]): The evaluated utility values of the current state.</span>
+<span class="sd">        transition_utility_vals (List[float]): The evaluated utility values of the current transition.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="History.__init__">
@@ -415,8 +449,14 @@
 <span class="k">class</span> <span class="nc">Patient</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A patient in the simulation.</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        id (str): The ID of the patient.</span>
+<span class="sd">        start_timestep (int): The start timestep of the patient.</span>
+<span class="sd">        properties (dict): The properties of the patient.</span>
+<span class="sd">        history (List[History]): The history of the patient.</span>
+<span class="sd">        current_state (str): The ID of the current state.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="vm">__module__</span> <span class="o">=</span> <span class="s1">&#39;aplusml.models&#39;</span>
 
 <div class="viewcode-block" id="Patient.__init__">
 <a class="viewcode-back" href="../../api/api.html#aplusml.models.Patient.__init__">[docs]</a>
