@@ -1,10 +1,21 @@
-.. APLUS ML documentation master file, created by
-   sphinx-quickstart on Mon Feb 24 13:52:47 2025.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+.. raw:: html
 
-Welcome to APLUS ML's documentation!
-====================================
+   <div align="center">
+      <h1 style="margin-bottom: 10px;">APLUS ML</h1>
+      <div style="margin-bottom: 10px;">
+         <strong>A</strong> <strong>P</strong>ython <strong>L</strong>ibrary for <strong>U</strong>sefulness <strong>S</strong>imulations of <strong>M</strong>achine <strong>L</strong>earning Models
+      </div>
+      <div>
+         <h4 style="margin-bottom: 10px;">
+            <a href="https://github.com/som-shahlab/aplusml" target="_blank">💻 GitHub</a> • <a href="https://pypi.org/project/aplusml/" target="_blank">🐍 PyPi</a> • <a href="https://www.sciencedirect.com/science/article/pii/S1532046423000400?via%3Dihub" target="_blank">📝 Paper</a>
+         </h4>
+         <h4>
+            <code>pip install aplusml</code>
+         </h4>
+      </div>
+   </div>
+
+
 .. image:: _static/graphical_abstract.png
    :width: 700
    :alt: APLUS graphical abstract

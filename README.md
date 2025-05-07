@@ -1,15 +1,18 @@
-# APLUS ML
-
-**A** **P**ython **L**ibrary for **U**sefulness **S**imulations of **M**achine **L**earning Models
-
-* ⚙ Documentation: [https://aplusml.readthedocs.io/en/latest/](https://aplusml.readthedocs.io/en/latest/)
-* 📝 Paper: [APLUS - Journal of Biomedical Informatics](https://www.sciencedirect.com/science/article/pii/S1532046423000400?via%3Dihub)
-* 🚀 Quickstart: `pip install aplusml`
-
-----
-
-![Graphical Abstract](https://github.com/som-shahlab/aplusml/blob/bc3fba49257092f038a862e870b4cae86f9eb659/assets/graphical%20abstract.png)
-
+<div align="center">
+  <h1>APLUS ML</h1>
+  <div>
+    <strong>A</strong> <strong>P</strong>ython <strong>L</strong>ibrary for <strong>U</strong>sefulness <strong>S</strong>imulations of <strong>M</strong>achine <strong>L</strong>earning Models
+  </div>
+  <div>
+    <h4>
+      <a href="https://aplusml.readthedocs.io/en/latest/">⚙ Documentation</a> • <a href="https://www.sciencedirect.com/science/article/pii/S1532046423000400?via%3Dihub">📝 Paper</a>
+    </h4>
+    <h4>
+      <code>pip install aplusml</code>
+    </h4>
+  </div>
+  <img src="https://github.com/som-shahlab/aplusml/blob/bc3fba49257092f038a862e870b4cae86f9eb659/assets/graphical%20abstract.png" height="400" />
+</div>
 
 ## Installation
 
@@ -25,6 +28,8 @@ brew install graphviz
 ```
 
 ## Usage
+
+Please see the <a href="https://aplusml.readthedocs.io/en/latest/">documentation</a> for usage examples.
 
 Run `tutorials/synthetic_pad.ipynb` to try an example notebook which works out-of-the-box.
 
