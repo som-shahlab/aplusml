@@ -2,23 +2,14 @@
 
 **A** **P**ython **L**ibrary for **U**sefulness **S**imulations of **M**achine **L**earning Models
 
+* ⚙ Documentation: [https://aplusml.readthedocs.io/en/latest/](https://aplusml.readthedocs.io/en/latest/)
+* 📝 Paper: [APLUS - Journal of Biomedical Informatics](https://www.sciencedirect.com/science/article/pii/S1532046423000400?via%3Dihub)
+* 🚀 Quickstart: `pip install aplusml`
+
 ----
 
 ![Graphical Abstract](assets/graphical%20abstract.png)
 
-Corresponding paper: [APLUS - Journal of Biomedical Informatics](https://www.sciencedirect.com/science/article/pii/S1532046423000400?via%3Dihub)
-
-Citation:
-```
-@article{wornow2023aplus,
-  title={APLUS: A Python Library for Usefulness Simulations of Machine Learning Models in Healthcare},
-  author={Wornow, Michael and Ross, Elsie Gyang and Callahan, Alison and Shah, Nigam H},
-  journal={Journal of Biomedical Informatics},
-  pages={104319},
-  year={2023},
-  publisher={Elsevier}
-}
-```
 
 ## Installation
 
@@ -138,4 +129,17 @@ sphinx-autobuild docs/source docs/build/html
 
 # Build for dist
 make html
+```
+
+## Citation
+
+```
+@article{wornow2023aplus,
+  title={APLUS: A Python Library for Usefulness Simulations of Machine Learning Models in Healthcare},
+  author={Wornow, Michael and Ross, Elsie Gyang and Callahan, Alison and Shah, Nigam H},
+  journal={Journal of Biomedical Informatics},
+  pages={104319},
+  year={2023},
+  publisher={Elsevier}
+}
 ```
