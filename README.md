@@ -5,7 +5,7 @@
   </div>
   <div>
     <h4>
-      <a href="https://aplusml.readthedocs.io/en/latest/">⚙ Documentation</a> • <a href="https://www.sciencedirect.com/science/article/pii/S1532046423000400?via%3Dihub">📝 Paper</a>
+      <a href="https://aplusml.readthedocs.io/en/latest/" target="_blank">⚙ Documentation</a> • <a href="https://pypi.org/project/aplusml/" target="_blank">🐍 PyPi</a> • <a href="https://www.sciencedirect.com/science/article/pii/S1532046423000400?via%3Dihub" target="_blank">📝 Paper</a>
     </h4>
     <h4>
       <code>pip install aplusml</code>
