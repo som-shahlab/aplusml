@@ -1,0 +1,268 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Config YAML Templates &mdash; APLUS ML  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=ae483e34" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Configuration" href="../api/config.html" />
+    <link rel="prev" title="Concept Guide" href="concepts.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            APLUS ML
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">🚦 Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/background.html">Background</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">📚 User Guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quick.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_hello.html">Tutorial (Hello World)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_pad.html">Tutorial (PAD)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_hcm.html">Tutorial (HCM)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">Concept Guide</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Config YAML Templates</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#no-patient-properties-csv">No Patient Properties CSV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#resource-driven-config">Resource-Driven Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#patient-properties-csv">Patient Properties CSV</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">📖 API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/config.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">APLUS ML</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Config YAML Templates</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/usage/templates.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="config-yaml-templates">
+<h1>Config YAML Templates<a class="headerlink" href="#config-yaml-templates" title="Link to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<p>This page contains some minimal YAML templates for various configurations.</p>
+<section id="no-patient-properties-csv">
+<h2>No Patient Properties CSV<a class="headerlink" href="#no-patient-properties-csv" title="Link to this heading"></a></h2>
+<p>This config is for the case where <strong>no patient properties CSV</strong> is provided.</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text"><cite>config.yaml</cite></span><a class="headerlink" href="#id1" title="Link to this code"></a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">metadata</span><span class="p">:</span>
+<span class="linenos"> 2</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;My</span><span class="nv"> </span><span class="s">simulation&quot;</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="nt">variables</span><span class="p">:</span>
+<span class="linenos"> 5</span><span class="w">  </span><span class="nt">var_constant</span><span class="p">:</span>
+<span class="linenos"> 6</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scalar</span>
+<span class="linenos"> 7</span><span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="linenos"> 8</span><span class="w">  </span><span class="nt">sim_property__los</span><span class="p">:</span>
+<span class="linenos"> 9</span><span class="w">    </span><span class="c1"># Every patient has a different random LOS, which is sampled from a normal distribution with mean 5 and std 1.</span>
+<span class="linenos">10</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">property</span>
+<span class="linenos">11</span><span class="w">    </span><span class="nt">distribution</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">normal</span>
+<span class="linenos">12</span><span class="w">    </span><span class="nt">mean</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="linenos">13</span><span class="w">    </span><span class="nt">std</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="linenos">14</span>
+<span class="linenos">15</span><span class="nt">states</span><span class="p">:</span>
+<span class="linenos">16</span><span class="w">  </span><span class="nt">state_1</span><span class="p">:</span>
+<span class="linenos">17</span><span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;State</span><span class="nv"> </span><span class="s">1&quot;</span>
+<span class="linenos">18</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">start</span>
+<span class="linenos">19</span><span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="linenos">20</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">state_2</span>
+<span class="linenos">21</span><span class="w">  </span><span class="nt">state_2</span><span class="p">:</span>
+<span class="linenos">22</span><span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;State</span><span class="nv"> </span><span class="s">2&quot;</span>
+<span class="linenos">23</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">intermediate</span>
+<span class="linenos">24</span><span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="linenos">25</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">state_3</span>
+<span class="linenos">26</span><span class="w">  </span><span class="nt">state_3</span><span class="p">:</span>
+<span class="linenos">27</span><span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;State</span><span class="nv"> </span><span class="s">3&quot;</span>
+<span class="linenos">28</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">end</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="resource-driven-config">
+<h2>Resource-Driven Config<a class="headerlink" href="#resource-driven-config" title="Link to this heading"></a></h2>
+<p>This config has a <strong>resource</strong> that changes over time.</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text"><cite>config.yaml</cite></span><a class="headerlink" href="#id2" title="Link to this code"></a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">metadata</span><span class="p">:</span>
+<span class="linenos"> 2</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;My</span><span class="nv"> </span><span class="s">simulation&quot;</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="nt">variables</span><span class="p">:</span>
+<span class="linenos"> 5</span><span class="w">  </span><span class="nt">resource__open_beds</span><span class="p">:</span>
+<span class="linenos"> 6</span><span class="w">    </span><span class="c1"># Starts at 3, refills by 2 every 1 timesteps, maxes out at 10.</span>
+<span class="linenos"> 7</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">resource</span>
+<span class="linenos"> 8</span><span class="w">    </span><span class="nt">init_amount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+<span class="linenos"> 9</span><span class="w">    </span><span class="nt">max_amount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="linenos">10</span><span class="w">    </span><span class="nt">refill_amount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="linenos">11</span><span class="w">    </span><span class="nt">refill_duration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="linenos">12</span>
+<span class="linenos">13</span><span class="nt">states</span><span class="p">:</span>
+<span class="linenos">14</span><span class="w">  </span><span class="nt">state_1</span><span class="p">:</span>
+<span class="linenos">15</span><span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;State</span><span class="nv"> </span><span class="s">1&quot;</span>
+<span class="linenos">16</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">start</span>
+<span class="linenos">17</span><span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="linenos">18</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">state_2</span>
+<span class="linenos">19</span><span class="w">  </span><span class="nt">state_2</span><span class="p">:</span>
+<span class="linenos">20</span><span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;State</span><span class="nv"> </span><span class="s">2&quot;</span>
+<span class="linenos">21</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">intermediate</span>
+<span class="linenos">22</span><span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="linenos">23</span><span class="w">      </span><span class="c1"># If there are open beds, then the patient can be admitted...</span>
+<span class="linenos">24</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">state_admitted</span>
+<span class="linenos">25</span><span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">resource__open_beds &gt; 0</span>
+<span class="linenos">26</span><span class="w">        </span><span class="nt">resource_deltas</span><span class="p">:</span>
+<span class="linenos">27</span><span class="w">          </span><span class="c1"># If patient takes this transition to state 3, then 1 bed is used.</span>
+<span class="linenos">28</span><span class="w">          </span><span class="nt">resource__open_beds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-1</span>
+<span class="linenos">29</span><span class="w">      </span><span class="c1"># ...otherwise, the patient is refused.</span>
+<span class="linenos">30</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">state_refused</span>
+<span class="linenos">31</span><span class="w">  </span><span class="nt">state_admitted</span><span class="p">:</span>
+<span class="linenos">32</span><span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Admitted</span><span class="nv"> </span><span class="s">State&quot;</span>
+<span class="linenos">33</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">end</span>
+<span class="linenos">34</span><span class="w">  </span><span class="nt">state_refused</span><span class="p">:</span>
+<span class="linenos">35</span><span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Refused</span><span class="nv"> </span><span class="s">State&quot;</span>
+<span class="linenos">36</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">end</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="patient-properties-csv">
+<h2>Patient Properties CSV<a class="headerlink" href="#patient-properties-csv" title="Link to this heading"></a></h2>
+<p>This config has a <strong>patient properties CSV</strong> that must be provided at the path <code class="docutils literal notranslate"><span class="pre">path/to/patient_properties.csv</span></code>.</p>
+<p>The CSV must have a column for the patient ID (named <code class="docutils literal notranslate"><span class="pre">id</span></code>), and then one column for each property referenced in the <code class="docutils literal notranslate"><span class="pre">variables</span></code> section (e.g. <code class="docutils literal notranslate"><span class="pre">y</span></code> and <code class="docutils literal notranslate"><span class="pre">y_hat</span></code>).</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text"><cite>config.yaml</cite></span><a class="headerlink" href="#id3" title="Link to this code"></a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">metadata</span><span class="p">:</span>
+<span class="linenos"> 2</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;My</span><span class="nv"> </span><span class="s">simulation&quot;</span>
+<span class="linenos"> 3</span><span class="w">  </span><span class="nt">path_to_properties</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;path/to/patient_properties.csv&quot;</span>
+<span class="linenos"> 4</span><span class="w">  </span><span class="nt">properties_col_for_patient_id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;id&quot;</span><span class="w"> </span><span class="c1"># This property is LOADED from the CSV file</span>
+<span class="linenos"> 5</span>
+<span class="linenos"> 6</span><span class="nt">variables</span><span class="p">:</span>
+<span class="linenos"> 7</span><span class="w">  </span><span class="nt">csv_property__y</span><span class="p">:</span>
+<span class="linenos"> 8</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">property</span>
+<span class="linenos"> 9</span><span class="w">    </span><span class="c1"># This property is LOADED from the CSV file b/c the &#39;column&#39; attribute is set.</span>
+<span class="linenos">10</span><span class="w">    </span><span class="nt">column</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;y&quot;</span>
+<span class="linenos">11</span><span class="w">  </span><span class="nt">csv_property__y_hat</span><span class="p">:</span>
+<span class="linenos">12</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">property</span>
+<span class="linenos">13</span><span class="w">    </span><span class="c1"># This property is LOADED from the CSV file b/c the &#39;column&#39; attribute is set.</span>
+<span class="linenos">14</span><span class="w">    </span><span class="nt">column</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;y_hat&quot;</span>
+<span class="linenos">15</span><span class="w">  </span><span class="nt">sim_property__los</span><span class="p">:</span>
+<span class="linenos">16</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">property</span>
+<span class="linenos">17</span><span class="w">    </span><span class="c1"># This property is NOT LOADED from the CSV file b/c the &#39;column&#39; attribute is not set.</span>
+<span class="linenos">18</span><span class="w">    </span><span class="c1"># Instead, the value is randomly sampled by the simulation.</span>
+<span class="linenos">19</span><span class="w">    </span><span class="nt">distribution</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">normal</span>
+<span class="linenos">20</span><span class="w">    </span><span class="nt">mean</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="linenos">21</span><span class="w">    </span><span class="nt">std</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="linenos">22</span>
+<span class="linenos">23</span><span class="nt">states</span><span class="p">:</span>
+<span class="linenos">24</span><span class="w">  </span><span class="nt">state_1</span><span class="p">:</span>
+<span class="linenos">25</span><span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;State</span><span class="nv"> </span><span class="s">1&quot;</span>
+<span class="linenos">26</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">start</span>
+<span class="linenos">27</span><span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="linenos">28</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">state_2</span>
+<span class="linenos">29</span><span class="w">  </span><span class="nt">state_2</span><span class="p">:</span>
+<span class="linenos">30</span><span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;State</span><span class="nv"> </span><span class="s">2&quot;</span>
+<span class="linenos">31</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">intermediate</span>
+<span class="linenos">32</span><span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="linenos">33</span><span class="w">      </span><span class="c1"># If model prediction is correct, then the patient is successfully treated.</span>
+<span class="linenos">34</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">state_success</span>
+<span class="linenos">35</span><span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">csv_property__y == csv_property__y_hat</span>
+<span class="linenos">36</span><span class="w">      </span><span class="c1"># ...otherwise, the model failed.</span>
+<span class="linenos">37</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">state_failure</span>
+<span class="linenos">38</span><span class="w">  </span><span class="nt">state_success</span><span class="p">:</span>
+<span class="linenos">39</span><span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Success</span><span class="nv"> </span><span class="s">State&quot;</span>
+<span class="linenos">40</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">end</span>
+<span class="linenos">41</span><span class="w">  </span><span class="nt">state_failure</span><span class="p">:</span>
+<span class="linenos">42</span><span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Failure</span><span class="nv"> </span><span class="s">State&quot;</span>
+<span class="linenos">43</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">end</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="concepts.html" class="btn btn-neutral float-left" title="Concept Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../api/config.html" class="btn btn-neutral float-right" title="Configuration" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Michael Wornow.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

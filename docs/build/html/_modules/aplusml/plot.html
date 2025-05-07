@@ -1,0 +1,1124 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>aplusml.plot &mdash; APLUS ML  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=ae483e34" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            APLUS ML
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">🚦 Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/background.html">Background</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">📚 User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/quick.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/tutorial_hello.html">Tutorial (Hello World)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/tutorial_pad.html">Tutorial (PAD)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/tutorial_hcm.html">Tutorial (HCM)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/concepts.html">Concept Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/templates.html">Config YAML Templates</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">📖 API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/config.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">APLUS ML</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">aplusml.plot</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for aplusml.plot</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Plotting functions for visualizing simulation results.</span>
+
+<span class="sd">Some quick notes:</span>
+<span class="sd">    - For all functions, the `df_preds` dataframe must contain two columns -- &#39;y&#39; (ground truth) and &#39;y_hat&#39; (predicted labels).</span>
+<span class="sd">    - For all functions, the `utilities` dictionary must contain four keys -- &#39;tp&#39;, &#39;fp&#39;, &#39;tn&#39;, &#39;fn&#39; -- which map to the utility values for each class.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">sklearn.metrics</span>
+<span class="kn">import</span> <span class="nn">sklearn.calibration</span>
+<span class="kn">from</span> <span class="nn">sklearn.neighbors</span> <span class="kn">import</span> <span class="n">KernelDensity</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">confusion_matrix</span><span class="p">,</span> <span class="n">ConfusionMatrixDisplay</span>
+<span class="kn">import</span> <span class="nn">plotnine</span> <span class="k">as</span> <span class="nn">p9</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;ggplot&#39;</span><span class="p">)</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span> <span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">module</span> <span class="o">=</span> <span class="s2">&quot;plotnine\..*&quot;</span> <span class="p">)</span>
+
+<span class="c1">################################################</span>
+<span class="c1"># Simulation analysis</span>
+<span class="c1">################################################</span>
+<div class="viewcode-block" id="plot_mean_utility_v_threshold">
+<a class="viewcode-back" href="../../api/api.html#aplusml.plot.plot_mean_utility_v_threshold">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_mean_utility_v_threshold</span><span class="p">(</span><span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+                                  <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+                                  <span class="n">label_sort_order</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                                  <span class="n">label_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                                  <span class="n">label_title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">p9</span><span class="o">.</span><span class="n">ggplot</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot mean utility vs. threshold</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        title (str): Title of the plot</span>
+<span class="sd">        df (pd.DataFrame): Output of `run.run_test()`. Columns: threshold, mean_utility, std_utility, sem_utility, mean_work_per_timestep, label</span>
+<span class="sd">        label_sort_order (list[str], optional): Custom ordering for x-axis labels. Defaults to None.</span>
+<span class="sd">        label_names (list[str], optional): Display names for labels. Defaults to None.</span>
+<span class="sd">        label_title (str, optional): Title of label legend. Defaults to None.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        p9.ggplot: Plot object</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s1">&#39;N/A&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Categorical</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">],</span> <span class="n">categories</span><span class="o">=</span><span class="n">label_sort_order</span> <span class="k">if</span> <span class="n">label_sort_order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">pd</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">label_names</span><span class="p">:</span> <span class="n">label_names</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+    <span class="c1"># Reorder labels ordered from lowest to highest max(mean_utility))</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">p9</span><span class="o">.</span><span class="n">ggplot</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">p9</span><span class="o">.</span><span class="n">aes</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="s1">&#39;mean_utility&#39;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s1">&#39;threshold&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;label&#39;</span><span class="p">))</span> <span class="o">+</span>
+        <span class="n">p9</span><span class="o">.</span><span class="n">geom_ribbon</span><span class="p">(</span><span class="n">p9</span><span class="o">.</span><span class="n">aes</span><span class="p">(</span><span class="n">ymin</span><span class="o">=</span><span class="s1">&#39;mean_utility - sem_utility&#39;</span><span class="p">,</span> 
+                               <span class="n">ymax</span><span class="o">=</span><span class="s1">&#39;mean_utility + sem_utility&#39;</span><span class="p">,</span>
+                               <span class="n">fill</span><span class="o">=</span><span class="s1">&#39;label&#39;</span><span class="p">),</span> 
+                           <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+                           <span class="n">outline_type</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                           <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">+</span>
+        <span class="n">p9</span><span class="o">.</span><span class="n">geom_point</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">show_legend</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">+</span>
+        <span class="n">p9</span><span class="o">.</span><span class="n">labs</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s2">&quot;Model Cutoff Threshold&quot;</span><span class="p">,</span>
+                <span class="n">y</span><span class="o">=</span><span class="s2">&quot;Achieved Utility Per Patient&quot;</span><span class="p">,</span>
+                <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="o">+</span>
+        <span class="n">p9</span><span class="o">.</span><span class="n">scale_fill_discrete</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="n">label_title</span> <span class="ow">or</span> <span class="s1">&#39;Setting&#39;</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">label_names</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">p</span></div>
+
+
+<div class="viewcode-block" id="plot_dodged_bar_mean_utilities">
+<a class="viewcode-back" href="../../api/api.html#aplusml.plot.plot_dodged_bar_mean_utilities">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_dodged_bar_mean_utilities</span><span class="p">(</span><span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+                                   <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+                                   <span class="n">label_sort_order</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                                   <span class="n">label_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                                   <span class="n">color_sort_order</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                                   <span class="n">color_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                                   <span class="n">is_percent_of_optimistic</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                                   <span class="n">x_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">p9</span><span class="o">.</span><span class="n">ggplot</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot relative utility using the optimistic model as a baseline.</span>
+<span class="sd">    </span>
+<span class="sd">    Creates a bar plot where bars are grouped by label (x-axis) and colored by a secondary</span>
+<span class="sd">    category. Utility values are measured relative to a baseline, optionally as a percentage</span>
+<span class="sd">    of the optimistic model&#39;s performance.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        title (str): Title of the plot</span>
+<span class="sd">        df (pd.DataFrame): DataFrame containing columns: y, label, color</span>
+<span class="sd">        label_sort_order (list[str], optional): Custom ordering for x-axis labels. Defaults to None.</span>
+<span class="sd">        label_names (list[str], optional): Display names for labels. Defaults to None.</span>
+<span class="sd">        color_sort_order (list[str], optional): Custom ordering for color categories. Defaults to None.</span>
+<span class="sd">        color_names (list[str], optional): Display names for color categories. Defaults to None.</span>
+<span class="sd">        is_percent_of_optimistic (bool, optional): If True, show utilities as percentage of optimistic model. Defaults to False.</span>
+<span class="sd">        x_label (str, optional): Custom x-axis label. Defaults to None.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        p9.ggplot: A plotnine plot object showing grouped bars of relative utilities</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="c1"># Sort utilities</span>
+    <span class="n">baseline</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">is_percent_of_optimistic</span><span class="p">:</span>
+        <span class="c1"># We scale everything by the &#39;optimistic&#39; pathway that yields the max utility (since there may be multiple &#39;optimistic&#39; rows)</span>
+        <span class="n">utility_optimistic</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;optimistic&#39;</span><span class="p">][</span><span class="s1">&#39;y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="n">df</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">baseline</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">utility_optimistic</span> <span class="o">-</span> <span class="n">baseline</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">df</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">baseline</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+    <span class="c1"># NOTE: need to `fillna` b/c Pandas doesn&#39;t let you set None as a categorical value</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s1">&#39;N/A&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Categorical</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">],</span> <span class="n">categories</span><span class="o">=</span><span class="n">label_sort_order</span> <span class="k">if</span> <span class="n">label_sort_order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">pd</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">label_names</span><span class="p">:</span> <span class="n">label_names</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s1">&#39;N/A&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Categorical</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">],</span> <span class="n">categories</span><span class="o">=</span><span class="n">color_sort_order</span> <span class="k">if</span> <span class="n">color_sort_order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">pd</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">]))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">color_names</span><span class="p">:</span> <span class="n">color_names</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+    <span class="c1"># Make plot</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">p9</span><span class="o">.</span><span class="n">ggplot</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">p9</span><span class="o">.</span><span class="n">aes</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">fill</span> <span class="o">=</span> <span class="s1">&#39;color&#39;</span><span class="p">))</span> <span class="o">+</span> 
+        <span class="n">p9</span><span class="o">.</span><span class="n">geom_col</span><span class="p">(</span><span class="n">stat</span><span class="o">=</span><span class="s1">&#39;identity&#39;</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="s1">&#39;dodge&#39;</span><span class="p">)</span> <span class="o">+</span>
+        <span class="n">p9</span><span class="o">.</span><span class="n">labs</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">x_label</span> <span class="k">else</span> <span class="n">x_label</span><span class="p">,</span>
+             <span class="n">y</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Achieved Utility Per Patient Over &#39;Treat None&#39;</span><span class="se">\n</span><span class="s2"> </span><span class="si">{</span><span class="w"> </span><span class="s1">&#39;as Fraction of Optimistic Pathway Utility&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">is_percent_of_optimistic</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+             <span class="n">title</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+             <span class="n">color</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">+</span> 
+        <span class="n">p9</span><span class="o">.</span><span class="n">scale_fill_discrete</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Model&quot;</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">color_names</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">p</span></div>
+
+
+<div class="viewcode-block" id="plot_line_mean_utilities">
+<a class="viewcode-back" href="../../api/api.html#aplusml.plot.plot_line_mean_utilities">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_line_mean_utilities</span><span class="p">(</span><span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+                           <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+                           <span class="n">group_sort_order</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                           <span class="n">groups_to_drop</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                           <span class="n">label_sort_order</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                           <span class="n">color_sort_order</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                           <span class="n">color_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                           <span class="n">shape_sort_order</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                           <span class="n">is_percent_of_optimistic</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                           <span class="n">color_title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                           <span class="n">shape_title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                           <span class="n">x_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">p9</span><span class="o">.</span><span class="n">ggplot</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates a line plot comparing mean utilities across different groups and settings.</span>
+
+<span class="sd">    This function creates a line plot where each line represents a group of related points.</span>
+<span class="sd">    Lines can be differentiated by color and points by shape. Unlike the dodged bar plot,</span>
+<span class="sd">    this supports multiple grouping dimensions.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        title (str): Title of the plot</span>
+<span class="sd">        df (pd.DataFrame): DataFrame containing at minimum these columns:</span>
+<span class="sd">            - y: numeric utility values</span>
+<span class="sd">            - label: categories for x-axis</span>
+<span class="sd">            - group: groups points that should be connected by lines</span>
+<span class="sd">            Optional columns:</span>
+<span class="sd">            - color: categories for line colors</span>
+<span class="sd">            - shape: categories for point shapes</span>
+<span class="sd">        group_sort_order (list, optional): Custom ordering for line groups. Defaults to None.</span>
+<span class="sd">        groups_to_drop (list, optional): Groups to exclude from plot. Defaults to None.</span>
+<span class="sd">        label_sort_order (list, optional): Custom ordering for x-axis labels. Defaults to None.</span>
+<span class="sd">        color_sort_order (list, optional): Custom ordering for colors. Defaults to None.</span>
+<span class="sd">        color_names (list[str], optional): Display names for color categories. Defaults to None.</span>
+<span class="sd">        shape_sort_order (list, optional): Custom ordering for point shapes. Defaults to None.</span>
+<span class="sd">        is_percent_of_optimistic (bool, optional): If True, show utilities as percentage of optimistic model. Defaults to False.</span>
+<span class="sd">        color_title (str, optional): Title for color legend. Defaults to None.</span>
+<span class="sd">        shape_title (str, optional): Title for shape legend. Defaults to None.</span>
+<span class="sd">        x_label (str, optional): Custom x-axis label. Defaults to None.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        p9.ggplot: A plotnine plot object showing utility comparisons across groups</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="c1"># Sort utilities</span>
+    <span class="n">baseline</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">is_percent_of_optimistic</span><span class="p">:</span>
+        <span class="c1"># We scale everything by the &#39;optimistic&#39; pathway that yields the max utility (since there may be multiple &#39;optimistic&#39; rows)</span>
+        <span class="n">utility_optimistic</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;optimistic&#39;</span><span class="p">][</span><span class="s1">&#39;y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="n">df</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span><span class="o">*</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">baseline</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">utility_optimistic</span> <span class="o">-</span> <span class="n">baseline</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">df</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">baseline</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+    <span class="c1"># NOTE: need to `fillna` b/c Pandas doesn&#39;t let you set None as a categorical value</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Categorical</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">],</span> <span class="n">categories</span><span class="o">=</span><span class="n">label_sort_order</span> <span class="k">if</span> <span class="n">label_sort_order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">pd</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]))</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;group&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s1">&#39;N/A&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;group&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Categorical</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;group&#39;</span><span class="p">],</span> <span class="n">categories</span><span class="o">=</span><span class="n">group_sort_order</span> <span class="k">if</span> <span class="n">group_sort_order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">pd</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;group&#39;</span><span class="p">]))</span>
+    <span class="k">if</span> <span class="s1">&#39;color&#39;</span> <span class="ow">in</span> <span class="n">df</span><span class="p">:</span>
+        <span class="n">df</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s1">&#39;N/A&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">df</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Categorical</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">],</span> <span class="n">categories</span><span class="o">=</span><span class="n">color_sort_order</span> <span class="k">if</span> <span class="n">color_sort_order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">pd</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">]))</span>
+    <span class="k">if</span> <span class="s1">&#39;shape&#39;</span> <span class="ow">in</span> <span class="n">df</span><span class="p">:</span>
+        <span class="n">df</span><span class="p">[</span><span class="s1">&#39;shape&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s1">&#39;N/A&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">df</span><span class="p">[</span><span class="s1">&#39;shape&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Categorical</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;shape&#39;</span><span class="p">],</span> <span class="n">categories</span><span class="o">=</span><span class="n">shape_sort_order</span> <span class="k">if</span> <span class="n">shape_sort_order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">pd</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;shape&#39;</span><span class="p">]))</span>
+    <span class="c1"># Drop certain groups (if specified)</span>
+    <span class="k">if</span> <span class="n">groups_to_drop</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">groups_to_drop</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;group&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">g</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">color_names</span><span class="p">:</span> <span class="n">color_names</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+    <span class="c1"># Make plot</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">p9</span><span class="o">.</span><span class="n">ggplot</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">p9</span><span class="o">.</span><span class="n">aes</span><span class="p">(</span><span class="o">**</span><span class="p">{</span>
+            <span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="s1">&#39;label&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;group&#39;</span><span class="p">:</span> <span class="s1">&#39;group&#39;</span><span class="p">,</span>
+            <span class="o">**</span><span class="p">({</span> <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;color&#39;</span> <span class="p">}</span> <span class="k">if</span> <span class="s1">&#39;color&#39;</span> <span class="ow">in</span> <span class="n">df</span> <span class="k">else</span> <span class="p">{}),</span>
+            <span class="o">**</span><span class="p">({</span> <span class="s1">&#39;shape&#39;</span><span class="p">:</span> <span class="s1">&#39;shape&#39;</span> <span class="p">}</span> <span class="k">if</span> <span class="s1">&#39;shape&#39;</span> <span class="ow">in</span> <span class="n">df</span> <span class="k">else</span> <span class="p">{}),</span>
+        <span class="p">}))</span> <span class="o">+</span>
+        <span class="n">p9</span><span class="o">.</span><span class="n">geom_point</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span>
+        <span class="n">p9</span><span class="o">.</span><span class="n">geom_line</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span> <span class="o">+</span> 
+        <span class="n">p9</span><span class="o">.</span><span class="n">labs</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">x_label</span> <span class="k">else</span> <span class="n">x_label</span><span class="p">,</span>
+             <span class="n">y</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Achieved Utility Over Baseline </span><span class="si">{</span><span class="w"> </span><span class="s1">&#39; v. Optimistic (%)&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">is_percent_of_optimistic</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+             <span class="n">title</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+             <span class="n">color</span><span class="o">=</span><span class="n">color_title</span> <span class="k">if</span> <span class="n">color_title</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+             <span class="n">shape</span><span class="o">=</span><span class="n">shape_title</span> <span class="k">if</span> <span class="n">shape_title</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">+</span>
+        <span class="n">p9</span><span class="o">.</span><span class="n">scale_color_hue</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Model&quot;</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">color_names</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">p</span></div>
+
+
+<div class="viewcode-block" id="plot_bar_mean_utilities">
+<a class="viewcode-back" href="../../api/api.html#aplusml.plot.plot_bar_mean_utilities">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_bar_mean_utilities</span><span class="p">(</span><span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+                            <span class="n">plot_avg_utilities</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">p9</span><span class="o">.</span><span class="n">ggplot</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plots bar chart of mean utilities for different settings</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        title (str): Title of the plot</span>
+<span class="sd">        plot_avg_utilities (dict[float]): Dictionary of mean utilities for different settings</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        p9.ggplot: A plotnine plot object showing bar chart of mean utilities</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Sort utilities</span>
+    <span class="n">sorted_plot_avg_utilities</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">plot_avg_utilities</span><span class="o">.</span><span class="n">items</span><span class="p">()),</span> <span class="n">key</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">sorted_plot_avg_utilities</span><span class="p">]</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">sorted_plot_avg_utilities</span><span class="p">])</span>
+    <span class="n">baseline</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">plot_avg_utilities</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+    <span class="n">percents</span> <span class="o">=</span> <span class="mi">100</span><span class="o">*</span><span class="p">(</span><span class="n">values</span> <span class="o">-</span> <span class="n">baseline</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">plot_avg_utilities</span><span class="p">[</span><span class="s1">&#39;optimistic&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">baseline</span><span class="p">)</span>
+    <span class="c1"># Dataframe</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">labels</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;percents&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">percents</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Categorical</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">],</span> <span class="n">categories</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">]))</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;percents&#39;</span><span class="p">)</span>
+    <span class="c1"># Make plot</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">p9</span><span class="o">.</span><span class="n">ggplot</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">p9</span><span class="o">.</span><span class="n">aes</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="s1">&#39;labels&#39;</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="s1">&#39;percents&#39;</span><span class="p">))</span> <span class="o">+</span> 
+        <span class="n">p9</span><span class="o">.</span><span class="n">geom_bar</span><span class="p">(</span><span class="n">stat</span><span class="o">=</span><span class="s1">&#39;identity&#39;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s2">&quot;lightblue&quot;</span><span class="p">)</span> <span class="o">+</span>
+        <span class="n">p9</span><span class="o">.</span><span class="n">labs</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">y</span> <span class="o">=</span> <span class="s2">&quot;Achieved Relative Utility Over Baseline v. Optimistic (%)&quot;</span><span class="p">,</span>
+                <span class="n">title</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Impact of </span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">p</span></div>
+
+
+<div class="viewcode-block" id="plot_line_compare_multiple_settings">
+<a class="viewcode-back" href="../../api/api.html#aplusml.plot.plot_line_compare_multiple_settings">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_line_compare_multiple_settings</span><span class="p">(</span><span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                                        <span class="n">df</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span>
+                                        <span class="n">x_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                                        <span class="n">line_labels</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">p9</span><span class="o">.</span><span class="n">ggplot</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plots multiple lines on the same x- and y-axis. Used to generate Figure 2 from Jung et al. 2021</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        title (str): Title of the plot</span>
+<span class="sd">        df (list[pd.DataFrame]): List of DataFrames, each containing columns: x, y, line</span>
+<span class="sd">        x_label (str, optional): Label for the x-axis. Defaults to None.</span>
+<span class="sd">        line_labels (list[str], optional): Labels for the lines. Defaults to None.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        p9.ggplot: A plotnine plot object showing multiple lines</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">p9</span><span class="o">.</span><span class="n">ggplot</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">p9</span><span class="o">.</span><span class="n">aes</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;line&#39;</span><span class="p">,</span> <span class="n">group</span> <span class="o">=</span> <span class="s1">&#39;line&#39;</span><span class="p">))</span> <span class="o">+</span> 
+        <span class="n">p9</span><span class="o">.</span><span class="n">geom_point</span><span class="p">(</span><span class="n">size</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span>
+        <span class="n">p9</span><span class="o">.</span><span class="n">geom_line</span><span class="p">(</span><span class="n">size</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> 
+        <span class="p">(</span><span class="n">p9</span><span class="o">.</span><span class="n">scale_color_hue</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="n">line_labels</span><span class="p">)</span> <span class="k">if</span> <span class="n">line_labels</span> <span class="k">else</span> <span class="p">())</span> <span class="o">+</span> 
+        <span class="n">p9</span><span class="o">.</span><span class="n">labs</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x_label</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">x_label</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+             <span class="n">y</span> <span class="o">=</span> <span class="s2">&quot;Change in Achieved Utility v. Baseline&quot;</span><span class="p">,</span>
+             <span class="n">title</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+             <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">+</span>
+        <span class="n">p9</span><span class="o">.</span><span class="n">theme</span><span class="p">(</span>
+            <span class="n">legend_direction</span><span class="o">=</span><span class="s1">&#39;vertical&#39;</span><span class="p">,</span>
+            <span class="n">legend_position</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.75</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">),</span>
+            <span class="n">legend_background</span><span class="o">=</span><span class="n">p9</span><span class="o">.</span><span class="n">element_rect</span><span class="p">(</span><span class="n">fill</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">),</span>
+            <span class="n">legend_title</span><span class="o">=</span><span class="n">p9</span><span class="o">.</span><span class="n">element_blank</span><span class="p">(),</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">p</span></div>
+
+    
+<span class="c1">################################################</span>
+<span class="c1"># Theoretical Utility Analysis</span>
+<span class="c1">################################################</span>
+
+
+<span class="n">PADDING</span> <span class="o">=</span> <span class="mf">0.05</span> <span class="c1"># How much padding to add to plots that get bounded by (0,1) - e.g. ROC Curve</span>
+<div class="viewcode-block" id="get_df_utility_from_df_preds">
+<a class="viewcode-back" href="../../api/api.html#aplusml.plot.get_df_utility_from_df_preds">[docs]</a>
+<span class="k">def</span> <span class="nf">get_df_utility_from_df_preds</span><span class="p">(</span><span class="n">df_preds</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> 
+                                 <span class="n">utilities</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> 
+                                 <span class="n">thresholds</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                                 <span class="n">is_add_0_and_1</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+                                 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Adds metrics (Utilities + TP/FP/TN/FN) to DataFrame of predictions</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        df_preds (pd.DataFrame): DataFrame containing &#39;y_hat&#39; (predictions) and &#39;y&#39; (ground truth) columns</span>
+<span class="sd">        utilities (dict): Dictionary containing utility values for each class. Must contain four keys: &#39;tp&#39;, &#39;fp&#39;, &#39;tn&#39;, &#39;fn&#39;</span>
+<span class="sd">        thresholds (np.ndarray): Array of model thresholds to consider</span>
+<span class="sd">        is_add_0_and_1 (bool): If TRUE, add 0 and 1 to the start/end of the `thresholds` array</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        pd.DataFrame: DataFrame that mirrors &quot;df_preds&quot;, but with additional columns</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">utility_rows</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">thresholds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">thresholds</span><span class="p">)</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">is_add_0_and_1</span> <span class="k">else</span> <span class="p">[])))))</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">thresholds</span><span class="p">:</span>
+        <span class="n">preds</span> <span class="o">=</span> <span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y_hat&#39;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">t</span>
+        <span class="n">tp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">preds</span><span class="p">)</span><span class="o">.</span><span class="n">values</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">preds</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="n">fp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">preds</span><span class="p">)</span><span class="o">.</span><span class="n">values</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">preds</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="n">tn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">preds</span><span class="p">)</span><span class="o">.</span><span class="n">values</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">preds</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="n">fn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">preds</span><span class="p">)</span><span class="o">.</span><span class="n">values</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">preds</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="n">ppv</span> <span class="o">=</span> <span class="n">tp</span> <span class="o">/</span> <span class="p">(</span><span class="n">tp</span> <span class="o">+</span> <span class="n">fp</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">tp</span> <span class="o">+</span> <span class="n">fp</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">tpr</span> <span class="o">=</span> <span class="n">tp</span> <span class="o">/</span> <span class="p">(</span><span class="n">tp</span> <span class="o">+</span> <span class="n">fn</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">tp</span> <span class="o">+</span> <span class="n">fn</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">fpr</span> <span class="o">=</span> <span class="n">fp</span> <span class="o">/</span> <span class="p">(</span><span class="n">fp</span> <span class="o">+</span> <span class="n">tn</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">fp</span> <span class="o">+</span> <span class="n">tn</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">utility_rows</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+            <span class="s1">&#39;threshold&#39;</span> <span class="p">:</span> <span class="n">t</span><span class="p">,</span>
+            <span class="s1">&#39;prevalence&#39;</span> <span class="p">:</span> <span class="p">(</span><span class="n">tp</span> <span class="o">+</span> <span class="n">fn</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">tp</span> <span class="o">+</span> <span class="n">fp</span> <span class="o">+</span> <span class="n">tn</span> <span class="o">+</span> <span class="n">fn</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">tp</span> <span class="o">+</span> <span class="n">fp</span> <span class="o">+</span> <span class="n">tn</span> <span class="o">+</span> <span class="n">fn</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span> <span class="c1"># Proportion of y&#39;s that are TRUE</span>
+            <span class="s1">&#39;ppv&#39;</span> <span class="p">:</span> <span class="n">ppv</span><span class="p">,</span> <span class="c1"># Same as precision</span>
+            <span class="s1">&#39;precision&#39;</span> <span class="p">:</span> <span class="n">ppv</span><span class="p">,</span> <span class="c1"># Same as PPV</span>
+            <span class="s1">&#39;tpr&#39;</span> <span class="p">:</span> <span class="n">tpr</span><span class="p">,</span> <span class="c1"># Same as recall</span>
+            <span class="s1">&#39;recall&#39;</span> <span class="p">:</span> <span class="n">tpr</span><span class="p">,</span> <span class="c1"># Same as TPR</span>
+            <span class="s1">&#39;fpr&#39;</span> <span class="p">:</span> <span class="n">fpr</span><span class="p">,</span>
+            <span class="s1">&#39;tp&#39;</span> <span class="p">:</span> <span class="n">tp</span><span class="p">,</span>
+            <span class="s1">&#39;fp&#39;</span> <span class="p">:</span> <span class="n">fp</span><span class="p">,</span>
+            <span class="s1">&#39;tn&#39;</span> <span class="p">:</span> <span class="n">tn</span><span class="p">,</span>
+            <span class="s1">&#39;fn&#39;</span> <span class="p">:</span> <span class="n">fn</span><span class="p">,</span>
+            <span class="s1">&#39;total&#39;</span> <span class="p">:</span> <span class="n">tp</span> <span class="o">+</span> <span class="n">fp</span> <span class="o">+</span> <span class="n">tn</span> <span class="o">+</span> <span class="n">fn</span><span class="p">,</span>
+            <span class="s1">&#39;work&#39;</span> <span class="p">:</span> <span class="n">tp</span> <span class="o">+</span> <span class="n">fp</span><span class="p">,</span>
+            <span class="s1">&#39;unit_utility&#39;</span> <span class="p">:</span> <span class="p">(</span><span class="n">utilities</span><span class="p">[</span><span class="s1">&#39;tp&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">tp</span> <span class="o">+</span> <span class="n">utilities</span><span class="p">[</span><span class="s1">&#39;fp&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">fp</span> <span class="o">+</span> <span class="n">utilities</span><span class="p">[</span><span class="s1">&#39;tn&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">tn</span> <span class="o">+</span> <span class="n">utilities</span><span class="p">[</span><span class="s1">&#39;fn&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">fn</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">tp</span> <span class="o">+</span> <span class="n">fp</span> <span class="o">+</span> <span class="n">tn</span> <span class="o">+</span> <span class="n">fn</span><span class="p">),</span>
+        <span class="p">})</span>
+    <span class="n">df_utility</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">utility_rows</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">df_utility</span></div>
+
+
+<div class="viewcode-block" id="plot_hist_pred">
+<a class="viewcode-back" href="../../api/api.html#aplusml.plot.plot_hist_pred">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_hist_pred</span><span class="p">(</span><span class="n">df_preds</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate Histogram of predictions</span>
+<span class="sd">        - x-axis = predictions (&#39;y_hat&#39;)</span>
+<span class="sd">        - y-axis = density</span>
+<span class="sd">        </span>
+<span class="sd">    Args:</span>
+<span class="sd">        df_preds (pd.DataFrame): DataFrame containing &#39;y_hat&#39; (predictions) and &#39;y&#39; (ground truth) columns</span>
+<span class="sd">        ax (plt.Axes, optional): Matplotlib axes to plot on. If None, creates new figure. Defaults to None.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        plt.figure: Matplotlib figure object containing the plot</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span> <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span>
+
+    <span class="c1"># Plot</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y_hat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Histogram of Predictions&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span> <span class="p">:</span> <span class="mi">12</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Count&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Prediction&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">})</span>
+    <span class="k">return</span> <span class="n">fig</span></div>
+
+
+<div class="viewcode-block" id="plot_pred_v_true">
+<a class="viewcode-back" href="../../api/api.html#aplusml.plot.plot_pred_v_true">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_pred_v_true</span><span class="p">(</span><span class="n">df_preds</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a scatter plot comparing predicted vs true values with density coloring.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        df_preds (pd.DataFrame): DataFrame containing &#39;y_hat&#39; (predictions) and &#39;y&#39; (ground truth) columns</span>
+<span class="sd">        ax (plt.Axes, optional): Matplotlib axes to plot on. If None, creates new figure. Defaults to None.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        plt.figure: Matplotlib figure object containing the plot</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span> <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span>
+
+    <span class="c1"># Calculate Pearson Correlation</span>
+    <span class="n">pearson_corr</span> <span class="o">=</span> <span class="n">calc_pearsonr</span><span class="p">(</span><span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y_hat&#39;</span><span class="p">],</span> <span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">])</span>
+    <span class="n">spearman_corr</span> <span class="o">=</span> <span class="n">calc_spearmanr</span><span class="p">(</span><span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y_hat&#39;</span><span class="p">],</span> <span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">])</span>
+    <span class="c1"># Plot</span>
+    <span class="c1"># Source: https://stackoverflow.com/a/20107592/3015186</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y_hat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">xy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">])</span>
+    <span class="n">kde</span> <span class="o">=</span> <span class="n">KernelDensity</span><span class="p">(</span><span class="n">kernel</span><span class="o">=</span><span class="s1">&#39;gaussian&#39;</span><span class="p">,</span> <span class="n">bandwidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">xy</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">kde</span><span class="o">.</span><span class="n">score_samples</span><span class="p">(</span><span class="n">xy</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
+    <span class="n">density</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">z</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Predictions v. Ground Truth</span><span class="se">\n</span><span class="s2">Pearson $r$=</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">pearson_corr</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">, Spearman $</span><span class="se">\\</span><span class="s2">rho$=</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">spearman_corr</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span> <span class="p">:</span> <span class="mi">12</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;True Label&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Prediction&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span> <span class="o">-</span> <span class="n">PADDING</span><span class="p">,</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">PADDING</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span> <span class="o">-</span> <span class="n">PADDING</span><span class="p">,</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">PADDING</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fig</span></div>
+
+
+<div class="viewcode-block" id="plot_calibration_curve">
+<a class="viewcode-back" href="../../api/api.html#aplusml.plot.plot_calibration_curve">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_calibration_curve</span><span class="p">(</span><span class="n">df_preds</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate Calibration curve where:</span>
+<span class="sd">        - x-axis = mean predicted probability for each bin</span>
+<span class="sd">        - y-axis = fraction of positive cases in each bin</span>
+<span class="sd">        </span>
+<span class="sd">    The calibration curve shows how well the predicted probabilities match </span>
+<span class="sd">    the actual observed frequencies. A perfectly calibrated model will follow </span>
+<span class="sd">    the diagonal line y=x.</span>
+<span class="sd">        </span>
+<span class="sd">    Args:</span>
+<span class="sd">        df_preds (pd.DataFrame): DataFrame containing &#39;y_hat&#39; (predictions) and &#39;y&#39; (ground truth) columns</span>
+<span class="sd">        ax (plt.Axes, optional): Matplotlib axes to plot on. If None, creates new figure. Defaults to None.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        plt.figure: Matplotlib figure object containing the plot</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span> <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1000</span><span class="p">)</span>
+
+    <span class="c1"># Calibration Curve</span>
+    <span class="c1">#   Calculate</span>
+    <span class="n">fop</span><span class="p">,</span> <span class="n">mpv</span> <span class="o">=</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">calibration</span><span class="o">.</span><span class="n">calibration_curve</span><span class="p">(</span><span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y_hat&#39;</span><span class="p">],</span> <span class="n">n_bins</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="c1">#   Plot</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">mpv</span><span class="p">,</span> <span class="n">fop</span><span class="p">,</span> <span class="s1">&#39;-bo&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Model&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Perfect&#39;</span><span class="p">)</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Calibration curve&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span> <span class="p">:</span> <span class="mi">12</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Fraction of Positives&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Predicted Probability of Positive&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span> <span class="o">-</span> <span class="n">PADDING</span><span class="p">,</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">PADDING</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span> <span class="o">-</span> <span class="n">PADDING</span><span class="p">,</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">PADDING</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fig</span></div>
+
+
+<div class="viewcode-block" id="plot_confusion_matrix">
+<a class="viewcode-back" href="../../api/api.html#aplusml.plot.plot_confusion_matrix">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_confusion_matrix</span><span class="p">(</span><span class="n">df_preds</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">utilities</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate Confusion Matrix @ highest utility threshold (if `threshold` is not specified) where:</span>
+<span class="sd">        - x-axis = predictions (&#39;y_hat&#39;)</span>
+<span class="sd">        - y-axis = ground truth (&#39;y&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        df_preds (pd.DataFrame): DataFrame containing &#39;y_hat&#39; (predictions) and &#39;y&#39; (ground truth) columns</span>
+<span class="sd">        utilities (dict, optional): Dictionary containing utility values for each class</span>
+<span class="sd">        threshold (float, optional): Cutoff threshold for confusion matrix. If not specified, uses the threshold with highest utility</span>
+<span class="sd">        ax (plt.Axes, optional): Matplotlib axes to plot on. If None, creates new figure. Defaults to None.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        plt.figure: Matplotlib figure object containing the plot</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span> <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span>
+    <span class="c1"># Calculate</span>
+    <span class="n">thresholds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y_hat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">df_utility</span> <span class="o">=</span> <span class="n">get_df_utility_from_df_preds</span><span class="p">(</span><span class="n">df_preds</span><span class="p">,</span> <span class="n">utilities</span><span class="p">,</span> <span class="n">thresholds</span><span class="p">,</span> <span class="n">is_add_0_and_1</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">max_utility_idx</span> <span class="o">=</span> <span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;unit_utility&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span>
+    <span class="n">threshold</span> <span class="o">=</span> <span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;threshold&#39;</span><span class="p">][</span><span class="n">max_utility_idx</span><span class="p">]</span>
+
+    <span class="c1"># Plot</span>
+    <span class="n">cm</span> <span class="o">=</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y_hat&#39;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">threshold</span><span class="p">)</span>
+    <span class="n">disp</span> <span class="o">=</span> <span class="n">ConfusionMatrixDisplay</span><span class="p">(</span><span class="n">confusion_matrix</span><span class="o">=</span><span class="n">cm</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ax</span><span class="p">:</span>
+        <span class="n">disp</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">disp</span><span class="o">.</span><span class="n">figure_</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">disp</span><span class="o">.</span><span class="n">ax_</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Confusion Matrix</span><span class="se">\n</span><span class="s2">Using Cutoff Threshold $t$ with Max Unit Utility</span><span class="se">\n</span><span class="s2">($t$ = </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">threshold</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span> <span class="p">:</span> <span class="mi">12</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;True Label&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Predicted Label&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fig</span></div>
+
+
+<div class="viewcode-block" id="plot_roc_curve">
+<a class="viewcode-back" href="../../api/api.html#aplusml.plot.plot_roc_curve">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_roc_curve</span><span class="p">(</span><span class="n">df_preds</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">utilities</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate ROC curve with indifference curves where:</span>
+<span class="sd">        - x-axis = false positive rate (FPR)</span>
+<span class="sd">        - y-axis = true positive rate (TPR)</span>
+<span class="sd">        </span>
+<span class="sd">    Explanation of indifference curves: http://www0.cs.ucl.ac.uk/staff/ucacbbl/roc/</span>
+<span class="sd">        </span>
+<span class="sd">    Args:</span>
+<span class="sd">        df_preds (pd.DataFrame): DataFrame containing &#39;y_hat&#39; (predictions) and &#39;y&#39; (ground truth) columns</span>
+<span class="sd">        utilities (dict, optional): Dictionary containing utility values for each class</span>
+<span class="sd">        ax (plt.Axes, optional): Matplotlib axes to plot on. If None, creates new figure. Defaults to None.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        plt.figure: Matplotlib figure object containing the plot</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span> <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1000</span><span class="p">)</span>
+
+    <span class="c1"># ROC Curve</span>
+    <span class="c1">#   Calculate</span>
+    <span class="n">fpr</span><span class="p">,</span> <span class="n">tpr</span><span class="p">,</span> <span class="n">thresholds</span> <span class="o">=</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">roc_curve</span><span class="p">(</span><span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y_hat&#39;</span><span class="p">])</span>
+    <span class="n">auc</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">sklearn</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">auc</span><span class="p">(</span><span class="n">fpr</span><span class="p">,</span> <span class="n">tpr</span><span class="p">),</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="c1">#   Plot</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">fpr</span><span class="p">,</span> <span class="n">tpr</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;ROC Curve&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="s1">&#39;k--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Random&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Utility</span>
+    <span class="k">if</span> <span class="n">utilities</span><span class="p">:</span>
+        <span class="c1">#   Calculate</span>
+        <span class="n">df_utility</span> <span class="o">=</span> <span class="n">get_df_utility_from_df_preds</span><span class="p">(</span><span class="n">df_preds</span><span class="p">,</span> <span class="n">utilities</span><span class="p">,</span> <span class="n">thresholds</span><span class="p">)</span>
+        <span class="n">max_utility_idx</span> <span class="o">=</span> <span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;unit_utility&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span>
+        <span class="n">prevalence</span> <span class="o">=</span> <span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="c1"># Proportion of positive cases</span>
+        <span class="n">indifference_curve_slope</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">prevalence</span><span class="p">)</span> <span class="o">/</span> <span class="n">prevalence</span> <span class="o">*</span> <span class="p">(</span><span class="n">utilities</span><span class="p">[</span><span class="s1">&#39;tn&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">utilities</span><span class="p">[</span><span class="s1">&#39;fp&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">utilities</span><span class="p">[</span><span class="s1">&#39;tp&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">utilities</span><span class="p">[</span><span class="s1">&#39;fn&#39;</span><span class="p">])</span>
+        <span class="c1">#   Plot</span>
+        <span class="c1">#       Max utility</span>
+        <span class="n">max_utility_x</span> <span class="o">=</span> <span class="n">df_utility</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">max_utility_idx</span><span class="p">][</span><span class="s1">&#39;fpr&#39;</span><span class="p">]</span>
+        <span class="n">max_utility_y</span> <span class="o">=</span> <span class="n">df_utility</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">max_utility_idx</span><span class="p">][</span><span class="s1">&#39;tpr&#39;</span><span class="p">]</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">max_utility_x</span><span class="p">,</span> <span class="n">max_utility_y</span><span class="p">,</span> <span class="s1">&#39;bo&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">indifference_curve_slope</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="p">(</span><span class="n">max_utility_y</span> <span class="o">-</span> <span class="n">indifference_curve_slope</span> <span class="o">*</span> <span class="n">max_utility_x</span><span class="p">),</span> <span class="s1">&#39;b--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Max Utility&#39;</span><span class="p">)</span>
+        <span class="c1">#       Treat All</span>
+        <span class="n">all_x</span> <span class="o">=</span> <span class="n">df_utility</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;fpr&#39;</span><span class="p">]</span>
+        <span class="n">all_y</span> <span class="o">=</span> <span class="n">df_utility</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;tpr&#39;</span><span class="p">]</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">all_x</span><span class="p">,</span> <span class="n">all_y</span><span class="p">,</span> <span class="s1">&#39;ro&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">indifference_curve_slope</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="p">(</span><span class="n">all_y</span> <span class="o">-</span> <span class="n">indifference_curve_slope</span> <span class="o">*</span> <span class="n">all_x</span><span class="p">),</span> <span class="s1">&#39;r--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Treat All Utility&#39;</span><span class="p">)</span>
+        <span class="c1">#       Treat None</span>
+        <span class="n">none_x</span> <span class="o">=</span> <span class="n">df_utility</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;fpr&#39;</span><span class="p">]</span>
+        <span class="n">none_y</span> <span class="o">=</span> <span class="n">df_utility</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;tpr&#39;</span><span class="p">]</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">none_x</span><span class="p">,</span> <span class="n">none_y</span><span class="p">,</span> <span class="s1">&#39;go&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">indifference_curve_slope</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="p">(</span><span class="n">none_y</span> <span class="o">-</span> <span class="n">indifference_curve_slope</span> <span class="o">*</span> <span class="n">none_x</span><span class="p">),</span> <span class="s1">&#39;g--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Treat None Utility&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ROC curve</span><span class="si">{</span><span class="s1">&#39; with indifference curves&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">utilities</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="se">\n</span><span class="s2">AUC=</span><span class="si">{</span><span class="n">auc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span> <span class="p">:</span> <span class="mi">12</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;TPR&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;FPR&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span> <span class="o">-</span> <span class="n">PADDING</span><span class="p">,</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">PADDING</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span> <span class="o">-</span> <span class="n">PADDING</span><span class="p">,</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">PADDING</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fig</span></div>
+
+
+<div class="viewcode-block" id="plot_precision_recall_curve">
+<a class="viewcode-back" href="../../api/api.html#aplusml.plot.plot_precision_recall_curve">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_precision_recall_curve</span><span class="p">(</span><span class="n">df_preds</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">utilities</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate Precision-Recall curve with utility contours where:</span>
+<span class="sd">        - x-axis = recall (TPR)</span>
+<span class="sd">        - y-axis = precision (PPV)</span>
+<span class="sd">        </span>
+<span class="sd">    Explanation of Expected Utility (EU) calculations (Appendix A): https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2804257/pdf/nihms-108324.pdf</span>
+<span class="sd">        </span>
+<span class="sd">    Args:</span>
+<span class="sd">        df_preds (pd.DataFrame): DataFrame containing &#39;y_hat&#39; (predictions) and &#39;y&#39; (ground truth) columns</span>
+<span class="sd">        utilities (dict, optional): Dictionary containing utility values for each class</span>
+<span class="sd">        ax (plt.Axes, optional): Matplotlib axes to plot on. If None, creates new figure. Defaults to None.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        plt.figure: Matplotlib figure object containing the plot</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span> <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1000</span><span class="p">)</span>
+
+    <span class="c1"># ROC Curve</span>
+    <span class="c1">#   Calculate</span>
+    <span class="n">precision</span><span class="p">,</span> <span class="n">recall</span><span class="p">,</span> <span class="n">thresholds</span> <span class="o">=</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">precision_recall_curve</span><span class="p">(</span><span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y_hat&#39;</span><span class="p">])</span>
+    <span class="n">auc</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">sklearn</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">auc</span><span class="p">(</span><span class="n">recall</span><span class="p">,</span> <span class="n">precision</span><span class="p">),</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="n">prevalence</span> <span class="o">=</span> <span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="c1"># Proportion of positive cases</span>
+    <span class="c1">#   Plot</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">recall</span><span class="p">,</span> <span class="n">precision</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;PR Curve&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">[</span><span class="n">prevalence</span><span class="p">]</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">,</span> <span class="s1">&#39;k--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Random&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Utility</span>
+    <span class="k">if</span> <span class="n">utilities</span><span class="p">:</span>
+        <span class="c1">#   Calculate</span>
+        <span class="n">df_utility</span> <span class="o">=</span> <span class="n">get_df_utility_from_df_preds</span><span class="p">(</span><span class="n">df_preds</span><span class="p">,</span> <span class="n">utilities</span><span class="p">,</span> <span class="n">thresholds</span><span class="p">)</span>
+        <span class="n">max_utility_idx</span> <span class="o">=</span> <span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;unit_utility&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span>
+        <span class="c1">#   Generate EU contours for plot</span>
+        <span class="n">utility_contour_x</span><span class="p">,</span> <span class="n">utility_contour_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">))</span>
+        <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span><span class="n">invalid</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">):</span> <span class="c1"># Ignore divide by 0</span>
+            <span class="n">expected_utility</span> <span class="o">=</span> <span class="p">(</span><span class="n">prevalence</span> <span class="o">*</span> <span class="n">utility_contour_x</span> <span class="o">*</span> <span class="p">(</span><span class="n">utilities</span><span class="p">[</span><span class="s1">&#39;fp&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">utilities</span><span class="p">[</span><span class="s1">&#39;tn&#39;</span><span class="p">]))</span> <span class="o">/</span> <span class="n">utility_contour_y</span> <span class="o">+</span> <span class="n">utilities</span><span class="p">[</span><span class="s1">&#39;tn&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">prevalence</span> <span class="o">*</span> <span class="p">(</span><span class="n">utilities</span><span class="p">[</span><span class="s1">&#39;fn&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">utilities</span><span class="p">[</span><span class="s1">&#39;tn&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">utility_contour_x</span> <span class="o">*</span> <span class="p">(</span><span class="n">utilities</span><span class="p">[</span><span class="s1">&#39;tn&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">utilities</span><span class="p">[</span><span class="s1">&#39;tp&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">utilities</span><span class="p">[</span><span class="s1">&#39;fp&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">utilities</span><span class="p">[</span><span class="s1">&#39;fn&#39;</span><span class="p">]))</span> 
+        <span class="c1">#   Max utility</span>
+        <span class="n">max_utility_x</span> <span class="o">=</span> <span class="n">df_utility</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">max_utility_idx</span><span class="p">][</span><span class="s1">&#39;recall&#39;</span><span class="p">]</span> <span class="c1"># TPR</span>
+        <span class="n">max_utility_y</span> <span class="o">=</span> <span class="n">df_utility</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">max_utility_idx</span><span class="p">][</span><span class="s1">&#39;precision&#39;</span><span class="p">]</span> <span class="c1"># PPV</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">max_utility_x</span><span class="p">,</span> <span class="n">max_utility_y</span><span class="p">,</span> <span class="s1">&#39;bo&#39;</span><span class="p">)</span>
+        <span class="c1">#   Utility contour</span>
+        <span class="n">cs</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">utility_contour_x</span><span class="p">,</span> <span class="n">utility_contour_y</span><span class="p">,</span> <span class="n">expected_utility</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">clabel</span><span class="p">(</span><span class="n">cs</span><span class="p">,</span> <span class="n">inline</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+        <span class="c1"># for i in range(len(cs.levels)):</span>
+        <span class="c1">#     cs.collections[i].set_label(cs.levels[i])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Precision-Recall curve</span><span class="si">{</span><span class="s1">&#39; with indifference curves &#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">utilities</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="se">\n</span><span class="s2">AUC=</span><span class="si">{</span><span class="n">auc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span> <span class="p">:</span> <span class="mi">12</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Precision (PPV)&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Recall (TPR)&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span> <span class="o">-</span> <span class="n">PADDING</span><span class="p">,</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">PADDING</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span> <span class="o">-</span> <span class="n">PADDING</span><span class="p">,</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">PADDING</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fig</span></div>
+
+
+<div class="viewcode-block" id="plot_ppv_v_utility_curve">
+<a class="viewcode-back" href="../../api/api.html#aplusml.plot.plot_ppv_v_utility_curve">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_ppv_v_utility_curve</span><span class="p">(</span><span class="n">df_preds</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">utilities</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate PPV v. Unit Utility curve where:</span>
+<span class="sd">        - x-axis = precision (PPV)</span>
+<span class="sd">        - y-axis = unit utility</span>
+<span class="sd">        </span>
+<span class="sd">    Args:</span>
+<span class="sd">        df_preds (pd.DataFrame): DataFrame containing &#39;y_hat&#39; (predictions) and &#39;y&#39; (ground truth) columns</span>
+<span class="sd">        utilities (dict, optional): Dictionary containing utility values for each class</span>
+<span class="sd">        ax (plt.Axes, optional): Matplotlib axes to plot on. If None, creates new figure. Defaults to None.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        plt.figure: Matplotlib figure object containing the plot</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span> <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span>
+    <span class="c1"># Calculate</span>
+    <span class="n">thresholds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y_hat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">df_utility</span> <span class="o">=</span> <span class="n">get_df_utility_from_df_preds</span><span class="p">(</span><span class="n">df_preds</span><span class="p">,</span> <span class="n">utilities</span><span class="p">,</span> <span class="n">thresholds</span><span class="p">,</span> <span class="n">is_add_0_and_1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">max_utility_idx</span> <span class="o">=</span> <span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;unit_utility&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span>
+
+    <span class="c1"># Plot</span>
+    <span class="c1">#   Curve</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;ppv&#39;</span><span class="p">],</span> <span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;unit_utility&#39;</span><span class="p">],</span> <span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Utility Curve&#39;</span><span class="p">)</span>
+    <span class="c1">#   Max utility</span>
+    <span class="n">max_utility_x</span> <span class="o">=</span> <span class="n">df_utility</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">max_utility_idx</span><span class="p">][</span><span class="s1">&#39;ppv&#39;</span><span class="p">]</span>
+    <span class="n">max_utility_y</span> <span class="o">=</span> <span class="n">df_utility</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">max_utility_idx</span><span class="p">][</span><span class="s1">&#39;unit_utility&#39;</span><span class="p">]</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">max_utility_x</span><span class="p">,</span> <span class="n">max_utility_y</span><span class="p">,</span> <span class="s1">&#39;bo&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PPV v. Unit Utility&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span> <span class="p">:</span> <span class="mi">12</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Unit Utility&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Precision (PPV)&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span> <span class="o">-</span> <span class="n">PADDING</span><span class="p">,</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">PADDING</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fig</span></div>
+
+
+<div class="viewcode-block" id="plot_threshold_v_utility_curve">
+<a class="viewcode-back" href="../../api/api.html#aplusml.plot.plot_threshold_v_utility_curve">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_threshold_v_utility_curve</span><span class="p">(</span><span class="n">df_preds</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">utilities</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate Cutoff Threshold v. Unit Utility curve where:</span>
+<span class="sd">        - x-axis = cutoff threshold</span>
+<span class="sd">        - y-axis = unit utility</span>
+<span class="sd">        </span>
+<span class="sd">    Args:</span>
+<span class="sd">        df_preds (pd.DataFrame): DataFrame containing &#39;y_hat&#39; (predictions) and &#39;y&#39; (ground truth) columns</span>
+<span class="sd">        utilities (dict, optional): Dictionary containing utility values for each class</span>
+<span class="sd">        ax (plt.Axes, optional): Matplotlib axes to plot on. If None, creates new figure. Defaults to None.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        plt.figure: Matplotlib figure object containing the plot</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span> <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span>
+    <span class="c1"># Calculate</span>
+    <span class="n">thresholds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y_hat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">df_utility</span> <span class="o">=</span> <span class="n">get_df_utility_from_df_preds</span><span class="p">(</span><span class="n">df_preds</span><span class="p">,</span> <span class="n">utilities</span><span class="p">,</span> <span class="n">thresholds</span><span class="p">,</span> <span class="n">is_add_0_and_1</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">max_utility_idx</span> <span class="o">=</span> <span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;unit_utility&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span>
+
+    <span class="c1"># Plot</span>
+    <span class="c1">#   Curve</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;threshold&#39;</span><span class="p">],</span> <span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;unit_utility&#39;</span><span class="p">],</span> <span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Utility Curve&#39;</span><span class="p">)</span>
+    <span class="c1">#   Max utility</span>
+    <span class="n">max_utility_x</span> <span class="o">=</span> <span class="n">df_utility</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">max_utility_idx</span><span class="p">][</span><span class="s1">&#39;threshold&#39;</span><span class="p">]</span>
+    <span class="n">max_utility_y</span> <span class="o">=</span> <span class="n">df_utility</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">max_utility_idx</span><span class="p">][</span><span class="s1">&#39;unit_utility&#39;</span><span class="p">]</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">max_utility_x</span><span class="p">,</span> <span class="n">max_utility_y</span><span class="p">,</span> <span class="s1">&#39;bo&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cutoff Threshold v. Unit Utility&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span> <span class="p">:</span> <span class="mi">12</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Unit Utility&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Cutoff Threshold&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span> <span class="o">-</span> <span class="n">PADDING</span><span class="p">,</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">PADDING</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fig</span></div>
+
+
+<div class="viewcode-block" id="plot_work_v_utility">
+<a class="viewcode-back" href="../../api/api.html#aplusml.plot.plot_work_v_utility">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_work_v_utility</span><span class="p">(</span><span class="n">df_preds</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">utilities</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate Work v. Unit Utility curve where:</span>
+<span class="sd">        - x-axis = work (%)</span>
+<span class="sd">        - y-axis = unit utility</span>
+<span class="sd">        </span>
+<span class="sd">    Args:</span>
+<span class="sd">        df_preds (pd.DataFrame): DataFrame containing &#39;y_hat&#39; (predictions) and &#39;y&#39; (ground truth) columns</span>
+<span class="sd">        utilities (dict, optional): Dictionary containing utility values for each class</span>
+<span class="sd">        ax (plt.Axes, optional): Matplotlib axes to plot on. If None, creates new figure. Defaults to None.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        plt.figure: Matplotlib figure object containing the plot</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span> <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span>
+    <span class="c1"># Calculate</span>
+    <span class="n">thresholds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y_hat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">df_utility</span> <span class="o">=</span> <span class="n">get_df_utility_from_df_preds</span><span class="p">(</span><span class="n">df_preds</span><span class="p">,</span> <span class="n">utilities</span><span class="p">,</span> <span class="n">thresholds</span><span class="p">,</span> <span class="n">is_add_0_and_1</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">max_utility_idx</span> <span class="o">=</span> <span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;unit_utility&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span>
+
+    <span class="c1"># Plot</span>
+    <span class="c1">#   Curve</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;work&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;total&#39;</span><span class="p">],</span> <span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;unit_utility&#39;</span><span class="p">],</span> <span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Utility Curve&#39;</span><span class="p">)</span>
+    <span class="c1">#   Max utility</span>
+    <span class="n">max_utility_x</span> <span class="o">=</span> <span class="n">df_utility</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">max_utility_idx</span><span class="p">][</span><span class="s1">&#39;work&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">df_utility</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">max_utility_idx</span><span class="p">][</span><span class="s1">&#39;total&#39;</span><span class="p">]</span>
+    <span class="n">max_utility_y</span> <span class="o">=</span> <span class="n">df_utility</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">max_utility_idx</span><span class="p">][</span><span class="s1">&#39;unit_utility&#39;</span><span class="p">]</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">max_utility_x</span><span class="p">,</span> <span class="n">max_utility_y</span><span class="p">,</span> <span class="s1">&#39;bo&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Work v. Unit Utility&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span> <span class="p">:</span> <span class="mi">12</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Unit Utility&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;% Positive Predictions&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span> <span class="o">-</span> <span class="n">PADDING</span><span class="p">,</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">PADDING</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fig</span></div>
+
+
+<div class="viewcode-block" id="plot_work_v_ppv_tpr_fpr">
+<a class="viewcode-back" href="../../api/api.html#aplusml.plot.plot_work_v_ppv_tpr_fpr">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_work_v_ppv_tpr_fpr</span><span class="p">(</span><span class="n">df_preds</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">utilities</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate Work v. PPV/TPR/FPR curve where:</span>
+<span class="sd">    </span>
+<span class="sd">        - x-axis = work (%)</span>
+<span class="sd">        - y-axis = PPV/TPR/FPR</span>
+<span class="sd">        </span>
+<span class="sd">    Args:</span>
+<span class="sd">        df_preds (pd.DataFrame): DataFrame containing &#39;y_hat&#39; (predictions) and &#39;y&#39; (ground truth) columns</span>
+<span class="sd">        utilities (dict, optional): Dictionary containing utility values for each class</span>
+<span class="sd">        ax (plt.Axes, optional): Matplotlib axes to plot on. If None, creates new figure. Defaults to None.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        plt.figure: Matplotlib figure object containing the plot</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span> <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span>
+    <span class="c1"># Calculate</span>
+    <span class="n">thresholds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y_hat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">df_utility</span> <span class="o">=</span> <span class="n">get_df_utility_from_df_preds</span><span class="p">(</span><span class="n">df_preds</span><span class="p">,</span> <span class="n">utilities</span><span class="p">,</span> <span class="n">thresholds</span><span class="p">,</span> <span class="n">is_add_0_and_1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># Plot</span>
+    <span class="c1">#   PPV</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;work&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;total&#39;</span><span class="p">],</span> <span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;ppv&#39;</span><span class="p">],</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;PPV&#39;</span><span class="p">)</span>
+    <span class="c1">#   TPR</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;work&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;total&#39;</span><span class="p">],</span> <span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;tpr&#39;</span><span class="p">],</span> <span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;TPR&#39;</span><span class="p">)</span>
+    <span class="c1">#   FPR</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;work&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;total&#39;</span><span class="p">],</span> <span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;fpr&#39;</span><span class="p">],</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;FPR&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Work v. PPV/TPR/FPR&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span> <span class="p">:</span> <span class="mi">12</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Value&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;% Positive Predictions&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span> <span class="o">-</span> <span class="n">PADDING</span><span class="p">,</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">PADDING</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fig</span></div>
+
+
+<div class="viewcode-block" id="plot_threshold_v_ppv_tpr_work">
+<a class="viewcode-back" href="../../api/api.html#aplusml.plot.plot_threshold_v_ppv_tpr_work">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_threshold_v_ppv_tpr_work</span><span class="p">(</span><span class="n">df_preds</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">utilities</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate Cutoff Threshold v. PPV/TPR/Work curve where:</span>
+<span class="sd">        - x-axis = cutoff threshold</span>
+<span class="sd">        - y-axis = PPV/TPR/Work</span>
+<span class="sd">        </span>
+<span class="sd">    Args:</span>
+<span class="sd">        df_preds (pd.DataFrame): DataFrame containing &#39;y_hat&#39; (predictions) and &#39;y&#39; (ground truth) columns</span>
+<span class="sd">        utilities (dict, optional): Dictionary containing utility values for each class</span>
+<span class="sd">        ax (plt.Axes, optional): Matplotlib axes to plot on. If None, creates new figure. Defaults to None.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        plt.figure: Matplotlib figure object containing the plot</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span> <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span>
+    <span class="c1"># Calculate</span>
+    <span class="n">thresholds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y_hat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">df_utility</span> <span class="o">=</span> <span class="n">get_df_utility_from_df_preds</span><span class="p">(</span><span class="n">df_preds</span><span class="p">,</span> <span class="n">utilities</span><span class="p">,</span> <span class="n">thresholds</span><span class="p">,</span> <span class="n">is_add_0_and_1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># Plot</span>
+    <span class="c1">#   PPV</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;threshold&#39;</span><span class="p">],</span> <span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;ppv&#39;</span><span class="p">],</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;PPV&#39;</span><span class="p">)</span>
+    <span class="c1">#   TPR</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;threshold&#39;</span><span class="p">],</span> <span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;tpr&#39;</span><span class="p">],</span> <span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;TPR&#39;</span><span class="p">)</span>
+    <span class="c1">#   Fraction Positive (Work / Total)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;threshold&#39;</span><span class="p">],</span> <span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;work&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;total&#39;</span><span class="p">],</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;% Positive Predictions&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cutoff Threshold v. PPV/TPR/Work&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span> <span class="p">:</span> <span class="mi">12</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Value&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Cutoff Threshold&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span> <span class="o">-</span> <span class="n">PADDING</span><span class="p">,</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">PADDING</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fig</span></div>
+
+
+<div class="viewcode-block" id="plot_decision_curve">
+<a class="viewcode-back" href="../../api/api.html#aplusml.plot.plot_decision_curve">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_decision_curve</span><span class="p">(</span><span class="n">df_preds</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">utilities</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate Decision Curve for model where:</span>
+<span class="sd">        - y-axis = X - U_none (i.e. everything is relative to Treat None)</span>
+<span class="sd">        - x-axis = R</span>
+
+<span class="sd">    Risk Threshold (R) is defined as &quot;the cutpoint for calling a result positive that maximizes expected utility&quot;</span>
+<span class="sd">    </span>
+<span class="sd">    Thus, &quot;Treat None&quot; on this graph = U_none - U_none = 0.</span>
+<span class="sd">    </span>
+<span class="sd">    Thus, at R = r, the &quot;Treat All&quot; graph shows what the net benefit would be if you treated everyone AND the optimal risk threshold = r.</span>
+
+<span class="sd">    Guarantee: &quot;Treat All&quot; and &quot;Treat None&quot; lines should intersect at R = Prevalence.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        df_preds (pd.DataFrame): DataFrame containing &#39;y_hat&#39; (predictions) and &#39;y&#39; (ground truth) columns</span>
+<span class="sd">        utilities (dict, optional): Dictionary containing utility values for each class</span>
+<span class="sd">        ax (plt.Axes, optional): Matplotlib axes to plot on. If None, creates new figure. Defaults to None.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        plt.figure: Matplotlib figure object containing the plot</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span> <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span>
+    <span class="c1"># Calculate</span>
+    <span class="c1"># NOTE: &#39;thresholds&#39; may be a diff size than df_utility[&#39;threshold&#39;] b/c we add 0,1 to it in &#39;get_df_utility_from_df_preds&#39;</span>
+    <span class="n">thresholds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y_hat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">df_utility</span> <span class="o">=</span> <span class="n">get_df_utility_from_df_preds</span><span class="p">(</span><span class="n">df_preds</span><span class="p">,</span> <span class="n">utilities</span><span class="p">,</span> <span class="n">thresholds</span><span class="p">,</span> <span class="n">is_add_0_and_1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">prevalence</span> <span class="o">=</span> <span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="c1"># Proportion of positive cases</span>
+
+    <span class="c1"># Plot</span>
+    <span class="c1"># Treat All</span>
+    <span class="c1"># Explanation of how to calculate net benefits (Page 8):</span>
+    <span class="c1">#   https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2804257/pdf/nihms-108324.pdf</span>
+    <span class="c1"># Explanation of risk thresholds / curves (Page 5): </span>
+    <span class="c1">#   https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2577036/pdf/nihms74373.pdf</span>
+    <span class="n">net_benefit_all</span> <span class="o">=</span> <span class="p">(</span><span class="n">prevalence</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">prevalence</span><span class="p">)</span> <span class="o">*</span>  <span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;threshold&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;threshold&#39;</span><span class="p">])</span> <span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;threshold&#39;</span><span class="p">],</span> <span class="n">net_benefit_all</span><span class="p">,</span> <span class="s1">&#39;r--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Treat All&#39;</span><span class="p">)</span>
+    <span class="c1"># Treat None</span>
+    <span class="n">net_benefit_none</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;threshold&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;threshold&#39;</span><span class="p">],</span> <span class="n">net_benefit_none</span><span class="p">,</span> <span class="s1">&#39;g--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Treat None&#39;</span><span class="p">)</span>
+    <span class="c1"># Model</span>
+    <span class="n">net_benefit_model</span> <span class="o">=</span> <span class="p">(</span><span class="n">prevalence</span> <span class="o">*</span> <span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;tpr&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">prevalence</span><span class="p">)</span> <span class="o">*</span> <span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;fpr&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;threshold&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;threshold&#39;</span><span class="p">])</span> <span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;threshold&#39;</span><span class="p">],</span> <span class="n">net_benefit_model</span><span class="p">,</span> <span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Model&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Decision Curve&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span> <span class="p">:</span> <span class="mi">12</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Net Benefit&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Risk Threshold&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">net_benefit_all</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">net_benefit_model</span><span class="o">.</span><span class="n">max</span><span class="p">()),</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">net_benefit_all</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">net_benefit_model</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
+    <span class="k">return</span> <span class="n">fig</span></div>
+
+
+<div class="viewcode-block" id="plot_relative_utility_curve">
+<a class="viewcode-back" href="../../api/api.html#aplusml.plot.plot_relative_utility_curve">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_relative_utility_curve</span><span class="p">(</span><span class="n">lines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]],</span>
+                                <span class="n">utilities</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+                                <span class="n">xlim</span><span class="p">:</span> <span class="n">Tuple</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                                <span class="n">ylim</span><span class="p">:</span> <span class="n">Tuple</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.1</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                                <span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate Relative Utility Curve where:</span>
+<span class="sd">        - y-axis = relative utility</span>
+<span class="sd">        - x-axis = risk threshold</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;The relative utility curve plots the fraction of the expected utility </span>
+<span class="sd">    of perfect prediction obtained by the risk prediction model at the </span>
+<span class="sd">    optimal cut point associated with the risk threshold R&quot;</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        lines (list[dict[pd.DataFrame]]): List of dictionaries containing &#39;df&#39; (dataframe) and &#39;label&#39; (string)</span>
+<span class="sd">        utilities (dict, optional): Dictionary containing utility values for each class</span>
+<span class="sd">        xlim (Tuple, optional): Tuple containing the x-axis limits. Defaults to (0, 1).</span>
+<span class="sd">        ylim (Tuple, optional): Tuple containing the y-axis limits. Defaults to (-0.1, None).</span>
+<span class="sd">        ax (plt.Axes, optional): Matplotlib axes to plot on. If None, creates new figure. Defaults to None.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        plt.figure: Matplotlib figure object containing the plot</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span> <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span>
+    <span class="c1"># NOTE: &#39;thresholds&#39; may be a diff size than df_utility[&#39;threshold&#39;] b/c we add 0,1 to it in &#39;get_df_utility_from_df_preds&#39;</span>
+    <span class="n">thresholds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;df&#39;</span><span class="p">][</span><span class="s1">&#39;y_hat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">df_utility</span> <span class="o">=</span> <span class="n">get_df_utility_from_df_preds</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;df&#39;</span><span class="p">],</span> <span class="n">utilities</span><span class="p">,</span> <span class="n">thresholds</span><span class="p">,</span> <span class="n">is_add_0_and_1</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">prevalence</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;df&#39;</span><span class="p">][</span><span class="s1">&#39;y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="c1"># Proportion of positive cases</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;threshold&#39;</span><span class="p">]</span>
+    
+    <span class="c1"># Treat All</span>
+    <span class="c1"># Explanation of how to calculate net benefits (Page 8):</span>
+    <span class="c1">#   https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2804257/pdf/nihms-108324.pdf</span>
+    <span class="c1"># Explanation of risk thresholds / curves (Page 5): </span>
+    <span class="c1">#   https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2577036/pdf/nihms74373.pdf</span>
+    <span class="n">utility_perfect</span> <span class="o">=</span> <span class="n">prevalence</span> <span class="o">*</span> <span class="n">utilities</span><span class="p">[</span><span class="s1">&#39;tp&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">prevalence</span><span class="p">)</span> <span class="o">*</span> <span class="n">utilities</span><span class="p">[</span><span class="s1">&#39;tn&#39;</span><span class="p">]</span>
+    <span class="n">utility_all</span> <span class="o">=</span> <span class="n">prevalence</span> <span class="o">*</span> <span class="n">utilities</span><span class="p">[</span><span class="s1">&#39;tp&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">prevalence</span><span class="p">)</span> <span class="o">*</span> <span class="n">utilities</span><span class="p">[</span><span class="s1">&#39;fp&#39;</span><span class="p">]</span>
+    <span class="n">utility_none</span> <span class="o">=</span> <span class="n">prevalence</span> <span class="o">*</span> <span class="n">utilities</span><span class="p">[</span><span class="s1">&#39;fn&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">prevalence</span><span class="p">)</span> <span class="o">*</span> <span class="n">utilities</span><span class="p">[</span><span class="s1">&#39;tn&#39;</span><span class="p">]</span>
+    
+    <span class="c1"># Model</span>
+    <span class="n">y_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;unit_utility&#39;</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+        <span class="n">df_preds</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="s1">&#39;df&#39;</span><span class="p">]</span>
+        <span class="n">df_utility</span> <span class="o">=</span> <span class="n">get_df_utility_from_df_preds</span><span class="p">(</span><span class="n">df_preds</span><span class="p">,</span> <span class="n">utilities</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+        <span class="n">ru_none</span> <span class="o">=</span> <span class="p">(</span><span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;unit_utility&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">utility_none</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">utility_perfect</span> <span class="o">-</span> <span class="n">utility_none</span><span class="p">)</span>
+        <span class="n">ru_all</span> <span class="o">=</span> <span class="p">(</span><span class="n">df_utility</span><span class="p">[</span><span class="s1">&#39;unit_utility&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">utility_all</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">utility_perfect</span> <span class="o">-</span> <span class="n">utility_all</span><span class="p">)</span>
+        <span class="c1"># TODO</span>
+        <span class="c1"># y = ru_all until prevalence then ru_all</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">line</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">])</span>
+        <span class="n">y_max</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="k">if</span> <span class="n">y</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">y_max</span> <span class="k">else</span> <span class="n">y_max</span>
+    
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Relative Utility Curve&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span> <span class="p">:</span> <span class="mi">12</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Relative Utility&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Risk Threshold&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">xlim</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">xlim</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ylim</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">y_max</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fig</span></div>
+
+
+<div class="viewcode-block" id="calc_model_performance_metrics">
+<a class="viewcode-back" href="../../api/api.html#aplusml.plot.calc_model_performance_metrics">[docs]</a>
+<span class="k">def</span> <span class="nf">calc_model_performance_metrics</span><span class="p">(</span><span class="n">df_preds</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+                                   <span class="n">thresholds</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a dictionary containing performance metrics for this model</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        df_preds (pd.DataFrame): Dataframe with two columns, &#39;y&#39; and &#39;y_hat&#39;</span>
+<span class="sd">        thresholds (list[float]): Cutoffs for thresholding predictions to binary 0/1 (used for accuracy, Matthews correlation)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: Dictionary containing performance metrics</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    <span class="n">pearson_corr</span> <span class="o">=</span> <span class="n">calc_pearsonr</span><span class="p">(</span><span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y_hat&#39;</span><span class="p">],</span> <span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">])</span>
+    <span class="n">spearman_corr</span> <span class="o">=</span> <span class="n">calc_spearmanr</span><span class="p">(</span><span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y_hat&#39;</span><span class="p">],</span> <span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">])</span>
+    <span class="n">fpr</span><span class="p">,</span> <span class="n">tpr</span><span class="p">,</span> <span class="n">t</span> <span class="o">=</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">roc_curve</span><span class="p">(</span><span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y_hat&#39;</span><span class="p">])</span>
+    <span class="n">auroc</span> <span class="o">=</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">auc</span><span class="p">(</span><span class="n">fpr</span><span class="p">,</span> <span class="n">tpr</span><span class="p">)</span>
+    <span class="n">precision</span><span class="p">,</span> <span class="n">recall</span><span class="p">,</span> <span class="n">t</span> <span class="o">=</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">precision_recall_curve</span><span class="p">(</span><span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y_hat&#39;</span><span class="p">])</span>
+    <span class="n">auprc</span> <span class="o">=</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">auc</span><span class="p">(</span><span class="n">recall</span><span class="p">,</span> <span class="n">precision</span><span class="p">)</span>
+    <span class="c1"># Threshold dependent calculations</span>
+    <span class="n">matthews_corr</span> <span class="o">=</span> <span class="p">[</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">matthews_corrcoef</span><span class="p">(</span><span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y_hat&#39;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">thresholds</span> <span class="p">]</span>
+    <span class="n">accuracy</span> <span class="o">=</span> <span class="p">[</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="p">(</span><span class="n">df_preds</span><span class="p">[</span><span class="s1">&#39;y_hat&#39;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">x</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">thresholds</span> <span class="p">]</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;auroc&#39;</span> <span class="p">:</span> <span class="n">auroc</span><span class="p">,</span>
+        <span class="s1">&#39;auprc&#39;</span> <span class="p">:</span> <span class="n">auprc</span><span class="p">,</span>
+        <span class="s1">&#39;pearson_corr&#39;</span> <span class="p">:</span> <span class="n">pearson_corr</span><span class="p">,</span>
+        <span class="s1">&#39;spearman_corr&#39;</span> <span class="p">:</span> <span class="n">spearman_corr</span><span class="p">,</span>
+        <span class="s1">&#39;spearman_corr&#39;</span> <span class="p">:</span> <span class="n">spearman_corr</span><span class="p">,</span>
+        <span class="s1">&#39;accuracies&#39;</span> <span class="p">:</span> <span class="n">accuracy</span><span class="p">,</span>
+        <span class="s1">&#39;matthews_corrs&#39;</span> <span class="p">:</span> <span class="n">matthews_corr</span><span class="p">,</span>
+        <span class="s1">&#39;thresholds&#39;</span> <span class="p">:</span> <span class="n">thresholds</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">results</span></div>
+
+
+<div class="viewcode-block" id="make_model_utility_plots">
+<a class="viewcode-back" href="../../api/api.html#aplusml.plot.make_model_utility_plots">[docs]</a>
+<span class="k">def</span> <span class="nf">make_model_utility_plots</span><span class="p">(</span><span class="n">df_preds</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> 
+                             <span class="n">utilities</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> 
+                             <span class="n">is_show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                             <span class="n">path_to_plots_prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run all plotting functions</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        df_preds (pd.DataFrame):  - dataframe with two columns, &#39;y&#39; and &#39;y_hat&#39;</span>
+<span class="sd">        is_show (bool, optional): If TRUE, show plots. Defaults to False.</span>
+<span class="sd">        path_to_plots_prefix (str, optional): Prefix for path to saved plot files. Defaults to None.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">path_to_plots_prefix</span><span class="p">:</span> 
+        <span class="n">is_show</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">is_show</span> <span class="ow">and</span> <span class="n">path_to_plots_prefix</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ERROR - Either `is_show = True` or `path_to_plots_prefix` must be specified&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="n">plots</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">plot_roc_curve</span><span class="p">(</span><span class="n">df_preds</span><span class="p">,</span> <span class="n">utilities</span><span class="p">),</span>
+        <span class="n">plot_precision_recall_curve</span><span class="p">(</span><span class="n">df_preds</span><span class="p">,</span> <span class="n">utilities</span><span class="p">),</span>
+        <span class="n">plot_ppv_v_utility_curve</span><span class="p">(</span><span class="n">df_preds</span><span class="p">,</span> <span class="n">utilities</span><span class="p">),</span>
+        <span class="n">plot_threshold_v_utility_curve</span><span class="p">(</span><span class="n">df_preds</span><span class="p">,</span> <span class="n">utilities</span><span class="p">),</span>
+        <span class="n">plot_work_v_utility</span><span class="p">(</span><span class="n">df_preds</span><span class="p">,</span> <span class="n">utilities</span><span class="p">),</span>
+        <span class="n">plot_work_v_ppv_tpr_fpr</span><span class="p">(</span><span class="n">df_preds</span><span class="p">,</span> <span class="n">utilities</span><span class="p">),</span>
+        <span class="n">plot_threshold_v_ppv_tpr_work</span><span class="p">(</span><span class="n">df_preds</span><span class="p">,</span> <span class="n">utilities</span><span class="p">),</span>
+        <span class="n">plot_calibration_curve</span><span class="p">(</span><span class="n">df_preds</span><span class="p">),</span>
+        <span class="n">plot_hist_pred</span><span class="p">(</span><span class="n">df_preds</span><span class="p">),</span>
+        <span class="n">plot_pred_v_true</span><span class="p">(</span><span class="n">df_preds</span><span class="p">),</span>
+        <span class="n">plot_confusion_matrix</span><span class="p">(</span><span class="n">df_preds</span><span class="p">,</span> <span class="n">utilities</span><span class="p">),</span>
+        <span class="n">plot_decision_curve</span><span class="p">(</span><span class="n">df_preds</span><span class="p">,</span> <span class="n">utilities</span><span class="p">),</span>
+    <span class="p">]</span>
+    <span class="n">suffixes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s1">&#39;roc.png&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;pr.png&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;ppv_v_utility.png&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;threshold_v_utility.png&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;work_v_utility.png&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;work_v_ppv_tpr_fpr.png&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;threshold_v_ppv_tpr_work.png&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;decision_curve.png&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;calibration.png&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;pred_histogram.png&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;pred_v_true.png&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;confusion_matrix.png&#39;</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="k">if</span> <span class="n">is_show</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span> 
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">fig</span><span class="p">,</span> <span class="n">suffix</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">plots</span><span class="p">,</span> <span class="n">suffixes</span><span class="p">):</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">path_to_plots_prefix</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s1">&#39;all&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="calc_pearsonr">
+<a class="viewcode-back" href="../../api/api.html#aplusml.plot.calc_pearsonr">[docs]</a>
+<span class="k">def</span> <span class="nf">calc_pearsonr</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pearson correlation coefficient between two 1d vectors</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        a (np.ndarray): First vector</span>
+<span class="sd">        b (np.ndarray): Second vector</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        float: Pearson correlation coefficient</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">corrcoef</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="calc_spearmanr">
+<a class="viewcode-back" href="../../api/api.html#aplusml.plot.calc_spearmanr">[docs]</a>
+<span class="k">def</span> <span class="nf">calc_spearmanr</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Spearman correlation coefficient between two 1d vectors</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        a (np.ndarray): First vector</span>
+<span class="sd">        b (np.ndarray): Second vector</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        float: Spearman correlation coefficient</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">corrcoef</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="k">pass</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Michael Wornow.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

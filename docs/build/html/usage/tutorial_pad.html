@@ -1,0 +1,1132 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorial (PAD) &mdash; APLUS ML  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=ae483e34" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tutorial (HCM)" href="tutorial_hcm.html" />
+    <link rel="prev" title="Tutorial (Hello World)" href="tutorial_hello.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            APLUS ML
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">🚦 Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/background.html">Background</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">📚 User Guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quick.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_hello.html">Tutorial (Hello World)</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial (PAD)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#clinical-motivation">🏥 Clinical Motivation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ml-models">🤖 ML Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#workflows">👩‍⚕️ Workflows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#variables">𝓧 Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data">💽 Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#creating-the-aplus-config">🔧 Creating the APLUS Config</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#patient-properties-csv">1. Patient Properties CSV</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metadata-section-of-config-yaml">2. <code class="docutils literal notranslate"><span class="pre">Metadata</span></code> Section of Config YAML</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#parameters-section-of-config-yaml">3. <code class="docutils literal notranslate"><span class="pre">Parameters</span></code> Section of Config YAML</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#states-section-of-config-yaml">4. <code class="docutils literal notranslate"><span class="pre">States</span></code> Section of Config YAML</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#baselines">📏 Baselines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#run-simulation">📊 Run Simulation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_hcm.html">Tutorial (HCM)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">Concept Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="templates.html">Config YAML Templates</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">📖 API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/config.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">APLUS ML</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Tutorial (PAD)</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/usage/tutorial_pad.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="tutorial-pad">
+<h1>Tutorial (PAD)<a class="headerlink" href="#tutorial-pad" title="Link to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<p>In this section, we present a case study of conducting a novel usefulness assessment via APLUS of ML models for the early detection of PAD.</p>
+<p>The full <code class="docutils literal notranslate"><span class="pre">.ipynb</span></code> notebook for this tutorial can be found <a class="reference external" href="https://github.com/som-shahlab/aplusml/blob/main/tutorials/pad.ipynb">at this link</a>.</p>
+<section id="clinical-motivation">
+<h2>🏥 Clinical Motivation<a class="headerlink" href="#clinical-motivation" title="Link to this heading"></a></h2>
+<p>PAD is a chronic condition which occurs when the arteries in a patient’s limbs are constricted by atherosclerosis, thereby reducing blood flow.
+A total of 8–12 million people in the US have PAD. Left untreated, PAD is associated with a higher risk of mortality, serious cardiovascular events, and lower quality of life. This costs the US healthcare system over $21 billion annually.</p>
+<p>Despite these risks, PAD is often missed by healthcare providers as roughly half of all PAD patients are asymptomatic.</p>
+<p>Thus, developing methods for the early detection of PAD can help reduce the burden of PAD on the US healthcare system.</p>
+</section>
+<section id="ml-models">
+<h2>🤖 ML Models<a class="headerlink" href="#ml-models" title="Link to this heading"></a></h2>
+<p><a class="reference external" href="https://www.nature.com/articles/s41598-022-17180-5">Ghanzouri et al. 2022</a> proposed three ML models to classify patients for PAD based on EHR data: a deep learning model, a random forest, and a logistic regression with respective AUROCs of 0.96, 0.91 and 0.81. Each model assigns a probabilistic risk score to each visiting patient which indicates their likelihood of having PAD.</p>
+<p>We use APLUS to conduct a usefulness assessment on incorporating this model into clinical decision making at Stanford Health Care to quantify the benefits of deploying this model in practice.</p>
+</section>
+<section id="workflows">
+<h2>👩‍⚕️ Workflows<a class="headerlink" href="#workflows" title="Link to this heading"></a></h2>
+<a class="reference internal image-reference" href="../_images/pad_workflows.png"><img alt="Workflows for PAD screening" src="../_images/pad_workflows.png" style="width: 700px;" />
+</a>
+<p>Based on interviews with practitioners, we identified two workflows to consider:</p>
+<ol class="arabic simple">
+<li><p>A <strong>nurse-driven</strong> workflow which assumes the existence of a centralized team of nurses reviewing the PAD model’s predictions for all patients visiting their clinic each day. This nursing staff decides which patients to directly refer to the specialist, thus cutting out any intermediate steps with a non-specialist physician. The main constraints on this workflow are the capacity of the nursing staff and the specialist’s schedule.</p></li>
+<li><p>A <strong>doctor-driven</strong> workflow which assumes that the PAD model’s predictions appear as a real-time alert in a patient’s EHR during their visit to the clinic. If the attending physician notices this alert, she can choose to either ignore the alert or act on it. We assume that physicians ignore alerts at random. The main constraints on this workflow are the probability that the attending physician reads the alert (previous studies have shown that up to 96 % of alerts are overridden [54], [55], [56]) and the specialist’s schedule.</p></li>
+</ol>
+<p>In both workflows, we assume the existence of a downstream cardiovascular specialist who evaluates patients after they are referred by a doctor or nurse.
+We assume that the specialist has a set capacity for how many patients she can see per day.
+However, once a patient reaches the specialist, we assume that the specialist makes the optimal treatment decision for that patient.</p>
+<p>We model 3 possible end outcomes for patients: <strong>Untreated</strong>, <strong>Medication</strong>, or <strong>Surgery.</strong></p>
+<p>An important distinction between the <strong>nurse-driven</strong> and <strong>doctor-driven</strong> workflows is that the nurse-driven workflow is centralized whereas the doctor-driven workflow is decentralized.
+In other words, the nurse-driven workflow batches together all model predictions for each day before patients are chosen for follow-up, while in the doctor-driven workflow each doctor decides whether to act on a PAD alert immediately upon receipt of the alert (independent from the decisions of other doctors).
+Thus, we consider two possible strategies that the nurses can leverage for processing this batch of predictions: (1) ranked screening, in which the nursing staff follows up with the K patients with the highest PAD risk scores; or (2) thresholded screening, in which a random subset of patients are selected from the batch of predictions whose predicted PAD risk score exceeds some cutoff threshold.</p>
+<p>The corresponding YAML workflow specification files are available in the APLUS Github repository.</p>
+</section>
+<section id="variables">
+<h2>𝓧 Variables<a class="headerlink" href="#variables" title="Link to this heading"></a></h2>
+<p>We now need to define the variables (i.e. parameters) that we will use to simulate our workflow. These knobs can be turned to simulate different workflow settings.</p>
+<p>First, let’s define <strong>simulation-level variables</strong> that will determine how the overall simulation runs.</p>
+<p>We need to choose the <strong>timestep</strong> <span class="math notranslate nohighlight">\(\Delta t\)</span> of the simulation. The simulation runs one timestep at a time, so setting this timestep to the appropriate unit of time is important.</p>
+<p>For PAD, the workflow occurs over the span of weeks / months. Thus, we will set the timestep to represent 1 day.</p>
+<p>Next, we need to choose the <strong>length</strong>  <span class="math notranslate nohighlight">\(T\)</span> in timesteps of the simulation. We’ll arbitrarily use <span class="math notranslate nohighlight">\(T = 500\)</span> days. Longer values will result in more precise utility estimates, but will also take longer to run.</p>
+<p>We assume we have a dataset of <span class="math notranslate nohighlight">\(N\)</span> patients, indexed by <span class="math notranslate nohighlight">\(i = 1, \ldots, N\)</span>.</p>
+<p>Second, we need to define the <strong>individual-level properties</strong> of each patient.</p>
+<p>Each patient either has PAD (<span class="math notranslate nohighlight">\(y_i = 1\)</span>) or does not (<span class="math notranslate nohighlight">\(y_i = 0\)</span>).</p>
+<p>Each patient has an individual-level ABI score <span class="math notranslate nohighlight">\(a_i\)</span>.</p>
+<ul class="simple">
+<li><p>For patients with PAD, we assume that <span class="math notranslate nohighlight">\(a_i | y_i = 1 \sim \text{Normal}(0.65, 0.15)\)</span>.</p></li>
+<li><p>For patients without PAD, we assume that <span class="math notranslate nohighlight">\(a_i | y_i = 0 \sim \text{Normal}(1.09, 0.11)\)</span>.</p></li>
+</ul>
+<p>These numbers were based on a literature review of the ABI score distribution in patients with and without PAD.</p>
+<p>Third, let’s define the <strong>utility values</strong> for each of the three workflow outcomes (<strong>Untreated</strong>, <strong>Medication</strong>, <strong>Surgery</strong>).</p>
+<p>For example, <strong>Untreated</strong> is the best option for patients without PAD but has the largest cost for patients with PAD. <strong>Medication</strong> is the ideal outcome for patients with moderate PAD but is undesirable for patients without PAD.  <strong>Surgery</strong> is the costliest outcome for all patients, but the relatively best option for patients with severe PAD.</p>
+<p>We combined clinician input with utility estimates from <a class="reference external" href="https://pubmed.ncbi.nlm.nih.gov/29930023/">Itoga et al. 2018</a> to define the utilities associated with the end outcomes of each workflow in terms of a multiplier on remaining years living to reflect quality-adjustment on lifespan.
+Given that a healthy patient with no PAD has a baseline utility of 1, the utilities for different combinations of PAD severity and treatment are shown in the table below:</p>
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">Utility Values by PAD Severity and Treatment</span><a class="headerlink" href="#id1" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 25.0%" />
+<col style="width: 25.0%" />
+<col style="width: 25.0%" />
+<col style="width: 25.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"></th>
+<th class="head"><p>Untreated</p></th>
+<th class="head"><p>Medication</p></th>
+<th class="head"><p>Surgery</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>No PAD</p></td>
+<td><p>1.0</p></td>
+<td><p>0.95</p></td>
+<td><p>0.7</p></td>
+</tr>
+<tr class="row-odd"><td><p>Moderate PAD</p></td>
+<td><p>0.85</p></td>
+<td><p>0.9</p></td>
+<td><p>N/A</p></td>
+</tr>
+<tr class="row-even"><td><p>Severe PAD</p></td>
+<td><p>0.6</p></td>
+<td><p>N/A</p></td>
+<td><p>0.68</p></td>
+</tr>
+</tbody>
+</table>
+<p>Fourth, we need to define the <strong>capacity constraints</strong> on our workflow.</p>
+<p>Both workflows have a constraint on the number of patients that the specialist can see per day, which we define as <span class="math notranslate nohighlight">\(c\)</span>. We assume that <span class="math notranslate nohighlight">\(c = 2\)</span> and that it decrements by 1 with each patient the specialist sees, but reset to 2 at the end of each timestep.</p>
+<p>For the nurse-driven workflow, we have the following specific constraint…</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(k\)</span> = Number of patients per day that the centralized nursing team can follow-up with for an ABI test</p></li>
+</ul>
+</div></blockquote>
+<p>For the doctor-driven workflow, we have the following specific constraint…</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(p\)</span> = Probability that a PAD alert is read</p></li>
+</ul>
+</div></blockquote>
+<p>We will vary the values of <span class="math notranslate nohighlight">\(k\)</span>, <span class="math notranslate nohighlight">\(p\)</span>, and <span class="math notranslate nohighlight">\(c\)</span> in our script to simulate different levels of capacity and quantify the utility achieved by the ML models under each.</p>
+</section>
+<section id="data">
+<h2>💽 Data<a class="headerlink" href="#data" title="Link to this heading"></a></h2>
+<p>We acquired a dataset of 4,452 patients who had both ground-truth labels of PAD diagnosis and risk score predictions from all three ML models developed in Ghanzouri et al. 2022.</p>
+<p>We simulated 500 consecutive days of patient visits. We sampled <span class="math notranslate nohighlight">\(k \sim \text{Poisson}(35)\)</span> to determine the number of patients visiting on a given day, then sampled <span class="math notranslate nohighlight">\(k\)</span> patients with replacement from our dataset.</p>
+</section>
+<section id="creating-the-aplus-config">
+<h2>🔧 Creating the APLUS Config<a class="headerlink" href="#creating-the-aplus-config" title="Link to this heading"></a></h2>
+<p>Let’s now create our config files, one for each workflow. We’ll walk through creating the <strong>doctor-driven</strong> workflow YAML below, but an example of the full nursing workflow can be found here: <a class="reference external" href="https://github.com/som-shahlab/aplusml/blob/main/workflows/pad_nurse.yaml">https://github.com/som-shahlab/aplusml/blob/main/workflows/pad_nurse.yaml</a></p>
+<section id="patient-properties-csv">
+<h3>1. Patient Properties CSV<a class="headerlink" href="#patient-properties-csv" title="Link to this heading"></a></h3>
+<p>First, we need to create a CSV file that contains <strong>individual-level properties</strong> associated with each patient that will be run through our simulation. Each row in the CSV is a unique patient, and each column is a property.
+Properties can be anything – e.g. demographic information, model predictions, clinical measurements, etc.</p>
+<p>This file can contain any columns. In our case, we have the following columns:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">id</span></code>: The <strong>unique identifier</strong> for the patient.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">y</span></code>: The <strong>ground truth</strong> PAD status of the patient.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">y_hat_dl</span></code>: The predicted PAD risk score from the <strong>deep learning</strong> model.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">y_hat_rf</span></code>: The predicted PAD risk score from the <strong>random forest</strong> model.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">y_hat_lr</span></code>: The predicted PAD risk score from the <strong>logistic regression</strong> model.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">abi_test_pred</span></code>: The <strong>predicted</strong> ABI score from the ABI test.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">random_resource_priority</span></code>: A random number that we will use to <strong>sort patients</strong> when prioritizing them for access to a finite resource.</p></li>
+</ul>
+<p>Here is an excerpt from our properties CSV (which we’ll store in <code class="docutils literal notranslate"><span class="pre">./patient_properties.csv</span></code>):</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>id,y,y_hat_dl,y_hat_rf,y_hat_lr,abi_test_pred,random_resource_priority
+1,0,0.95,0.9,0.85,0.9,0.1
+2,1,0.85,0.8,0.75,0.8,0.2
+3,0,0.75,0.7,0.65,0.7,0.3
+</pre></div>
+</div>
+</section>
+<section id="metadata-section-of-config-yaml">
+<h3>2. <code class="docutils literal notranslate"><span class="pre">Metadata</span></code> Section of Config YAML<a class="headerlink" href="#metadata-section-of-config-yaml" title="Link to this heading"></a></h3>
+<p>First, we define the <strong>Metadata section</strong> for our workflow. We need to provide the following metadata for our simulation:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: Name of the workflow.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">path_to_properties</span></code>: Path to the <strong>Patient Properties CSV file</strong> where each row is a patient, and each column is a property of that patient.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">properties_col_for_patient_id</span></code>: The name of the <strong>column</strong> within the properties CSV file that contains the patient IDs.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">patient_sort_preference_property</span></code>: The name of the the <strong>variable</strong> that we will use to sort patients when prioritizing them to access a finite resource. Use the <code class="docutils literal notranslate"><span class="pre">is_ascending</span></code> flag to specify whether the variable should be sorted in ascending or descending order.</p></li>
+</ul>
+</div></blockquote>
+<p>For our <strong>doctor-driven</strong> workflow, our config YAML file’s <strong>Metadata section</strong> looks like this:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;PAD</span><span class="nv"> </span><span class="s">(Doctor)&quot;</span>
+<span class="w">  </span><span class="nt">path_to_properties</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;./patient_properties.csv&quot;</span>
+<span class="w">  </span><span class="nt">properties_col_for_patient_id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;id&quot;</span>
+<span class="w">  </span><span class="nt">patient_sort_preference_property</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">variable</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">random_resource_priority</span>
+<span class="w">    </span><span class="nt">is_ascending</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">False</span>
+</pre></div>
+</div>
+</section>
+<section id="parameters-section-of-config-yaml">
+<h3>3. <code class="docutils literal notranslate"><span class="pre">Parameters</span></code> Section of Config YAML<a class="headerlink" href="#parameters-section-of-config-yaml" title="Link to this heading"></a></h3>
+<p>Second, we need to define the <strong>Variables section</strong> of our config YAML file. This section contains the parameters that we will use to simulate our workflow.</p>
+<p>Let’s start by defining the utility values for each possible outcome. Let’s define a variable called <code class="docutils literal notranslate"><span class="pre">qaly</span></code> to be a dictionary that maps each possible outcome to a utility value.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">variables</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># Utility values</span>
+<span class="w">  </span><span class="nt">qaly</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span>
+<span class="w">      </span><span class="s">&#39;YES_pad__UNTREATED__needs_surgery&#39;</span><span class="nt"> </span><span class="p">:</span><span class="w"> </span><span class="nv">0.6</span><span class="p p-Indicator">,</span>
+<span class="w">      </span><span class="s">&#39;YES_pad__YES_surgery&#39;</span><span class="nt"> </span><span class="p">:</span><span class="w"> </span><span class="nv">0.68</span><span class="p p-Indicator">,</span>
+<span class="w">      </span><span class="s">&#39;NO_pad__YES_surgery&#39;</span><span class="nt"> </span><span class="p">:</span><span class="w"> </span><span class="nv">0.7</span><span class="p p-Indicator">,</span>
+<span class="w">      </span><span class="s">&#39;YES_pad__UNTREATED__needs_medication&#39;</span><span class="nt"> </span><span class="p">:</span><span class="w"> </span><span class="nv">0.85</span><span class="p p-Indicator">,</span>
+<span class="w">      </span><span class="s">&#39;YES_pad__YES_medication&#39;</span><span class="nt"> </span><span class="p">:</span><span class="w"> </span><span class="nv">0.9</span><span class="p p-Indicator">,</span>
+<span class="w">      </span><span class="s">&#39;NO_pad__YES_medication&#39;</span><span class="nt"> </span><span class="p">:</span><span class="w"> </span><span class="nv">0.95</span><span class="p p-Indicator">,</span>
+<span class="w">      </span><span class="s">&#39;NO_pad__UNTREATED&#39;</span><span class="nt"> </span><span class="p">:</span><span class="w"> </span><span class="nv">1</span><span class="p p-Indicator">,</span>
+<span class="w">    </span><span class="p p-Indicator">}</span>
+</pre></div>
+</div>
+<p>Next, we need to define the parameters that we will use to simulate our workflow.</p>
+<p>Because our model outputs probabilistic predictions, we need to define a threshold above which we flag the patient as having PAD.
+By defining this threshold as a variable, we can easily change it in our simulation to evaluate the model’s utility at different thresholds.</p>
+<p>Here, we use a variable with <code class="docutils literal notranslate"><span class="pre">type:</span> <span class="pre">scalar</span></code>.
+This tells APLUS that the value of this variable is independent of the patient (i.e. it will be the same for all patients).
+We can set <code class="docutils literal notranslate"><span class="pre">value</span></code> to any Python expression.</p>
+<p>We’ll set it to 0.5 for now, but we can change this programatically in our simulation.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">variables</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># ... existing variables ...</span>
+<span class="w">  </span><span class="c1"># Model</span>
+<span class="w">  </span><span class="nt">model_threshold</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scalar</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
+</pre></div>
+</div>
+<p>The default <code class="docutils literal notranslate"><span class="pre">type</span></code> for a variable is <code class="docutils literal notranslate"><span class="pre">scalar</span></code>, so we can equivalently write this variable as:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">variables</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># ... existing variables ...</span>
+<span class="w">  </span><span class="c1"># Model</span>
+<span class="w">  </span><span class="nt">model_threshold</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
+</pre></div>
+</div>
+<p>We’ll next add the patient properties from the <strong>Patient Properties CSV</strong> into our simulation.</p>
+<p>We’ll start with the columns that contain the model predictions and ground truth labels.</p>
+<p>Here, we use a variable with <code class="docutils literal notranslate"><span class="pre">type:</span> <span class="pre">property</span></code>.
+This tells APLUS that for each patient, we will set the value of this variable to the value of that patient’s row in the CSV column named <code class="docutils literal notranslate"><span class="pre">column</span></code>.</p>
+<p>Typically, the name of the variable will be the same as the name of the column in the CSV, as shown below.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">variables</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># ... existing variables ...</span>
+<span class="w">  </span><span class="c1"># Patient properties</span>
+<span class="w">  </span><span class="nt">y</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">property</span>
+<span class="w">    </span><span class="nt">column</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">y</span>
+<span class="w">  </span><span class="nt">y_hat_dl</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">property</span>
+<span class="w">    </span><span class="nt">column</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">y_hat_dl</span>
+<span class="w">  </span><span class="nt">y_hat_rf</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">property</span>
+<span class="w">    </span><span class="nt">column</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">y_hat_rf</span>
+<span class="w">  </span><span class="nt">y_hat_lr</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">property</span>
+<span class="w">    </span><span class="nt">column</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">y_hat_lr</span>
+</pre></div>
+</div>
+<p>We’ll next add a column that contains a random nonce that will be used to deterministically (but randomly) prioritize patients for limited resources.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">variables</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># ... existing variables ...</span>
+<span class="w">  </span><span class="c1"># Patient properties</span>
+<span class="w">  </span><span class="nt">random_resource_priority</span><span class="p">:</span><span class="w"> </span><span class="c1"># Random nonce used to deterministically (but randomly) prioritize patients for limited resources</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">property</span>
+<span class="w">    </span><span class="nt">column</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">random_resource_priority</span>
+</pre></div>
+</div>
+<p>We’ll next consider the ABI test. Recall from our <strong>Patient Properties CSV</strong> that we have a column called <code class="docutils literal notranslate"><span class="pre">abi_test_pred</span></code>.
+This column contains the predicted ABI score for each patient.
+This will give every patient a property called <code class="docutils literal notranslate"><span class="pre">abi_test_pred</span></code> that contains the ABI score contained in their row’s <code class="docutils literal notranslate"><span class="pre">abi_test_pred</span></code> column.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">variables</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># ... existing variables ...</span>
+<span class="w">  </span><span class="c1"># ABI test</span>
+<span class="w">  </span><span class="nt">abi_test_pred</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">property</span>
+<span class="w">    </span><span class="nt">column</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">abi_test_pred</span>
+</pre></div>
+</div>
+<p>Given this ABI test result, we need to decide how it impacts the patient’s care.
+We’ll define variables to control the thresholds for each possible decision based on the ABI test result.
+Because these will thresholds will be the same across patients, we will use variables of <code class="docutils literal notranslate"><span class="pre">type:</span> <span class="pre">scalar</span></code> to represent them.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">variables</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># ... existing variables ...</span>
+<span class="w">  </span><span class="c1"># ABI test</span>
+<span class="w">  </span><span class="nt">abi_test_threshold</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.9</span><span class="w"> </span><span class="c1"># If abi_test_pred &lt; value, then patient tested positive for PAD</span>
+<span class="w">  </span><span class="nt">abi_test_specialist_recommend_surgery_threshold</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.45</span><span class="w"> </span><span class="c1"># If abi_test_pred &lt; value, then a specialist will recommend surgery for this patient</span>
+<span class="w">  </span><span class="nt">abi_test_untreated_needs_surgery_threshold</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.55</span><span class="w"> </span><span class="c1"># If abi_test_pred &lt; value, then this patient will eventually need surgery for their PAD if they aren&#39;t immediately put on medication/surgery</span>
+<span class="w">  </span><span class="nt">abi_test_treat_immediately_threshold</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.8</span><span class="w"> </span><span class="c1"># If abi_test_pred &gt; value, then doctor can treat PAD with medication</span>
+</pre></div>
+</div>
+<p>Finally, we’ll add variables for tracking the progress of the simulation over time.</p>
+<p>Here, we use a variable with <code class="docutils literal notranslate"><span class="pre">type:</span> <span class="pre">simulation</span></code>. This tells APLUS that these variables are special variables provided by the simulation engine.
+Currently, the only supported simulation variables are <code class="docutils literal notranslate"><span class="pre">time_already_in_sim</span></code> and <code class="docutils literal notranslate"><span class="pre">sim_current_timestep</span></code>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">time_already_in_sim</span></code> variable contains the number of timesteps that have elapsed since the specific patient accessing this property started their workflow.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">sim_current_timestep</span></code> variable contains the number of timesteps that have elapsed since the simulation started.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">variables</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># ... existing variables ...</span>
+<span class="w">  </span><span class="c1"># Simulation time</span>
+<span class="w">  </span><span class="nt">time_already_in_sim</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">simulation</span>
+<span class="w">  </span><span class="nt">sim_current_timestep</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">simulation</span>
+</pre></div>
+</div>
+<p>Let’s now add variables for representing the <strong>constraints</strong> on our workflow.</p>
+<p>The first constraint that we need to model is the <strong>specialist’s capacity.</strong>
+We’ll define a few variables to model this.</p>
+<p>First, we’ll define the number of days that the specialist is in office as an array of integers called <code class="docutils literal notranslate"><span class="pre">specialist_days_in_office</span></code>.
+We’ll have 0 represent Sunday and 6 represent Saturday.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">variables</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># ... existing variables ...</span>
+<span class="w">  </span><span class="c1"># Specialist</span>
+<span class="w">  </span><span class="nt">specialist_days_in_office</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">3</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">5</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="c1"># Specialist can only see patients on a MWF</span>
+</pre></div>
+</div>
+<p>Second, we’ll define the number of patients that the specialist can see per day as <code class="docutils literal notranslate"><span class="pre">specialist_capacity</span></code>.</p>
+<p>Here, we use a variable with <code class="docutils literal notranslate"><span class="pre">type:</span> <span class="pre">resource</span></code>.
+This tells APLUS that this variable can increase/decrease over time.</p>
+<p>We need to specify the following parameters for the resource:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">init_amount</span></code>: The initial amount of the resource when the simulation starts.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max_amount</span></code>: The maximum amount of the resource. Any refill attempts that would increase the resource above this amount will simply set the resource to this value.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">refill_amount</span></code>: The amount of the resource to add each time it is refilled.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">refill_duration</span></code>: The number of timesteps between refills.</p></li>
+</ul>
+</div></blockquote>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">variables</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># ... existing variables ...</span>
+<span class="w">  </span><span class="c1"># Specialist</span>
+<span class="w">  </span><span class="nt">specialist_capacity</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">resource</span>
+<span class="w">    </span><span class="nt">init_amount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"> </span><span class="c1"># Specialist can see 2 patients her first day</span>
+<span class="w">    </span><span class="nt">max_amount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"> </span><span class="c1"># Specialist can only see 2 patients per day</span>
+<span class="w">    </span><span class="nt">refill_duration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"> </span><span class="c1"># Specialist &quot;refills&quot; their capacity at the end of each day</span>
+<span class="w">    </span><span class="nt">refill_amount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"> </span><span class="c1"># Every time the specialist refills their capacity, they change it by +2</span>
+</pre></div>
+</div>
+<p>Third, we’ll define the number of days that a patient will be willing to wait to see the specialist (before giving up and ending in the “No Treatment” state) as <code class="docutils literal notranslate"><span class="pre">schedule_specialist_appt_time_out</span></code>.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">variables</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># ... existing variables ...</span>
+<span class="w">  </span><span class="c1"># Specialist</span>
+<span class="w">  </span><span class="nt">schedule_specialist_appt_time_out</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span><span class="w"> </span><span class="c1"># Wait 30 days to find time with specialist, then give up</span>
+</pre></div>
+</div>
+<p>The <strong>second constraint</strong> that we need to model is the <strong>probability that a PAD alert is read</strong> by the physician.</p>
+<p>We’ll define a variable called <code class="docutils literal notranslate"><span class="pre">prob_pad_alert_is_read</span></code> to represent this. Note that this is uniform across all patients and doctors.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">variables</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># ... existing variables ...</span>
+<span class="w">  </span><span class="c1"># Transition probs</span>
+<span class="w">  </span><span class="nt">prob_pad_alert_is_read</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.8</span>
+</pre></div>
+</div>
+<p>The <strong>third constraint</strong> that we need to model is the <strong>probability that an ABI test is ordered</strong> by the physician for a patient.</p>
+<p>We’ll define a variable called <code class="docutils literal notranslate"><span class="pre">prob_doctor_orders_abi</span></code> to represent this. Again, note that this is uniform across all patients and doctors.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">variables</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># ... existing variables ...</span>
+<span class="w">  </span><span class="c1"># Transition probs</span>
+<span class="w">  </span><span class="nt">prob_doctor_orders_abi</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.95</span>
+</pre></div>
+</div>
+<p>The <strong>fourth constraint</strong> that we need to model is the probability that the patient <strong>successfully schedules a follow-up appointment</strong> with the specialist.</p>
+<p>We’ll define a variable called <code class="docutils literal notranslate"><span class="pre">prob_specialist_follow_up_completed</span></code> to represent this.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">variables</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># ... existing variables ...</span>
+<span class="w">  </span><span class="c1"># Transition probs</span>
+<span class="w">  </span><span class="nt">prob_specialist_follow_up_completed</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.8</span>
+</pre></div>
+</div>
+<p>And that’s it! We’ve now defined all of the variables we need to control our simulation.</p>
+</section>
+<section id="states-section-of-config-yaml">
+<h3>4. <code class="docutils literal notranslate"><span class="pre">States</span></code> Section of Config YAML<a class="headerlink" href="#states-section-of-config-yaml" title="Link to this heading"></a></h3>
+<p>Now that we’ve defined all of the variables that we need, we can define the states of our workflow.</p>
+<p>First, we need to define the <strong>start</strong> state. Only one state can be the start state, and it must be named <code class="docutils literal notranslate"><span class="pre">start</span></code>.</p>
+<p>Each <strong>start</strong> state must have the following fields:
+* <code class="docutils literal notranslate"><span class="pre">type</span></code>: <code class="docutils literal notranslate"><span class="pre">start</span></code>
+* <code class="docutils literal notranslate"><span class="pre">label</span></code>: The label of the state.
+* <code class="docutils literal notranslate"><span class="pre">transitions</span></code>: A list of transitions that can be made from the current state. Each transition must have a <code class="docutils literal notranslate"><span class="pre">dest</span></code> field that specifies the state to transition to. If only one transition is specified, it will always be taken.</p>
+<p>For PAD, our patients will immediately be admitted into the clinic, so our start state will have the following transition:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">states</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">start</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">start</span>
+<span class="w">  </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Start&quot;</span>
+<span class="w">  </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">admit</span>
+</pre></div>
+</div>
+<p>Let’s now define the <strong>admit</strong> state.
+We will immediately make a model prediction for each patient who visits the clinic, so let’s immediately transition to the <strong>model_pred</strong> state.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">states</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># ... existing states ...</span>
+<span class="w">  </span><span class="nt">admit</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Patient</span><span class="nv"> </span><span class="s">Visits</span><span class="nv"> </span><span class="s">Clinic&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">model_pred</span>
+</pre></div>
+</div>
+<p>Let’s now define the <strong>model_pred</strong> state.</p>
+<p>This state will make a model prediction for each patient who visits the clinic, then branch to either the <strong>send_pad_alert</strong> or <strong>no_treatment</strong> state depending on the prediction.</p>
+<p>To represent a conditional transition, we add an <code class="docutils literal notranslate"><span class="pre">if</span></code> field to the <strong>send_pad_alert</strong> transition.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">if</span></code> field takes a Python expression that evaluates to a boolean. If the expression evaluates to <code class="docutils literal notranslate"><span class="pre">True</span></code>, then the transition will be taken.</p>
+<p>In this case, the expression is <code class="docutils literal notranslate"><span class="pre">y_hat_dl</span> <span class="pre">&gt;=</span> <span class="pre">model_threshold</span></code> will evaluate to <code class="docutils literal notranslate"><span class="pre">True</span></code> if the patient’s predicted PAD risk score (<code class="docutils literal notranslate"><span class="pre">y_hat_dl</span></code>) is greater than or equal to the model threshold (<code class="docutils literal notranslate"><span class="pre">model_threshold</span></code>) we’ve chosen.</p>
+<p>This expression is evaluated in the context of the patient’s properties, so you can use any of the variables defined in the <strong>Variables section</strong> of the config. In this case, we’re using the <code class="docutils literal notranslate"><span class="pre">y_hat_dl</span></code> and <code class="docutils literal notranslate"><span class="pre">model_threshold</span></code> variables.</p>
+<p>Note that the <strong>no_treatment</strong> transition does not have an <code class="docutils literal notranslate"><span class="pre">if</span></code> field; it will be taken by default if the <strong>send_pad_alert</strong> transition is not taken.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">states</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># ... existing states ...</span>
+<span class="w">  </span><span class="nt">model_pred</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Make</span><span class="nv"> </span><span class="s">Model</span><span class="nv"> </span><span class="s">Prediction&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">send_pad_alert</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">y_hat_dl &gt;= model_threshold</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">no_treatment</span>
+<span class="w">  </span><span class="nt">no_treatment</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Decide</span><span class="nv"> </span><span class="s">Not</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">Treat&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">untreated</span>
+</pre></div>
+</div>
+<p>Let’s now define the states that occur when a PAD alert is sent to the EHR.
+First, we define the <strong>send_pad_alert</strong> state to represent the alert being sent to the EHR. This state leads to the <strong>doctor_presented_with_alert</strong> state, which represents the alert appearing in the EHR.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">states</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># ... existing states ...</span>
+<span class="w">  </span><span class="nt">send_pad_alert</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Send</span><span class="nv"> </span><span class="s">PAD</span><span class="nv"> </span><span class="s">Alert</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">EHR&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">doctor_presented_with_alert</span>
+<span class="w">  </span><span class="nt">doctor_presented_with_alert</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alert</span><span class="nv"> </span><span class="s">Appears</span><span class="nv"> </span><span class="s">in</span><span class="nv"> </span><span class="s">EHR&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">doctor_reads_alert</span>
+<span class="w">        </span><span class="nt">prob</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prob_pad_alert_is_read</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">no_treatment</span>
+</pre></div>
+</div>
+<p>As shown above, the <strong>doctor_presented_with_alert</strong> state has a conditional transition. This time, however, the conditional transition is based on a simple probability rather than a Python expression.
+Thus, we use the <code class="docutils literal notranslate"><span class="pre">prob</span></code> field to specify the probability of transitioning to the <strong>doctor_reads_alert</strong> state.
+If the probability is not met, then the transition to the <strong>no_treatment</strong> state will be taken by default.</p>
+<p>Let’s now define the states that occur when the doctor reads the alert.
+This state will order an ABI test for the patient if the doctor reads the alert, then branch to either the <strong>order_abi</strong> or <strong>no_treatment</strong> state based on a probability defined in the <strong>Variables section</strong> of the config.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">states</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># ... existing states ...</span>
+<span class="w">  </span><span class="nt">doctor_reads_alert</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Doctor</span><span class="nv"> </span><span class="s">Reads</span><span class="nv"> </span><span class="s">Alert&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">order_abi</span>
+<span class="w">        </span><span class="nt">prob</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prob_doctor_orders_abi</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">no_treatment</span>
+</pre></div>
+</div>
+<p>Let’s now define the states that occur when the doctor orders an ABI test. Those are shown below, which include a mix of probabilitistic and expression-based conditional transitions.
+Note that the <code class="docutils literal notranslate"><span class="pre">if</span></code> fields can support arbitrarily complicated Python expressions (e.g. <code class="docutils literal notranslate"><span class="pre">(abi_test_treat_immediately_threshold</span> <span class="pre">&lt;</span> <span class="pre">abi_test_pred)</span> <span class="pre">and</span> <span class="pre">(abi_test_pred</span> <span class="pre">&lt;=</span> <span class="pre">abi_test_threshold)</span></code>).</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">states</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># ... existing states ...</span>
+<span class="w">  </span><span class="nt">order_abi</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Doctor</span><span class="nv"> </span><span class="s">Orders</span><span class="nv"> </span><span class="s">ABI</span><span class="nv"> </span><span class="s">Test&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">doctor_interprets_abi_result</span>
+<span class="w">  </span><span class="nt">doctor_interprets_abi_result</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Doctor</span><span class="nv"> </span><span class="s">Interprets</span><span class="nv"> </span><span class="s">ABI&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">doctor_treats_immediately</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">(abi_test_treat_immediately_threshold &lt; abi_test_pred) and (abi_test_pred &lt;= abi_test_threshold)</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">refer_to_specialist</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">abi_test_pred &lt; abi_test_threshold</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">no_treatment</span>
+<span class="w">  </span><span class="nt">doctor_treats_immediately</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Doctor</span><span class="nv"> </span><span class="s">Treats</span><span class="nv"> </span><span class="s">Immediately&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">medication</span>
+<span class="w">  </span><span class="nt">refer_to_specialist</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Doctor</span><span class="nv"> </span><span class="s">Refers</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">Specialist&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schedule_specialist_appt</span>
+<span class="w">        </span><span class="nt">prob</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prob_specialist_follow_up_completed</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">no_treatment</span>
+</pre></div>
+</div>
+<p>Let’s now define the states that occur when the doctor schedules a follow-up appointment with the specialist.
+This state will schedule an appointment with the specialist if the patient has capacity and the current day is a specialist day, then branch to either the <strong>specialist_review</strong> or <strong>no_treatment</strong> state depending on the result of the ABI test.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">states</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># ... existing states ...</span>
+<span class="w">  </span><span class="nt">schedule_specialist_appt</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Schedule</span><span class="nv"> </span><span class="s">Appt</span><span class="nv"> </span><span class="s">with</span><span class="nv"> </span><span class="s">Specialist&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">specialist_review</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">(specialist_capacity &gt; 0) and (sim_current_timestep % 7 in specialist_days_in_office)</span>
+<span class="w">        </span><span class="nt">resource_deltas</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">specialist_capacity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-1</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">no_treatment</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">time_already_in_sim &gt;= schedule_specialist_appt_time_out - 1</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schedule_specialist_appt</span>
+<span class="w">        </span><span class="nt">duration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">  </span><span class="nt">specialist_review</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Specialist</span><span class="nv"> </span><span class="s">Assessment&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">no_treatment</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">y == 0</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">surgery</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">abi_test_pred &lt; abi_test_specialist_recommend_surgery_threshold</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">medication</span>
+</pre></div>
+</div>
+<p>Finally, let’s define the terminal states in which a patient can end the workflow. For each terminal state, we must specify the following fields:
+* <code class="docutils literal notranslate"><span class="pre">type</span></code>: <code class="docutils literal notranslate"><span class="pre">end</span></code>
+* <code class="docutils literal notranslate"><span class="pre">label</span></code>: The label of the state.</p>
+<p>And we can optionally specify the following fields:
+* <code class="docutils literal notranslate"><span class="pre">utilities</span></code>: A list of utility values for the state. Each utility value must have a <code class="docutils literal notranslate"><span class="pre">value</span></code> field that specifies the utility value (this can be a variable), and a <code class="docutils literal notranslate"><span class="pre">unit</span></code> field that specifies the unit of the utility value. It can also optionally have an <code class="docutils literal notranslate"><span class="pre">if</span></code> field that specifies the condition under which the utility value is used.</p>
+<p>Let’s start with the <strong>medication</strong> state, which means the patient is treated with medication. We have two situations to model:</p>
+<ol class="arabic simple">
+<li><p>The patient <em>has PAD</em> (i.e. <code class="docutils literal notranslate"><span class="pre">y</span> <span class="pre">==</span> <span class="pre">1</span></code>) and is treated with medication. The utility for this is given by the variable <code class="docutils literal notranslate"><span class="pre">qaly[&quot;YES_pad__YES_medication&quot;]</span></code>.</p></li>
+<li><p>The patient <em>does not have PAD</em> (i.e. <code class="docutils literal notranslate"><span class="pre">y</span> <span class="pre">==</span> <span class="pre">0</span></code>) and is treated with medication. The utility for this is given by the variable <code class="docutils literal notranslate"><span class="pre">qaly[&quot;NO_pad__YES_medication&quot;]</span></code>.</p></li>
+</ol>
+<p>Putting this together, we get the following definition for the <strong>medication</strong> state:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">states</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># ... existing states ...</span>
+<span class="w">  </span><span class="nt">medication</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">end</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Medication&quot;</span>
+<span class="w">    </span><span class="nt">utilities</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">qaly[&quot;YES_pad__YES_medication&quot;]</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">y == 1</span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">qaly</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">qaly[&quot;NO_pad__YES_medication&quot;]</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">y == 0</span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">qaly</span>
+</pre></div>
+</div>
+<p>We can repeat this process for the <strong>surgery</strong> and <strong>untreated</strong> states.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">states</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># ... existing states ...</span>
+<span class="w">  </span><span class="nt">surgery</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">end</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Surgery&quot;</span>
+<span class="w">    </span><span class="nt">utilities</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">qaly[&quot;YES_pad__YES_surgery&quot;]</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">y == 1</span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">qaly</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">qaly[&quot;NO_pad__YES_surgery&quot;]</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">y == 0</span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">qaly</span>
+<span class="w">  </span><span class="nt">untreated</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Untreated&quot;</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">end</span>
+<span class="w">    </span><span class="nt">utilities</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">qaly[&quot;YES_pad__UNTREATED__needs_surgery&quot;]</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">y == 1 and (abi_test_pred &lt; abi_test_untreated_needs_surgery_threshold)</span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">qaly</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">qaly[&quot;YES_pad__UNTREATED__needs_medication&quot;]</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">y == 1 and not (abi_test_pred &lt; abi_test_untreated_needs_surgery_threshold)</span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">qaly</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">qaly[&quot;NO_pad__UNTREATED&quot;]</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">y == 0</span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">qaly</span>
+</pre></div>
+</div>
+<p>And we’re done!
+We’ve now defined the entire <strong>doctor-driven workflow</strong> for our simulation.</p>
+<p>The full config file is shown below for reference.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;PAD</span><span class="nv"> </span><span class="s">(Doctor)&quot;</span>
+<span class="w">  </span><span class="nt">path_to_properties</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;input/pad/properties.csv&quot;</span>
+<span class="w">  </span><span class="nt">patient_sort_preference_property</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">variable</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">random_resource_priority</span>
+<span class="w">    </span><span class="nt">is_ascending</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">False</span>
+
+<span class="nt">variables</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># Model</span>
+<span class="w">  </span><span class="nt">model_threshold</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
+<span class="w">  </span><span class="c1"># ABI test</span>
+<span class="w">  </span><span class="nt">abi_test_threshold</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.9</span><span class="w"> </span><span class="c1"># If abi_test_pred &lt; X, then patient tested positive for PAD</span>
+<span class="w">  </span><span class="nt">abi_test_specialist_recommend_surgery_threshold</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.45</span><span class="w"> </span><span class="c1"># If abi_test_pred &lt; X, then a specialist will recommend surgery for this patient</span>
+<span class="w">  </span><span class="nt">abi_test_untreated_needs_surgery_threshold</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.55</span><span class="w"> </span><span class="c1"># If abi_test_pred &lt; X, then this patient will eventually need surgery for their PAD if they aren&#39;t immediately put on medication/surgery</span>
+<span class="w">  </span><span class="nt">abi_test_pred</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">property</span>
+<span class="w">    </span><span class="nt">column</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">abi_test_pred</span>
+<span class="w">  </span><span class="nt">abi_test_treat_immediately_threshold</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.8</span><span class="w"> </span><span class="c1"># If abi_test_pred &gt; X, then doctor can treat PAD with medication</span>
+<span class="w">  </span><span class="c1"># Transition probs</span>
+<span class="w">  </span><span class="nt">prob_pad_alert_is_read</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.8</span>
+<span class="w">  </span><span class="nt">prob_doctor_orders_abi</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.95</span>
+<span class="w">  </span><span class="nt">prob_specialist_follow_up_completed</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.8</span>
+<span class="w">  </span><span class="c1"># Specialist</span>
+<span class="w">  </span><span class="nt">schedule_specialist_appt_time_out</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span><span class="w"> </span><span class="c1"># Wait 30 days to find time with specialist, then give up</span>
+<span class="w">  </span><span class="nt">specialist_days_in_office</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">3</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">5</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="c1"># Specialist can only see patients on a MWF</span>
+<span class="w">  </span><span class="nt">specialist_capacity</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">resource</span>
+<span class="w">    </span><span class="nt">init_amount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">    </span><span class="nt">max_amount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"> </span><span class="c1"># Specialist can only see 2 patients per day</span>
+<span class="w">    </span><span class="nt">refill_amount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">    </span><span class="nt">refill_duration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">  </span><span class="c1"># Patient properties</span>
+<span class="w">  </span><span class="nt">y</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">property</span>
+<span class="w">    </span><span class="nt">column</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">y</span>
+<span class="w">  </span><span class="nt">y_hat_dl</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">property</span>
+<span class="w">    </span><span class="nt">column</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">y_hat_dl</span>
+<span class="w">  </span><span class="nt">y_hat_rf</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">property</span>
+<span class="w">    </span><span class="nt">column</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">y_hat_rf</span>
+<span class="w">  </span><span class="nt">y_hat_lr</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">property</span>
+<span class="w">    </span><span class="nt">column</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">y_hat_lr</span>
+<span class="w">  </span><span class="nt">random_resource_priority</span><span class="p">:</span><span class="w"> </span><span class="c1"># Random nonce used to deterministically (but randomly) prioritize patients for limited resources</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">property</span>
+<span class="w">    </span><span class="nt">column</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">random_resource_priority</span>
+<span class="w">  </span><span class="nt">time_already_in_sim</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">simulation</span>
+<span class="w">  </span><span class="nt">sim_current_timestep</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">simulation</span>
+<span class="w">  </span><span class="c1"># Utilities</span>
+<span class="w">  </span><span class="nt">qaly</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span>
+<span class="w">      </span><span class="s">&#39;YES_pad__UNTREATED__needs_surgery&#39;</span><span class="nt"> </span><span class="p">:</span><span class="w"> </span><span class="nv">0.6</span><span class="p p-Indicator">,</span>
+<span class="w">      </span><span class="s">&#39;YES_pad__YES_surgery&#39;</span><span class="nt"> </span><span class="p">:</span><span class="w"> </span><span class="nv">0.68</span><span class="p p-Indicator">,</span>
+<span class="w">      </span><span class="s">&#39;NO_pad__YES_surgery&#39;</span><span class="nt"> </span><span class="p">:</span><span class="w"> </span><span class="nv">0.7</span><span class="p p-Indicator">,</span>
+<span class="w">      </span><span class="s">&#39;YES_pad__UNTREATED__needs_medication&#39;</span><span class="nt"> </span><span class="p">:</span><span class="w"> </span><span class="nv">0.85</span><span class="p p-Indicator">,</span>
+<span class="w">      </span><span class="s">&#39;YES_pad__YES_medication&#39;</span><span class="nt"> </span><span class="p">:</span><span class="w"> </span><span class="nv">0.9</span><span class="p p-Indicator">,</span>
+<span class="w">      </span><span class="s">&#39;NO_pad__YES_medication&#39;</span><span class="nt"> </span><span class="p">:</span><span class="w"> </span><span class="nv">0.95</span><span class="p p-Indicator">,</span>
+<span class="w">      </span><span class="s">&#39;NO_pad__UNTREATED&#39;</span><span class="nt"> </span><span class="p">:</span><span class="w"> </span><span class="nv">1</span><span class="p p-Indicator">,</span>
+<span class="w">    </span><span class="p p-Indicator">}</span>
+
+<span class="nt">states</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">start</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">start</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Start&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">admit</span>
+<span class="w">  </span><span class="nt">admit</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Patient</span><span class="nv"> </span><span class="s">Visits</span><span class="nv"> </span><span class="s">Clinic&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">model_pred</span>
+<span class="w">  </span><span class="nt">model_pred</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Make</span><span class="nv"> </span><span class="s">Model</span><span class="nv"> </span><span class="s">Prediction&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">send_pad_alert</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">y_hat_dl &gt;= model_threshold</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">no_treatment</span>
+<span class="w">  </span><span class="nt">send_pad_alert</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Send</span><span class="nv"> </span><span class="s">PAD</span><span class="nv"> </span><span class="s">Alert</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">EHR&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">doctor_presented_with_alert</span>
+<span class="w">  </span><span class="nt">doctor_presented_with_alert</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alert</span><span class="nv"> </span><span class="s">Appears</span><span class="nv"> </span><span class="s">in</span><span class="nv"> </span><span class="s">EHR&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">doctor_reads_alert</span>
+<span class="w">        </span><span class="nt">prob</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prob_pad_alert_is_read</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">no_treatment</span>
+<span class="w">  </span><span class="nt">doctor_reads_alert</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Doctor</span><span class="nv"> </span><span class="s">Reads</span><span class="nv"> </span><span class="s">Alert&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">order_abi</span>
+<span class="w">        </span><span class="nt">prob</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prob_doctor_orders_abi</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">no_treatment</span>
+<span class="w">  </span><span class="nt">order_abi</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Doctor</span><span class="nv"> </span><span class="s">Orders</span><span class="nv"> </span><span class="s">ABI</span><span class="nv"> </span><span class="s">Test&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">doctor_interprets_abi_result</span>
+<span class="w">  </span><span class="nt">doctor_interprets_abi_result</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Doctor</span><span class="nv"> </span><span class="s">Interprets</span><span class="nv"> </span><span class="s">ABI&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">doctor_treats_immediately</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">(abi_test_treat_immediately_threshold &lt; abi_test_pred) and (abi_test_pred &lt;= abi_test_threshold)</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">refer_to_specialist</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">abi_test_pred &lt; abi_test_threshold</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">no_treatment</span>
+<span class="w">  </span><span class="nt">doctor_treats_immediately</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Doctor</span><span class="nv"> </span><span class="s">Treats</span><span class="nv"> </span><span class="s">Immediately&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">medication</span>
+<span class="w">  </span><span class="nt">refer_to_specialist</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Doctor</span><span class="nv"> </span><span class="s">Refers</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">Specialist&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schedule_specialist_appt</span>
+<span class="w">        </span><span class="nt">prob</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prob_specialist_follow_up_completed</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">no_treatment</span>
+<span class="w">  </span><span class="nt">schedule_specialist_appt</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Schedule</span><span class="nv"> </span><span class="s">Appt</span><span class="nv"> </span><span class="s">with</span><span class="nv"> </span><span class="s">Specialist&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">specialist_review</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">(specialist_capacity &gt; 0) and (sim_current_timestep % 7 in specialist_days_in_office)</span>
+<span class="w">        </span><span class="nt">resource_deltas</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">specialist_capacity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-1</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">no_treatment</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">time_already_in_sim &gt;= schedule_specialist_appt_time_out - 1</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schedule_specialist_appt</span>
+<span class="w">        </span><span class="nt">duration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">  </span><span class="nt">specialist_review</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Specialist</span><span class="nv"> </span><span class="s">Assessment&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">no_treatment</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">y == 0</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">surgery</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">abi_test_pred &lt; abi_test_specialist_recommend_surgery_threshold</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">medication</span>
+<span class="w">  </span><span class="nt">no_treatment</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Decide</span><span class="nv"> </span><span class="s">Not</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">Treat&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">untreated</span>
+<span class="w">  </span><span class="nt">medication</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">end</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Medication&quot;</span>
+<span class="w">    </span><span class="nt">utilities</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">qaly[&quot;YES_pad__YES_medication&quot;]</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">y == 1</span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">qaly</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">qaly[&quot;NO_pad__YES_medication&quot;]</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">y == 0</span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">qaly</span>
+<span class="w">  </span><span class="nt">surgery</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">end</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Surgery&quot;</span>
+<span class="w">    </span><span class="nt">utilities</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">qaly[&quot;YES_pad__YES_surgery&quot;]</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">y == 1</span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">qaly</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">qaly[&quot;NO_pad__YES_surgery&quot;]</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">y == 0</span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">qaly</span>
+<span class="w">  </span><span class="nt">untreated</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Untreated&quot;</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">end</span>
+<span class="w">    </span><span class="nt">utilities</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">qaly[&quot;YES_pad__UNTREATED__needs_surgery&quot;]</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">y == 1 and (abi_test_pred &lt; abi_test_untreated_needs_surgery_threshold)</span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">qaly</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">qaly[&quot;YES_pad__UNTREATED__needs_medication&quot;]</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">y == 1 and not (abi_test_pred &lt; abi_test_untreated_needs_surgery_threshold)</span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">qaly</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">qaly[&quot;NO_pad__UNTREATED&quot;]</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">y == 0</span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">qaly</span>
+</pre></div>
+</div>
+<p>And the config file for the <strong>nurse-driven workflow</strong> can be found at this link: <a class="reference external" href="https://github.com/som-shahlab/aplusml/blob/main/workflows/pad_nurse.yaml">https://github.com/som-shahlab/aplusml/blob/main/workflows/pad_nurse.yaml</a></p>
+</section>
+</section>
+<section id="baselines">
+<h2>📏 Baselines<a class="headerlink" href="#baselines" title="Link to this heading"></a></h2>
+<p>We evaluated each PAD model’s utility relative to three baselines:</p>
+<ul class="simple">
+<li><p><strong>Treat None</strong> – We simply predict a PAD risk score of 0 for all patients;</p></li>
+<li><p><strong>Treat All</strong> – We predict a PAD risk score of 1 for all patients;</p></li>
+<li><p><strong>Optimistic</strong> – There were no workflow constraints or resource limits</p></li>
+</ul>
+<p>Concretely, we measured each model’s expected utility achieved per patient above the <strong>Treat None</strong> baseline as a percentage of the utility achieved under the <strong>Optimistic</strong> scenario. In other words, we measured how much of the total possible utility gained from using a model was actually achieved under each workflow’s constraints, relative to simply doing nothing.</p>
+</section>
+<section id="run-simulation">
+<h2>📊 Run Simulation<a class="headerlink" href="#run-simulation" title="Link to this heading"></a></h2>
+<p>Let’s now write some code to run the simulation and plot the results!</p>
+<p>First, load the necessary libraries and define the paths to the files we need.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">cm</span>
+<span class="kn">import</span> <span class="nn">matplotlib.patches</span> <span class="k">as</span> <span class="nn">mpatches</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span class="kn">import</span> <span class="nn">aplusml</span>
+<span class="kn">import</span> <span class="nn">pad</span>
+
+<span class="c1"># Patient properties + model predictions</span>
+<span class="n">PATH_TO_OUTPUT_FOLDER</span> <span class="o">=</span> <span class="s1">&#39;../output/&#39;</span>
+<span class="n">PATH_TO_PATIENT_PROPERTIES</span> <span class="o">=</span> <span class="s1">&#39;../input/synthetic_pad_inputs.csv&#39;</span>
+<span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">PATH_TO_OUTPUT_FOLDER</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Workflow config YAML file</span>
+<span class="n">PATH_TO_DOCTOR_YAML</span> <span class="o">=</span> <span class="s1">&#39;../workflows/pad_doctor.yaml&#39;</span>
+</pre></div>
+</div>
+<p>Next, set the models and thresholds we want to test.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Model settings</span>
+<span class="n">THRESHOLDS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">101</span><span class="p">)</span> <span class="c1"># Test model thresholds from 0 to 1</span>
+<span class="n">MODELS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;dl&#39;</span><span class="p">,</span> <span class="s1">&#39;rf&#39;</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="p">]</span> <span class="c1"># Test the three models</span>
+</pre></div>
+</div>
+<p>Next, load the doctor-driven workflow config YAML file and display the workflow diagram.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load nurse-driven workflow</span>
+<span class="n">simulation</span> <span class="o">=</span> <span class="n">aplusml</span><span class="o">.</span><span class="n">Simulation</span><span class="o">.</span><span class="n">create_from_yaml</span><span class="p">(</span><span class="n">PATH_TO_DOCTOR_YAML</span><span class="p">,</span> <span class="n">PATH_TO_PATIENT_PROPERTIES</span><span class="p">)</span>
+<span class="n">simulation</span><span class="o">.</span><span class="n">draw_workflow_diagram</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span><span class="mi">30</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Finally, define some helper functions to help us run the simulation…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Helper function to run the simulation and plot the results</span>
+<span class="k">def</span> <span class="nf">run_test</span><span class="p">(</span><span class="n">patients</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">aplusml</span><span class="o">.</span><span class="n">Patient</span><span class="p">],</span>
+            <span class="n">labels</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+            <span class="n">settings</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span>
+            <span class="n">MODELS</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+            <span class="n">THRESHOLDS</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+            <span class="n">PATH_TO_YAML</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">PATH_TO_PROPERTIES</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">is_patient_sort_by_y_hat</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">func_setup_optimistic</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">is_use_multi_processing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
+  <span class="n">model_2_result</span> <span class="o">=</span> <span class="p">{}</span> <span class="c1"># [key] = model name, [value] = df</span>
+  <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">MODELS</span><span class="p">:</span>
+      <span class="n">simulation</span> <span class="o">=</span> <span class="n">load_simulation_for_model</span><span class="p">(</span><span class="n">PATH_TO_YAML</span><span class="p">,</span>
+                                             <span class="n">PATH_TO_PROPERTIES</span><span class="p">,</span>
+                                             <span class="n">m</span><span class="p">,</span>
+                                             <span class="n">is_patient_sort_by_y_hat</span><span class="o">=</span><span class="n">is_patient_sort_by_y_hat</span><span class="p">,</span>
+                                             <span class="n">func_setup_optimistic</span><span class="o">=</span><span class="n">func_setup_optimistic</span><span class="p">)</span>
+      <span class="n">df_result</span> <span class="o">=</span> <span class="n">aplusml</span><span class="o">.</span><span class="n">run_test</span><span class="p">(</span><span class="n">simulation</span><span class="p">,</span>
+                                    <span class="n">patients</span><span class="p">,</span>
+                                    <span class="n">labels</span> <span class="o">+</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;optimistic&quot;</span><span class="p">],</span> <span class="n">settings</span> <span class="o">+</span> <span class="p">[{}],</span>
+                                    <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(),</span>
+                                    <span class="k">lambda</span> <span class="n">sim</span><span class="p">,</span> <span class="n">patients</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="n">aplusml</span><span class="o">.</span><span class="n">test_diff_thresholds</span><span class="p">(</span><span class="n">sim</span><span class="p">,</span> <span class="n">patients</span><span class="p">,</span> <span class="n">THRESHOLDS</span><span class="p">,</span> <span class="n">utility_unit</span><span class="o">=</span><span class="s1">&#39;qaly&#39;</span><span class="p">),</span>
+                                    <span class="n">is_use_multi_processing</span><span class="o">=</span><span class="n">is_use_multi_processing</span><span class="p">)</span>
+      <span class="n">model_2_result</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_result</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+  <span class="c1"># Save Treat All / None / Perfect baselines under optimistic conditions</span>
+  <span class="n">baselines</span> <span class="o">=</span> <span class="p">[</span>
+      <span class="c1"># Treat All - treat everyone as if y_hat == 1</span>
+      <span class="p">{</span> <span class="s1">&#39;label&#39;</span> <span class="p">:</span> <span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="s1">&#39;if_&#39;</span> <span class="p">:</span> <span class="kc">True</span> <span class="p">},</span>
+      <span class="c1"># Treat None - treat everyone as if y_hat == 0</span>
+      <span class="p">{</span> <span class="s1">&#39;label&#39;</span> <span class="p">:</span> <span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="s1">&#39;if_&#39;</span> <span class="p">:</span> <span class="kc">False</span> <span class="p">},</span>
+      <span class="c1"># Treat Perfect - treat everyone as if y_hat == y</span>
+      <span class="p">{</span> <span class="s1">&#39;label&#39;</span> <span class="p">:</span> <span class="s1">&#39;perfect&#39;</span><span class="p">,</span> <span class="s1">&#39;if_&#39;</span> <span class="p">:</span> <span class="s1">&#39;y == 1&#39;</span> <span class="p">},</span>
+  <span class="p">]</span>
+  <span class="n">baseline_2_result</span> <span class="o">=</span> <span class="p">{}</span>
+  <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">baselines</span><span class="p">:</span>
+      <span class="n">label</span> <span class="o">=</span> <span class="n">b</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span>
+      <span class="n">if_</span> <span class="o">=</span> <span class="n">b</span><span class="p">[</span><span class="s1">&#39;if_&#39;</span><span class="p">]</span>
+      <span class="c1"># This is INDEPENDENT of any model (MODELS[0] used for simplicity here)</span>
+      <span class="n">simulation</span> <span class="o">=</span> <span class="n">load_simulation_for_model</span><span class="p">(</span><span class="n">PATH_TO_YAML</span><span class="p">,</span> <span class="n">PATH_TO_PROPERTIES</span><span class="p">,</span> <span class="n">MODELS</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">is_patient_sort_by_y_hat</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">func_setup_optimistic</span><span class="o">=</span><span class="n">func_setup_optimistic</span><span class="p">)</span>
+      <span class="n">simulation</span><span class="o">.</span><span class="n">states</span><span class="p">[</span><span class="s1">&#39;model_pred&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">transitions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">if_</span> <span class="o">=</span> <span class="n">if_</span>
+      <span class="c1"># This only has one threshold (at 0) since this is independent of the model (and thus the threshold of the model)</span>
+      <span class="n">df_result</span> <span class="o">=</span> <span class="n">aplusml</span><span class="o">.</span><span class="n">run_test</span><span class="p">(</span><span class="n">simulation</span><span class="p">,</span> <span class="n">patients</span><span class="p">,</span>
+                              <span class="n">labels</span> <span class="o">+</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;optimistic&quot;</span><span class="p">],</span> <span class="n">settings</span> <span class="o">+</span> <span class="p">[{}],</span>
+                              <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(),</span>
+                              <span class="k">lambda</span> <span class="n">sim</span><span class="p">,</span> <span class="n">patients</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="n">aplusml</span><span class="o">.</span><span class="n">test_diff_thresholds</span><span class="p">(</span><span class="n">sim</span><span class="p">,</span> <span class="n">patients</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">utility_unit</span><span class="o">=</span><span class="s1">&#39;qaly&#39;</span><span class="p">),</span>
+                              <span class="n">is_use_multi_processing</span><span class="o">=</span><span class="n">is_use_multi_processing</span><span class="p">)</span>
+      <span class="n">baseline_2_result</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_result</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+  <span class="k">return</span> <span class="n">model_2_result</span><span class="p">,</span> <span class="n">baseline_2_result</span>
+</pre></div>
+</div>
+<p>Add some functions to help us plot the results…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">show_ribbon_plots</span><span class="p">(</span><span class="n">model_2_result</span><span class="p">,</span> <span class="n">label_sort_order</span><span class="p">,</span> <span class="n">label_title</span><span class="p">):</span>
+  <span class="n">p1</span> <span class="o">=</span> <span class="n">aplusml</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">plot_mean_utility_v_threshold</span><span class="p">(</span><span class="s1">&#39;Deep Learning&#39;</span><span class="p">,</span> <span class="n">model_2_result</span><span class="p">[</span><span class="s1">&#39;dl&#39;</span><span class="p">],</span>
+                                                  <span class="n">label_sort_order</span><span class="o">=</span><span class="n">label_sort_order</span><span class="p">,</span>
+                                                  <span class="n">label_title</span><span class="o">=</span><span class="n">label_title</span><span class="p">)</span>
+  <span class="n">p2</span> <span class="o">=</span> <span class="n">aplusml</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">plot_mean_utility_v_threshold</span><span class="p">(</span><span class="s1">&#39;Random Forest&#39;</span><span class="p">,</span> <span class="n">model_2_result</span><span class="p">[</span><span class="s1">&#39;rf&#39;</span><span class="p">],</span>
+                                                  <span class="n">label_sort_order</span><span class="o">=</span><span class="n">label_sort_order</span><span class="p">,</span>
+                                                  <span class="n">label_title</span><span class="o">=</span><span class="n">label_title</span><span class="p">)</span>
+  <span class="n">p3</span> <span class="o">=</span> <span class="n">aplusml</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">plot_mean_utility_v_threshold</span><span class="p">(</span><span class="s1">&#39;Logistic Regression&#39;</span><span class="p">,</span> <span class="n">model_2_result</span><span class="p">[</span><span class="s1">&#39;lr&#39;</span><span class="p">],</span>
+                                                  <span class="n">label_sort_order</span><span class="o">=</span><span class="n">label_sort_order</span><span class="p">,</span>
+                                                  <span class="n">label_title</span><span class="o">=</span><span class="n">label_title</span><span class="p">)</span>
+  <span class="nb">print</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span>
+  <span class="nb">print</span><span class="p">(</span><span class="n">p2</span><span class="p">)</span>
+  <span class="nb">print</span><span class="p">(</span><span class="n">p3</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">show_dodged_bar_mean_utility_plot</span><span class="p">(</span><span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">df_</span><span class="p">,</span> <span class="n">label_sort_order</span><span class="p">,</span> <span class="n">label_title</span><span class="p">,</span> <span class="n">is_percent_of_optimistic</span><span class="p">):</span>
+  <span class="n">p</span> <span class="o">=</span> <span class="n">aplusml</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">plot_dodged_bar_mean_utilities</span><span class="p">(</span><span class="n">title</span><span class="p">,</span>
+                                                  <span class="n">df_</span><span class="p">,</span>
+                                                  <span class="n">label_sort_order</span><span class="o">=</span><span class="n">label_sort_order</span><span class="p">,</span>
+                                                  <span class="n">color_sort_order</span><span class="o">=</span><span class="p">[</span>
+                                                      <span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="p">,</span> <span class="s1">&#39;rf&#39;</span><span class="p">,</span> <span class="s1">&#39;dl&#39;</span><span class="p">,</span> <span class="p">],</span>
+                                                  <span class="n">color_names</span><span class="o">=</span><span class="p">[</span>
+                                                      <span class="s1">&#39;Treat</span><span class="se">\n</span><span class="s1">None&#39;</span><span class="p">,</span> <span class="s1">&#39;Treat</span><span class="se">\n</span><span class="s1">All&#39;</span><span class="p">,</span> <span class="s1">&#39;Logistic</span><span class="se">\n</span><span class="s1">Regression&#39;</span><span class="p">,</span> <span class="s1">&#39;Random</span><span class="se">\n</span><span class="s1">Forest&#39;</span><span class="p">,</span> <span class="s1">&#39;Deep</span><span class="se">\n</span><span class="s1">Learning&#39;</span>
+                                                  <span class="p">],</span>
+                                                  <span class="n">is_percent_of_optimistic</span><span class="o">=</span><span class="n">is_percent_of_optimistic</span><span class="p">,</span>
+                                                  <span class="n">x_label</span><span class="o">=</span><span class="n">label_title</span><span class="p">)</span>
+  <span class="nb">print</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">show_line_mean_utility_plot</span><span class="p">(</span><span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">df_</span><span class="p">,</span> <span class="n">label_sort_order</span><span class="p">,</span> <span class="n">label_title</span><span class="p">,</span> <span class="n">is_percent_of_optimistic</span><span class="p">):</span>
+  <span class="n">df_</span><span class="p">[</span><span class="s1">&#39;group&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">]</span>
+  <span class="n">p</span> <span class="o">=</span> <span class="n">aplusml</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">plot_line_mean_utilities</span><span class="p">(</span><span class="n">title</span><span class="p">,</span>
+                                              <span class="n">df_</span><span class="p">,</span>
+                                              <span class="n">group_sort_order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                              <span class="n">shape_sort_order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                              <span class="n">color_title</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                              <span class="n">shape_title</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                              <span class="n">label_sort_order</span><span class="o">=</span><span class="n">label_sort_order</span><span class="p">,</span>
+                                              <span class="n">groups_to_drop</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="p">],</span>
+                                              <span class="n">color_sort_order</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="p">,</span> <span class="s1">&#39;rf&#39;</span><span class="p">,</span> <span class="s1">&#39;dl&#39;</span><span class="p">,</span> <span class="p">],</span>
+                                              <span class="n">color_names</span><span class="o">=</span><span class="p">[</span>
+                                                  <span class="s1">&#39;Treat</span><span class="se">\n</span><span class="s1">All&#39;</span><span class="p">,</span> <span class="s1">&#39;Logistic</span><span class="se">\n</span><span class="s1">Regression&#39;</span><span class="p">,</span> <span class="s1">&#39;Random</span><span class="se">\n</span><span class="s1">Forest&#39;</span><span class="p">,</span> <span class="s1">&#39;Deep</span><span class="se">\n</span><span class="s1">Learning&#39;</span>
+                                              <span class="p">],</span>
+                                              <span class="n">is_percent_of_optimistic</span><span class="o">=</span><span class="n">is_percent_of_optimistic</span><span class="p">,</span>
+                                              <span class="n">x_label</span><span class="o">=</span><span class="n">label_title</span><span class="p">)</span>
+
+  <span class="nb">print</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">show_plots</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">model_2_result</span><span class="p">,</span> <span class="n">df_</span><span class="p">,</span> <span class="n">label_sort_order</span><span class="p">,</span> <span class="n">label_title</span><span class="p">,</span>
+              <span class="n">is_show_ribbon_plot</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+              <span class="n">is_show_dodged_bar_plot</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+              <span class="n">is_show_line_plot</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+
+  <span class="c1"># Ribbon plot</span>
+  <span class="k">if</span> <span class="n">is_show_ribbon_plot</span><span class="p">:</span>
+      <span class="n">show_ribbon_plots</span><span class="p">(</span><span class="n">model_2_result</span><span class="p">,</span> <span class="n">label_sort_order</span><span class="p">,</span> <span class="n">label_title</span><span class="p">)</span>
+
+  <span class="c1"># Dodged bar mean utility plot</span>
+  <span class="k">if</span> <span class="n">is_show_dodged_bar_plot</span><span class="p">:</span>
+      <span class="n">show_dodged_bar_mean_utility_plot</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">df_</span><span class="p">,</span> <span class="n">label_sort_order</span><span class="p">,</span> <span class="n">label_title</span><span class="p">,</span> <span class="n">is_percent_of_optimistic</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+  <span class="c1"># Line mean utility plot</span>
+  <span class="k">if</span> <span class="n">is_show_line_plot</span><span class="p">:</span>
+      <span class="n">show_line_mean_utility_plot</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">df_</span><span class="p">,</span> <span class="n">label_sort_order</span><span class="p">,</span> <span class="n">label_title</span><span class="p">,</span> <span class="n">is_percent_of_optimistic</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Helper function to plot the results</span>
+<span class="k">def</span> <span class="nf">plot_helper</span><span class="p">(</span><span class="n">model_2_result</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+              <span class="n">baseline_2_result</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+              <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot;Convert `model_2_result` and `baseline_2_result` dicts into unified dfs</span>
+<span class="sd">  If `threshold` is not specified, choose `threshold` that achieves max `mean_utility`</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="n">plot_avg_utilities</span> <span class="o">=</span> <span class="p">[]</span>
+  <span class="k">for</span> <span class="n">m</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">model_2_result</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+      <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+          <span class="k">if</span> <span class="n">threshold</span><span class="p">:</span>
+              <span class="n">y</span> <span class="o">=</span> <span class="n">df</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">label</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;threshold&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">threshold</span><span class="p">)][</span><span class="s1">&#39;mean_utility&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+              <span class="n">y_sem</span> <span class="o">=</span> <span class="n">df</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">label</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;threshold&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">threshold</span><span class="p">)][</span><span class="s1">&#39;sem_utility&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+          <span class="k">else</span><span class="p">:</span>
+              <span class="n">max_idx</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">label</span><span class="p">][</span><span class="s1">&#39;mean_utility&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span>
+              <span class="n">y</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">label</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">max_idx</span><span class="p">][</span><span class="s1">&#39;mean_utility&#39;</span><span class="p">]</span>
+              <span class="n">y_sem</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">label</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">max_idx</span><span class="p">][</span><span class="s1">&#39;sem_utility&#39;</span><span class="p">]</span>
+          <span class="n">plot_avg_utilities</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+              <span class="s1">&#39;label&#39;</span> <span class="p">:</span> <span class="n">label</span><span class="p">,</span>
+              <span class="s1">&#39;y&#39;</span> <span class="p">:</span> <span class="n">y</span><span class="p">,</span>
+              <span class="s1">&#39;y_sem&#39;</span> <span class="p">:</span> <span class="n">y_sem</span><span class="p">,</span>
+              <span class="s1">&#39;model&#39;</span> <span class="p">:</span> <span class="n">m</span><span class="p">,</span>
+          <span class="p">})</span>
+  <span class="k">for</span> <span class="n">m</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">baseline_2_result</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+      <span class="n">plot_avg_utilities</span> <span class="o">+=</span> <span class="p">[{</span>
+              <span class="s1">&#39;label&#39;</span> <span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">],</span>
+              <span class="s1">&#39;y&#39;</span> <span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;mean_utility&#39;</span><span class="p">],</span>
+              <span class="s1">&#39;y_sem&#39;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+              <span class="s1">&#39;model&#39;</span> <span class="p">:</span> <span class="n">m</span><span class="p">,</span>
+          <span class="p">}</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()</span> <span class="p">]</span>
+  <span class="n">df_avg_utilities</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">plot_avg_utilities</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">df_avg_utilities</span>
+</pre></div>
+</div>
+<p>Finally, define a function to help us run the simulation…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run the simulation</span>
+<span class="k">def</span> <span class="nf">simulate_doctor_workflow</span><span class="p">(</span><span class="n">patients</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">aplusml</span><span class="o">.</span><span class="n">Patient</span><span class="p">],</span>
+                          <span class="n">values</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+                          <span class="n">specialist_capacity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                          <span class="n">is_ranked_screening</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                          <span class="n">path_to_yaml</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                          <span class="n">is_show_ribbon_plot</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                          <span class="n">is_show_dodged_bar_plot</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                          <span class="n">is_show_line_plot</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+  <span class="n">settings</span> <span class="o">=</span> <span class="p">[{</span>
+      <span class="s1">&#39;prob_pad_alert_is_read&#39;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;scalar&#39;</span><span class="p">,</span>
+          <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span>
+      <span class="p">},</span>
+      <span class="s1">&#39;specialist_capacity&#39;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;resource&#39;</span><span class="p">,</span>
+          <span class="s1">&#39;init_amount&#39;</span><span class="p">:</span> <span class="n">specialist_capacity</span> <span class="k">if</span> <span class="n">specialist_capacity</span> <span class="k">else</span> <span class="mf">1e5</span><span class="p">,</span>
+          <span class="s1">&#39;max_amount&#39;</span><span class="p">:</span> <span class="n">specialist_capacity</span> <span class="k">if</span> <span class="n">specialist_capacity</span> <span class="k">else</span> <span class="mf">1e5</span><span class="p">,</span>
+          <span class="s1">&#39;refill_amount&#39;</span><span class="p">:</span> <span class="n">specialist_capacity</span> <span class="k">if</span> <span class="n">specialist_capacity</span> <span class="k">else</span> <span class="mf">1e5</span><span class="p">,</span>
+          <span class="s1">&#39;refill_duration&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="p">},</span>
+  <span class="p">}</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">values</span><span class="p">]</span>
+
+  <span class="c1"># Run the simulation</span>
+  <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">values</span><span class="p">]</span>
+  <span class="n">model_2_result</span><span class="p">,</span> <span class="n">baseline_2_result</span> <span class="o">=</span> <span class="n">run_test</span><span class="p">(</span><span class="n">patients</span><span class="p">,</span>
+                                                <span class="n">labels</span><span class="p">,</span>
+                                                <span class="n">settings</span><span class="p">,</span>
+                                                <span class="n">MODELS</span><span class="p">,</span>
+                                                <span class="n">THRESHOLDS</span><span class="p">,</span>
+                                                <span class="n">path_to_yaml</span><span class="p">,</span>
+                                                <span class="n">PATH_TO_PATIENT_PROPERTIES</span><span class="p">,</span>
+                                                <span class="n">is_patient_sort_by_y_hat</span><span class="o">=</span><span class="n">is_ranked_screening</span><span class="p">,</span>
+                                                <span class="n">func_setup_optimistic</span><span class="o">=</span><span class="n">func_setup_optimistic</span><span class="p">)</span>
+  <span class="c1"># Plotting constants</span>
+  <span class="n">df_</span> <span class="o">=</span> <span class="n">plot_helper</span><span class="p">(</span><span class="n">model_2_result</span><span class="p">,</span> <span class="p">{</span>
+      <span class="s1">&#39;all&#39;</span><span class="p">:</span> <span class="n">baseline_2_result</span><span class="p">[</span><span class="s1">&#39;all&#39;</span><span class="p">],</span>
+      <span class="s1">&#39;none&#39;</span><span class="p">:</span> <span class="n">baseline_2_result</span><span class="p">[</span><span class="s1">&#39;none&#39;</span><span class="p">]</span>
+  <span class="p">},</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;model&#39;</span><span class="p">:</span> <span class="s1">&#39;color&#39;</span><span class="p">})</span>
+  <span class="c1"># Use prob=1 as the &#39;optimistic&#39; case</span>
+  <span class="n">df_</span> <span class="o">=</span> <span class="n">df_</span><span class="p">[</span><span class="n">df_</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;optimistic&#39;</span><span class="p">]</span>
+  <span class="n">df_</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;optimistic&#39;</span>
+  <span class="n">label_sort_order</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">df_</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span> <span class="p">]</span>
+  <span class="n">label_title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;Probability Doctor Reads Alert&#39;</span>
+  <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">MODELS</span><span class="p">:</span>
+      <span class="n">model_2_result</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">model_2_result</span><span class="p">[</span><span class="n">m</span><span class="p">][</span><span class="n">model_2_result</span><span class="p">[</span><span class="n">m</span><span class="p">][</span><span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;optimistic&#39;</span><span class="p">]</span>
+      <span class="n">model_2_result</span><span class="p">[</span><span class="n">m</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">model_2_result</span><span class="p">[</span><span class="n">m</span><span class="p">][</span><span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;optimistic&#39;</span>
+
+  <span class="n">show_plots</span><span class="p">(</span><span class="s1">&#39;Utility of doctor-driven workflow&#39;</span><span class="p">,</span> <span class="n">model_2_result</span><span class="p">,</span> <span class="n">df_</span><span class="p">,</span> <span class="n">label_sort_order</span><span class="p">,</span> <span class="n">label_title</span><span class="p">,</span>
+              <span class="n">is_show_ribbon_plot</span> <span class="o">=</span> <span class="n">is_show_ribbon_plot</span><span class="p">,</span>
+              <span class="n">is_show_dodged_bar_plot</span> <span class="o">=</span> <span class="n">is_show_dodged_bar_plot</span><span class="p">,</span>
+              <span class="n">is_show_line_plot</span> <span class="o">=</span> <span class="n">is_show_line_plot</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>And finally run our simulation across all the different doctor-driven workflow constraints we want to test!</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run simulation</span>
+<span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">.1</span><span class="p">,</span> <span class="mf">.2</span><span class="p">,</span> <span class="mf">.3</span><span class="p">,</span> <span class="mf">.4</span><span class="p">,</span> <span class="mf">.5</span><span class="p">,</span> <span class="mf">.6</span><span class="p">,</span> <span class="mf">.7</span><span class="p">,</span> <span class="mf">.8</span><span class="p">,</span> <span class="mf">.9</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">]</span>
+
+<span class="k">for</span> <span class="n">specialist_capacity</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;==== Thresholded&#39; + </span><span class="si">{</span><span class="s1">&#39;Specialist Unlimited&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">specialist_capacity</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="kc">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="sa">f</span><span class="s1">&#39;Specialist Cap (</span><span class="si">{</span><span class="n">specialist_capacity</span><span class="si">}</span><span class="s1">)&#39;</span><span class="si">}</span><span class="s2"> ====&quot;</span><span class="p">)</span>
+    <span class="n">simulate_doctor_workflow</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">all_patients</span><span class="p">),</span>
+                            <span class="n">values</span><span class="p">,</span>
+                            <span class="n">specialist_capacity</span><span class="o">=</span><span class="n">specialist_capacity</span><span class="p">,</span>
+                            <span class="n">is_ranked_screening</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                            <span class="n">path_to_yaml</span><span class="o">=</span><span class="n">PATH_TO_DOCTOR_YAML</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You should see plots like the following:</p>
+<a class="reference internal image-reference" href="../_images/doctor1.png"><img alt="Doctor Workflow Plots" src="../_images/doctor1.png" style="width: 100%;" />
+</a>
+<a class="reference internal image-reference" href="../_images/doctor2.png"><img alt="Doctor Workflow Plots" src="../_images/doctor2.png" style="width: 100%;" />
+</a>
+<a class="reference internal image-reference" href="../_images/doctor3.png"><img alt="Doctor Workflow Plots" src="../_images/doctor3.png" style="width: 100%;" />
+</a>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tutorial_hello.html" class="btn btn-neutral float-left" title="Tutorial (Hello World)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tutorial_hcm.html" class="btn btn-neutral float-right" title="Tutorial (HCM)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Michael Wornow.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

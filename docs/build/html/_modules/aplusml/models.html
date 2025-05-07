@@ -1,0 +1,528 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>aplusml.models &mdash; APLUS ML  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=ae483e34" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            APLUS ML
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">🚦 Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/background.html">Background</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">📚 User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/quick.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/tutorial_hello.html">Tutorial (Hello World)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/tutorial_pad.html">Tutorial (PAD)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/tutorial_hcm.html">Tutorial (HCM)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/concepts.html">Concept Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/templates.html">Config YAML Templates</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">📖 API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/config.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">APLUS ML</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">aplusml.models</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for aplusml.models</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">CodeType</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">import</span> <span class="nn">ast</span>
+
+<div class="viewcode-block" id="Utility">
+<a class="viewcode-back" href="../../api/api.html#aplusml.models.Utility">[docs]</a>
+<span class="k">class</span> <span class="nc">Utility</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A utility is a value that is associated with being in a state or undergoing a transition.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Utility.__init__">
+<a class="viewcode-back" href="../../api/api.html#aplusml.models.Utility.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                 <span class="n">if_</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A utility is a value that is associated with being in a state or undergoing a transition.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            value (str): The value of the utility. Example: &#39;100000&#39;</span>
+<span class="sd">            unit (str, optional): The unit of the utility. Defaults to &#39;&#39;. Example: &#39;USD&#39;, &#39;days&#39;, &#39;kg&#39;, &#39;cm&#39;, etc.</span>
+<span class="sd">            if_ (str, optional): The condition for the utility, specified as a Python expression. Defaults to None. Example: &#39;y_hat &gt; 0.5&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">unit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">if_</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">if_</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">if_compiled</span><span class="p">:</span> <span class="n">CodeType</span> <span class="o">=</span> <span class="nb">compile</span><span class="p">(</span><span class="n">if_</span><span class="p">,</span> <span class="s1">&#39;&lt;string&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;eval&#39;</span><span class="p">,</span> <span class="n">optimize</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">if_</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value_compiled</span><span class="p">:</span> <span class="n">CodeType</span> <span class="o">=</span> <span class="nb">compile</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s1">&#39;&lt;string&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;eval&#39;</span><span class="p">,</span> <span class="n">optimize</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="c1"># Update compiled versions of if/value</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;if_&#39;</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="s1">&#39;if_compiled&#39;</span><span class="p">,</span> <span class="nb">compile</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s1">&#39;&lt;string&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;eval&#39;</span><span class="p">,</span> <span class="n">optimize</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;value&#39;</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="s1">&#39;value_compiled&#39;</span><span class="p">,</span> <span class="nb">compile</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s1">&#39;&lt;string&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;eval&#39;</span><span class="p">,</span> <span class="n">optimize</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+    
+<div class="viewcode-block" id="Utility.is_conditional_if">
+<a class="viewcode-back" href="../../api/api.html#aplusml.models.Utility.is_conditional_if">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_conditional_if</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns True if the utility is conditional on a Python expression.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">if_</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
+
+    
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;Utility(&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">({</span>
+            <span class="s1">&#39;value&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="s1">&#39;unit&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span>
+            <span class="s1">&#39;if_&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">if_</span><span class="p">,</span>
+        <span class="p">})</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span>
+    
+    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;value&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="s1">&#39;unit&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span>
+            <span class="s1">&#39;if_&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">if_</span><span class="p">,</span>
+        <span class="p">}</span>
+    
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Transition">
+<a class="viewcode-back" href="../../api/api.html#aplusml.models.Transition">[docs]</a>
+<span class="k">class</span> <span class="nc">Transition</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A transition between states.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Transition.__init__">
+<a class="viewcode-back" href="../../api/api.html#aplusml.models.Transition.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+                 <span class="n">dest</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">duration</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                 <span class="n">utilities</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Utility</span><span class="p">],</span>
+                 <span class="n">resource_deltas</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+                 <span class="n">if_</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">prob</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            dest (str): The destination state.</span>
+<span class="sd">            label (str): The label of the transition.</span>
+<span class="sd">            duration (int): The duration of the transition. Example: 1</span>
+<span class="sd">            utilities (List[Utility]): The utilities of the transition. Example: [Utility(value=&#39;100000&#39;, unit=&#39;USD&#39;)]</span>
+<span class="sd">            resource_deltas (Dict[str, float]): The resource deltas of the transition. Example: {&#39;MRI&#39;: -1}</span>
+<span class="sd">            if_ (Union[str, bool], optional): The condition for the transition, specified as a Python expression. Defaults to None. Example: &#39;y_hat &gt; 0.5&#39;</span>
+<span class="sd">            prob (Union[str, float], optional): The probability of the transition. Defaults to None. Example: 0.5</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dest</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">dest</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">label</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">duration</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">duration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">utilities</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Utility</span><span class="p">]</span> <span class="o">=</span> <span class="n">utilities</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resource_deltas</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">resource_deltas</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">if_</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="n">if_</span> <span class="c1"># NOTE: This is referred to as &#39;if&#39; outside of this object</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prob</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">prob</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">if_compiled</span><span class="p">:</span> <span class="n">CodeType</span> <span class="o">=</span> <span class="nb">compile</span><span class="p">(</span><span class="n">if_</span><span class="p">,</span> <span class="s1">&#39;&lt;string&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;eval&#39;</span><span class="p">,</span> <span class="n">optimize</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">if_</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prob_compiled</span><span class="p">:</span> <span class="n">CodeType</span> <span class="o">=</span> <span class="nb">compile</span><span class="p">(</span><span class="n">prob</span><span class="p">,</span> <span class="s1">&#39;&lt;string&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;eval&#39;</span><span class="p">,</span> <span class="n">optimize</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">prob</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="c1"># Update compiled versions of if/prob</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;if_&#39;</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="s1">&#39;if_compiled&#39;</span><span class="p">,</span> <span class="nb">compile</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s1">&#39;&lt;string&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;eval&#39;</span><span class="p">,</span> <span class="n">optimize</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;prob&#39;</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="s1">&#39;prob_compiled&#39;</span><span class="p">,</span> <span class="nb">compile</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s1">&#39;&lt;string&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;eval&#39;</span><span class="p">,</span> <span class="n">optimize</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Transition.is_conditional_prob">
+<a class="viewcode-back" href="../../api/api.html#aplusml.models.Transition.is_conditional_prob">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_conditional_prob</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns True if the transition is probabilistic.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prob</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Transition.is_conditional_if">
+<a class="viewcode-back" href="../../api/api.html#aplusml.models.Transition.is_conditional_if">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_conditional_if</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns True if the transition is conditional on a Python expression.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">if_</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
+
+    
+<div class="viewcode-block" id="Transition.get_variables_in_conditional">
+<a class="viewcode-back" href="../../api/api.html#aplusml.models.Transition.get_variables_in_conditional">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_variables_in_conditional</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a list of variables involved in the conditional expression.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">expression</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="c1"># Determine where to find conditional in Transition</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_conditional_prob</span><span class="p">():</span>
+            <span class="n">expression</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prob</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_conditional_if</span><span class="p">():</span>
+            <span class="n">expression</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">if_</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># If there is not a conditional, then there can&#39;t be any variables involved</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="c1"># If the conditional is not a string (i.e. is a float or bool), then there can&#39;t be any variables involved</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">expression</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="c1"># Parse conditional expression for variables</span>
+        <span class="n">parsed_expression</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">expression</span><span class="p">)</span>
+        <span class="n">parsed_variable_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">ast</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">parsed_expression</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="ow">is</span> <span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">:</span>
+                <span class="n">parsed_variable_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">parsed_variable_ids</span></div>
+
+
+<div class="viewcode-block" id="Transition.print">
+<a class="viewcode-back" href="../../api/api.html#aplusml.models.Transition.print">[docs]</a>
+    <span class="k">def</span> <span class="nf">print</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Print the transition in a human-readable format.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;=&gt; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dest</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="si">}</span><span class="s2">)&quot;</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a string representation of the transition.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s1">&#39;Transition(&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">({</span>
+            <span class="s1">&#39;dest&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dest</span><span class="p">,</span>
+            <span class="s1">&#39;label&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
+            <span class="s1">&#39;duration&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span>
+            <span class="s1">&#39;utilities&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">utilities</span><span class="p">,</span>
+            <span class="s1">&#39;if_&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">if_</span><span class="p">,</span>
+            <span class="s1">&#39;prob&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">prob</span><span class="p">,</span>
+        <span class="p">})</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span>
+    
+<div class="viewcode-block" id="Transition.serialize">
+<a class="viewcode-back" href="../../api/api.html#aplusml.models.Transition.serialize">[docs]</a>
+    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Serialize the transition into a dictionary.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;dest&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dest</span><span class="p">,</span>
+            <span class="s1">&#39;label&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
+            <span class="s1">&#39;duration&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span>
+            <span class="s1">&#39;utilities&#39;</span> <span class="p">:</span> <span class="p">[</span> <span class="n">u</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">utilities</span> <span class="p">],</span>
+            <span class="s1">&#39;resource_deltas&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">resource_deltas</span><span class="p">,</span>
+            <span class="s1">&#39;if_&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">if_</span><span class="p">,</span>
+            <span class="s1">&#39;prob&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">prob</span><span class="p">,</span>
+        <span class="p">}</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="State">
+<a class="viewcode-back" href="../../api/api.html#aplusml.models.State">[docs]</a>
+<span class="k">class</span> <span class="nc">State</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A state in the workflow.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="State.__init__">
+<a class="viewcode-back" href="../../api/api.html#aplusml.models.State.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+                 <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">duration</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                 <span class="n">utilities</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Utility</span><span class="p">],</span>
+                 <span class="n">transitions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Transition</span><span class="p">],</span>
+                 <span class="n">resource_deltas</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            id (str): The ID of the state.</span>
+<span class="sd">            label (str): The label of the state.</span>
+<span class="sd">            type (str): The type of the state. Must be one of: &#39;start&#39;, &#39;intermediate&#39;, &#39;end&#39;</span>
+<span class="sd">            duration (int): The duration of the state. Example: 1</span>
+<span class="sd">            utilities (List[Utility]): The utilities of the state. Example: [Utility(value=&#39;100000&#39;, unit=&#39;USD&#39;)]</span>
+<span class="sd">            transitions (List[Transition]): The transitions of the state. Example: [Transition(dest=&#39;state2&#39;, label=&#39;To State 2&#39;, duration=1, utilities=[Utility(value=&#39;100000&#39;, unit=&#39;USD&#39;)], resource_deltas={&#39;MRI&#39;: -1})]</span>
+<span class="sd">            resource_deltas (Dict[str, float]): The resource deltas of the state. Example: {&#39;MRI&#39;: -1}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="nb">id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">label</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="nb">type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">duration</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">duration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">utilities</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Utility</span><span class="p">]</span> <span class="o">=</span> <span class="n">utilities</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transitions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Transition</span><span class="p">]</span> <span class="o">=</span> <span class="n">transitions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resource_deltas</span><span class="p">:</span>  <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">resource_deltas</span></div>
+
+
+<div class="viewcode-block" id="State.print">
+<a class="viewcode-back" href="../../api/api.html#aplusml.models.State.print">[docs]</a>
+    <span class="k">def</span> <span class="nf">print</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Print the state in a human-readable format.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a string representation of the state.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s1">&#39;State(&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">({</span>
+            <span class="s1">&#39;id&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="s1">&#39;label&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
+            <span class="s1">&#39;type&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+            <span class="s1">&#39;duration&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span>
+            <span class="s1">&#39;utilities&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">utilities</span><span class="p">,</span>
+            <span class="s1">&#39;transitions&#39;</span> <span class="p">:</span> <span class="p">[</span> <span class="n">x</span><span class="o">.</span><span class="n">print</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">transitions</span> <span class="p">],</span>
+        <span class="p">})</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span>
+
+<div class="viewcode-block" id="State.serialize">
+<a class="viewcode-back" href="../../api/api.html#aplusml.models.State.serialize">[docs]</a>
+    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Serialize the state into a dictionary.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;id&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="s1">&#39;label&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
+            <span class="s1">&#39;type&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+            <span class="s1">&#39;duration&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span>
+            <span class="s1">&#39;utilities&#39;</span> <span class="p">:</span> <span class="p">[</span> <span class="n">x</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">utilities</span> <span class="p">],</span>
+            <span class="s1">&#39;transitions&#39;</span> <span class="p">:</span> <span class="p">[</span> <span class="n">x</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">transitions</span> <span class="p">],</span>
+            <span class="s1">&#39;resource_deltas&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">resource_deltas</span><span class="p">,</span>
+        <span class="p">}</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
+            <span class="ow">and</span> <span class="nb">all</span><span class="p">([</span> <span class="n">x</span> <span class="o">==</span> <span class="n">y</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">utilities</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">utilities</span><span class="p">)</span> <span class="p">])</span>
+            <span class="ow">and</span> <span class="nb">all</span><span class="p">([</span> <span class="n">x</span> <span class="o">==</span> <span class="n">y</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transitions</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">transitions</span><span class="p">)</span> <span class="p">])</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="History">
+<a class="viewcode-back" href="../../api/api.html#aplusml.models.History">[docs]</a>
+<span class="k">class</span> <span class="nc">History</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The history of a patient&#39;s states and transitions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="History.__init__">
+<a class="viewcode-back" href="../../api/api.html#aplusml.models.History.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+                 <span class="n">current_timestep</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                 <span class="n">state_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">transition_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="c1"># Transition == state.transitions[idx]</span>
+                 <span class="n">state_utility_idxs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="c1"># Utilities == state.utilities[idxs]</span>
+                 <span class="n">transition_utility_idxs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="c1"># Utilities == state.transitions[idx].utilities[idxs]</span>
+                 <span class="n">state_utility_vals</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="c1"># Evaluated Utility Values == evaluate_utility_value(state.utilities[idxs].value)</span>
+                 <span class="n">transition_utility_vals</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="c1"># EvaluatedUtility Values == evaluate_utility_value(state.transitions[idx].utilities[idxs].value)</span>
+                 <span class="n">sim_variables</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args: </span>
+<span class="sd">            current_timestep (int): The current timestep. Example: 1</span>
+<span class="sd">            state_id (str): The ID of the current state. Example: &#39;state1&#39;</span>
+<span class="sd">            transition_idx (int): The index of the current transition. Example: 0</span>
+<span class="sd">            state_utility_idxs (List[int]): The indices of the utilities of the current state. Example: [0]</span>
+<span class="sd">            transition_utility_idxs (List[int]): The indices of the utilities of the current transition. Example: [0]</span>
+<span class="sd">            state_utility_vals (List[float]): The evaluated utility values of the current state. Example: [100000]</span>
+<span class="sd">            transition_utility_vals (List[float]): The evaluated utility values of the current transition. Example: [100000]</span>
+<span class="sd">            sim_variables (Dict): The variables of the simulation. Example: {&#39;y_hat&#39;: 0.5}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_timestep</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">current_timestep</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">state_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transition_idx</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="n">transition_idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_utility_idxs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">state_utility_idxs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transition_utility_idxs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">transition_utility_idxs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_utility_vals</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">state_utility_vals</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transition_utility_vals</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">transition_utility_vals</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sim_variables</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="n">sim_variables</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a string representation of the history.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s1">&#39;History(&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">({</span>
+            <span class="s1">&#39;current_timestep&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_timestep</span><span class="p">,</span>
+            <span class="s1">&#39;state_id&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_id</span><span class="p">,</span>
+            <span class="s1">&#39;transition_idx&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">transition_idx</span><span class="p">,</span>
+            <span class="s1">&#39;state_utility_idxs&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_utility_idxs</span><span class="p">,</span>
+            <span class="s1">&#39;transition_utility_idxs&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">transition_utility_idxs</span><span class="p">,</span>
+            <span class="s1">&#39;state_utility_vals&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_utility_vals</span><span class="p">,</span>
+            <span class="s1">&#39;transition_utility_vals&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">transition_utility_vals</span><span class="p">,</span>
+        <span class="p">})</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span></div>
+
+
+<div class="viewcode-block" id="Patient">
+<a class="viewcode-back" href="../../api/api.html#aplusml.models.Patient">[docs]</a>
+<span class="k">class</span> <span class="nc">Patient</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A patient in the simulation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="vm">__module__</span> <span class="o">=</span> <span class="s1">&#39;aplusml.models&#39;</span>
+
+<div class="viewcode-block" id="Patient.__init__">
+<a class="viewcode-back" href="../../api/api.html#aplusml.models.Patient.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+                 <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+                 <span class="n">start_timestep</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                 <span class="n">properties</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            id (str): The ID of the patient. Example: ``patient1``</span>
+<span class="sd">            start_timestep (int): The start timestep of the patient. Example: ``1``</span>
+<span class="sd">            properties (dict, optional): The properties of the patient. Example: ``{&#39;y_hat&#39;: 0.5}``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="nb">id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_timestep</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">start_timestep</span><span class="p">)</span> <span class="c1"># Start time for this patient (i.e. admitted date)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">properties</span> <span class="k">if</span> <span class="n">properties</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{}</span> <span class="c1"># Patient specific properties, i.e. &quot;y_hat&quot; or &quot;y&quot; or &quot;los&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">History</span><span class="p">]</span><span class="o">=</span> <span class="p">[]</span> <span class="c1"># Track history of (state, transition, utility)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># ID of current state</span></div>
+
+    
+<div class="viewcode-block" id="Patient.get_state_history">
+<a class="viewcode-back" href="../../api/api.html#aplusml.models.Patient.get_state_history">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_state_history</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the state history of this patient. Returns a list of state IDs (in chronological order) that the patient has visited.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span> <span class="n">h</span><span class="o">.</span><span class="n">state_id</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">]</span></div>
+
+        
+<div class="viewcode-block" id="Patient.repr_state_history">
+<a class="viewcode-back" href="../../api/api.html#aplusml.models.Patient.repr_state_history">[docs]</a>
+    <span class="k">def</span> <span class="nf">repr_state_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_show_timesteps</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the state history in a human-readable format.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            is_show_timesteps (bool, optional): If TRUE, then show the timestep of each state transition. Defaults to FALSE.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">is_show_timesteps</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot; &gt; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span> <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">h</span><span class="o">.</span><span class="n">current_timestep</span><span class="si">}</span><span class="s2">) </span><span class="si">{</span><span class="n">h</span><span class="o">.</span><span class="n">state_id</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot; &gt; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span> <span class="n">h</span><span class="o">.</span><span class="n">state_id</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="Patient.get_sum_utilities">
+<a class="viewcode-back" href="../../api/api.html#aplusml.models.Patient.get_sum_utilities">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_sum_utilities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulation</span><span class="p">:</span> <span class="s1">&#39;aplusml.sim.Simulation&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a dictionary of the sum of the utilities of the patient&#39;s history.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            simulation (Simulation): The simulation.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Dict[str, float]: A dictionary where each [key] is a unit, and each [value] is the sum of the utilities of the patient&#39;s history for that unit. Example: {&#39;USD&#39;: 100000}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sums</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span> <span class="c1"># [key] = unit, [value] = sum of that unit&#39;s utility across entire Patient&#39;s history</span>
+        <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">:</span>
+            <span class="c1"># State utilities</span>
+            <span class="n">state</span><span class="p">:</span> <span class="n">State</span> <span class="o">=</span> <span class="n">simulation</span><span class="o">.</span><span class="n">states</span><span class="p">[</span><span class="n">h</span><span class="o">.</span><span class="n">state_id</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">state_utility_idxs</span><span class="p">):</span>
+                <span class="n">u</span><span class="p">:</span> <span class="n">Utility</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">utilities</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+                <span class="n">sums</span><span class="p">[</span><span class="n">u</span><span class="o">.</span><span class="n">unit</span><span class="p">]</span> <span class="o">+=</span> <span class="n">h</span><span class="o">.</span><span class="n">state_utility_vals</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="c1"># Transition utilities (if transition exists)</span>
+            <span class="k">if</span> <span class="n">h</span><span class="o">.</span><span class="n">transition_idx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">transition</span><span class="p">:</span> <span class="n">Transition</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">transitions</span><span class="p">[</span><span class="n">h</span><span class="o">.</span><span class="n">transition_idx</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">transition_utility_idxs</span><span class="p">):</span>
+                    <span class="n">u</span><span class="p">:</span> <span class="n">Utility</span> <span class="o">=</span> <span class="n">transition</span><span class="o">.</span><span class="n">utilities</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+                    <span class="n">sums</span><span class="p">[</span><span class="n">u</span><span class="o">.</span><span class="n">unit</span><span class="p">]</span> <span class="o">+=</span> <span class="n">h</span><span class="o">.</span><span class="n">transition_utility_vals</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">sums</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a string representation of the patient.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s1">&#39;Patient(&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">({</span>
+            <span class="s1">&#39;id&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="s1">&#39;start_timestep&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_timestep</span><span class="p">,</span>
+            <span class="s1">&#39;properties&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">,</span>
+            <span class="s1">&#39;history&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">,</span>
+            <span class="s1">&#39;current_state&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="p">,</span>
+        <span class="p">})</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Michael Wornow.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

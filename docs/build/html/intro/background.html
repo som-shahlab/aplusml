@@ -1,0 +1,308 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Background &mdash; APLUS ML  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=ae483e34" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Quick Start" href="../usage/quick.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            APLUS ML
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">🚦 Introduction</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Background</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#motivation">Motivation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#components">Components</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#simulation">1. Simulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#configuration">2. Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#visualization">3. Visualization</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#definitions">Definitions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Simulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#workflow">Workflow</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#states">States</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transitions">Transitions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#utilities">Utilities</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#conditions">Conditions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#resources">Resources</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#patients">Patients</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#running-a-simulation">Running a Simulation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">📚 User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../usage/quick.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/tutorial_hello.html">Tutorial (Hello World)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/tutorial_pad.html">Tutorial (PAD)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/tutorial_hcm.html">Tutorial (HCM)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/concepts.html">Concept Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/templates.html">Config YAML Templates</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">📖 API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/config.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">APLUS ML</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Background</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/intro/background.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="background">
+<h1>Background<a class="headerlink" href="#background" title="Link to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<p>APLUS ML (<strong>A</strong> <strong>P</strong>ython <strong>L</strong>ibrary for <strong>U</strong>sefulness <strong>S</strong>imulations of <strong>M</strong>achine <strong>L</strong>earning Models) is a simulation framework for conducting usefulness assessments of machine learning models in workflows, as originally published in this <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S1532046423000400?via%3Dihub">2023 JBI paper</a>.</p>
+<p>It aims to quantitatively answer the question: <em>If I use this ML model within this workflow, will the benefits outweigh the costs, and by how much?</em></p>
+<a class="reference internal image-reference" href="../_images/graphical_abstract.png"><img alt="APLUS graphical abstract" src="../_images/graphical_abstract.png" style="width: 700px;" />
+</a>
+<p><strong>APLUS</strong> was originally developed for clinical workflows in healthcare settings. However, APLUS is a applicable to any workflow that involves a model making decisions on a stream of datapoints, and we encourage contributors from any domain to use and extend APLUS.</p>
+<section id="motivation">
+<h2>Motivation<a class="headerlink" href="#motivation" title="Link to this heading"></a></h2>
+<p>Despite rapid advancements in machine learning (ML) for healthcare, model deployment remains limited as traditional ML evaluation metrics (e.g., AUROC, F1 Score) fail to account for the complexities of real-world workflows such as staffing constraints, resource limitations, treatment heterogeneity, and variable patient flow.</p>
+<p>These operational conditions can greatly distort the realized impact of introducing an ML model into a clinical setting.</p>
+<p><strong>APLUS</strong> addresses this problem by evaluating ML models under realistic workflow constraints via simulation.</p>
+</section>
+<section id="components">
+<h2>Components<a class="headerlink" href="#components" title="Link to this heading"></a></h2>
+<p>Below, we provide a high-level overview of the <strong>three components</strong> of APLUS. We provide a more formal specification of the concepts underlying APLUS on the <a class="reference internal" href="../usage/concepts.html"><span class="doc">Concept Guide</span></a> page.</p>
+<section id="simulation">
+<h3>1. Simulation<a class="headerlink" href="#simulation" title="Link to this heading"></a></h3>
+<p>APLUS uses discrete-event simulation to model workflows.</p>
+<p>Each patient’s journey through the workflow is represented as an ordered sequence of states over evenly-spaced time steps, which enables modeling cycles and resource-dependent prioritization (e.g., Stage IV cancer patients receiving preferential access to treatment over Stage II patients).</p>
+<p>Transitions between states can be determined probabilistically or via conditional expressions, which enables modeling heterogeneous treatment effects, patient subpopulations, and system-level resource constraints.</p>
+<p>APLUS outputs a structured dictionary that contains the full history of the simulation (e.g. states, transitions, achieved utilities, etc.) to enable arbitrary downstream analyses.</p>
+</section>
+<section id="configuration">
+<h3>2. Configuration<a class="headerlink" href="#configuration" title="Link to this heading"></a></h3>
+<p>APLUS represents workflows as a <strong>state machine</strong> specified via a <strong>YAML</strong> config file. The config consists of three sections:</p>
+<ol class="arabic">
+<li><p><strong>Metadata</strong> - Essential initialization details, such as:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Workflow name</p></li>
+<li><p>Paths to required files (e.g., CSV files with model predictions)</p></li>
+<li><p>Column mappings for tabular data (e.g. which column in a CSV corresponds to patient IDs)</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><strong>Variables</strong> – Parameters of the simulation. There are four types of variables:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Simulation-Level Variables</strong>: Tracked by the simulation engine itself and measure the progression of time within the simulation. (e.g. the number of timesteps the simulation has run, the duration of time that a patient has been in a state, etc.).</p></li>
+<li><p><strong>Patient-Level Properties</strong>: Unique, individual-level properties associated with each patient(e.g., age, cancer stage, ML model predictions).</p></li>
+<li><p><strong>System-Level Resources</strong>: Attributes of the overall system shared across all patients (e.g., MRI availability, budget, specialist capacity).</p></li>
+<li><p><strong>Constants</strong>: Fixed values. These can be any primitive Python type (integer, float, string, or boolean) or basic Python data structure (list, dict, set).</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><strong>States</strong> – The steps of the workflow. There are three types of states:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Start</strong>: Where all patients begin their journey through the workflow. There is always exactly 1 start state.</p></li>
+<li><p><strong>Intermediate</strong>: Transition points within the workflow. There can be 0+ intermediate states.</p></li>
+<li><p><strong>End</strong>: Terminal states, which indicate the completion of the workflow. There must be 1+ end states.</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ol>
+</section>
+<section id="visualization">
+<h3>3. Visualization<a class="headerlink" href="#visualization" title="Link to this heading"></a></h3>
+<p>APLUS has a set of predefined visualizations for workflows which are generated using <strong>Graphviz</strong>.</p>
+</section>
+</section>
+<section id="definitions">
+<h2>Definitions<a class="headerlink" href="#definitions" title="Link to this heading"></a></h2>
+<p>Here, we provide a more detailed specification of the concepts underlying the APLUS simulation framework.</p>
+<section id="id1">
+<h3>Simulation<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<p>We use discrete event simulation to simulate our workflow <span class="math notranslate nohighlight">\(W\)</span>.</p>
+<p>In other words, we represent the world as occuring through a set of discrete, evenly spaced timesteps <span class="math notranslate nohighlight">\(\lambda = 0, 1,...,N\)</span>. Each timestep <span class="math notranslate nohighlight">\(\lambda\)</span> could represent a second, minute, hour, day, etc., the interpretation is up to the user.</p>
+<p>Events <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span> that occur within the same timestep <span class="math notranslate nohighlight">\(\lambda\)</span> can have arbitrary ordering if there does not exist a strict <span class="math notranslate nohighlight">\(A \rightarrow B\)</span> or <span class="math notranslate nohighlight">\(B \rightarrow A\)</span> dependency between these events. In other words, if 3 patients have an MRI and 2 patients have a blood test on timestep <span class="math notranslate nohighlight">\(\lambda = 3\)</span>, then assuming none of these events are dependent on each other, the ordering in which the blood tests and MRIs occur will be random.</p>
+<p>A <strong>“duration”</strong> refers to a number of timesteps (i.e. a length of time).</p>
+</section>
+<section id="workflow">
+<h3>Workflow<a class="headerlink" href="#workflow" title="Link to this heading"></a></h3>
+<p>A workflow <span class="math notranslate nohighlight">\(W\)</span> is simply a set of states <span class="math notranslate nohighlight">\(S\)</span>.</p>
+<section id="states">
+<h4>States<a class="headerlink" href="#states" title="Link to this heading"></a></h4>
+<p>Each state <span class="math notranslate nohighlight">\(s \in S\)</span> has associated with it:</p>
+<ol class="arabic simple">
+<li><p>A duration <span class="math notranslate nohighlight">\(\lambda_s\)</span> representing how many timesteps an agent will wait in this state before transitioning to another state</p></li>
+<li><p>A set of utilities <span class="math notranslate nohighlight">\(U_s\)</span></p></li>
+<li><p>A set of resource deltas <span class="math notranslate nohighlight">\(R_s \subseteq R\)</span> that specify how various resources <span class="math notranslate nohighlight">\(r \in R_s\)</span> change when an agent arrives at this state</p></li>
+<li><p>A set of transitions <span class="math notranslate nohighlight">\(T_s \subseteq T\)</span></p></li>
+<li><p>A type <span class="math notranslate nohighlight">\(\tau_s \in \{\text{start}, \text{normal}, \text{end}\}\)</span></p></li>
+</ol>
+<p>Invariants:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(|\{ s \in S | \tau_s = \text{start} \}| = 1\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(\forall s \in S\)</span> such that <span class="math notranslate nohighlight">\(\tau_s = \text{start}, |T_s| &gt; 0\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(\forall s \in S\)</span> such that <span class="math notranslate nohighlight">\(\tau_s = \text{normal}, |T_s| &gt; 0\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(\forall s \in S\)</span> such that <span class="math notranslate nohighlight">\(\tau_s = \text{end}, |T_s| = 0\)</span></p></li>
+</ul>
+</section>
+<section id="transitions">
+<h4>Transitions<a class="headerlink" href="#transitions" title="Link to this heading"></a></h4>
+<p>Given the set of all transitions <span class="math notranslate nohighlight">\(T\)</span>, each transition <span class="math notranslate nohighlight">\(t \in T_s \subseteq T\)</span> has associated with it:</p>
+<ol class="arabic simple">
+<li><p>A source state <span class="math notranslate nohighlight">\(s \in S\)</span></p></li>
+<li><p>A destination state <span class="math notranslate nohighlight">\(s' \in S\)</span> (where <span class="math notranslate nohighlight">\(s'\)</span> could be the same as <span class="math notranslate nohighlight">\(s\)</span>)</p></li>
+<li><p>A duration <span class="math notranslate nohighlight">\(\lambda_t\)</span> representing how many timesteps an agent will wait, after having chosen this transition <span class="math notranslate nohighlight">\(t\)</span>, before moving to state <span class="math notranslate nohighlight">\(s'\)</span></p></li>
+<li><p>A condition <span class="math notranslate nohighlight">\(c_t \in C\)</span> that, only when TRUE, allows the agent to take this transition <span class="math notranslate nohighlight">\(t\)</span> to state <span class="math notranslate nohighlight">\(s'\)</span></p></li>
+<li><p>A set of utilities <span class="math notranslate nohighlight">\(U_t\)</span></p></li>
+<li><p>A set of resource deltas <span class="math notranslate nohighlight">\(R_t \subseteq R\)</span> that specify how various resources <span class="math notranslate nohighlight">\(r \in R_t\)</span> change after an agent takes this transition</p></li>
+</ol>
+</section>
+<section id="utilities">
+<h4>Utilities<a class="headerlink" href="#utilities" title="Link to this heading"></a></h4>
+<p>Given the set of all utilities <span class="math notranslate nohighlight">\(U\)</span>, each utility <span class="math notranslate nohighlight">\(u \in U\)</span> has associated with it:</p>
+<ol class="arabic simple">
+<li><p>A value <span class="math notranslate nohighlight">\(u_v \in \mathbb{R}\)</span> representing the numeric value of this utility</p></li>
+<li><p>A unit <span class="math notranslate nohighlight">\(u_u\)</span> (i.e. QALYs, US dollars, years, etc.)</p></li>
+<li><p>A condition <span class="math notranslate nohighlight">\(c_u \in C\)</span> that, only when TRUE, has the simulation record that this utility value <span class="math notranslate nohighlight">\(u_v\)</span> for unit <span class="math notranslate nohighlight">\(u_u\)</span> was achieved</p></li>
+</ol>
+</section>
+<section id="conditions">
+<h4>Conditions<a class="headerlink" href="#conditions" title="Link to this heading"></a></h4>
+<p>A condition <span class="math notranslate nohighlight">\(c \in C\)</span> determines whether a utility or transition can be taken. A condition <span class="math notranslate nohighlight">\(c\)</span> can take the form of either:</p>
+<ol class="arabic simple">
+<li><p>A probability (in which case <span class="math notranslate nohighlight">\(\{ c \in \mathbb{R} | 0 \le c \le 1 \}\)</span>); OR</p></li>
+<li><p>An arbitrary Python expression which evaluates to TRUE or FALSE</p></li>
+</ol>
+</section>
+<section id="resources">
+<h4>Resources<a class="headerlink" href="#resources" title="Link to this heading"></a></h4>
+<p>A resource <span class="math notranslate nohighlight">\(r \in R\)</span> is a constrained resource that is shared across all patients. This represents a hospital-level constraint of a workflow (i.e. fiscal budget, number of nurses, MRI machine availability, etc.). Each resource <span class="math notranslate nohighlight">\(r\)</span> has associated with it:</p>
+<ol class="arabic simple">
+<li><p>A level <span class="math notranslate nohighlight">\(r_l \in \mathbb{N}\)</span> which represents the current value of the resource</p></li>
+<li><p>An initial amount <span class="math notranslate nohighlight">\(r_i \in \mathbb{N}\)</span> which ensures <span class="math notranslate nohighlight">\(r_l = r_i\)</span> when <span class="math notranslate nohighlight">\(\lambda = 0\)</span></p></li>
+<li><p>An maximum capacity <span class="math notranslate nohighlight">\(r_m \in \mathbb{N}\)</span> which ensures that <span class="math notranslate nohighlight">\(r_l \le r_m\)</span></p></li>
+<li><p>A refill amount <span class="math notranslate nohighlight">\(r_a \in \mathbb{N}\)</span> that represents how much this resource gets increased after <span class="math notranslate nohighlight">\(\lambda_r\)</span> timesteps have elapsed since the last refill</p></li>
+<li><p>A refill duration <span class="math notranslate nohighlight">\(\lambda_r \in \mathbb{N}\)</span> that represents how many timesteps must elapse before the resource is increased to a value of <span class="math notranslate nohighlight">\(\max{r_l + r_a, r_m}\)</span></p></li>
+</ol>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>In order to decrement a resource, you need to specify a <strong>resource delta</strong> on the relevant state/transition. Otherwise, if you just require that <code class="docutils literal notranslate"><span class="pre">nurse_capacity</span> <span class="pre">&gt;</span> <span class="pre">0</span></code> for a transition, then the simulation will not automatically decrement <code class="docutils literal notranslate"><span class="pre">nurse_capacity</span></code> by 1 when that transition is taken (which can be surprising to some users). This is often a cause of infinite loops, or situations where changing the <span class="math notranslate nohighlight">\(r_i\)</span>, <span class="math notranslate nohighlight">\(r_m\)</span>, or <span class="math notranslate nohighlight">\(r_a\)</span> of a resource has no effect on the model’s achieved utility.</p>
+</div>
+</section>
+</section>
+<section id="patients">
+<h3>Patients<a class="headerlink" href="#patients" title="Link to this heading"></a></h3>
+<p>Each patient <span class="math notranslate nohighlight">\(p \in P\)</span> has associated with it:</p>
+<ol class="arabic simple">
+<li><p>A start timestep <span class="math notranslate nohighlight">\(\lambda_p\)</span> representing the timestep of the simulation at which the patient began progressing through the workflow (i.e. the day that the patient was admitted to the hospital)</p></li>
+<li><p>A current state <span class="math notranslate nohighlight">\(s_p \in S\)</span>. The patient always starts at a state <span class="math notranslate nohighlight">\(s_p\)</span> where <span class="math notranslate nohighlight">\(\tau_{s_p} = \text{start}\)</span></p></li>
+<li><p>A set of <strong>properties</strong> <span class="math notranslate nohighlight">\(\rho_p\)</span> which can be anything (integers, floats, strings, dictionaries, lists, etc.)</p></li>
+<li><p>A <strong>history</strong> object <span class="math notranslate nohighlight">\(H_p\)</span> which captures all of the past states, transitions, and utilities that the patient achieved.</p></li>
+</ol>
+</section>
+<section id="running-a-simulation">
+<h3>Running a Simulation<a class="headerlink" href="#running-a-simulation" title="Link to this heading"></a></h3>
+<p>Each patient <span class="math notranslate nohighlight">\(p\)</span> starts his/her workflow at the state <span class="math notranslate nohighlight">\(s\)</span>, where <span class="math notranslate nohighlight">\(\tau_s = \text{start}\)</span>. Note: This is the same for all patients.</p>
+<p>Each patient <span class="math notranslate nohighlight">\(p\)</span> starts his/her workflow at timestep <span class="math notranslate nohighlight">\(\lambda_p\)</span>. Note: This varies across all patients.</p>
+<p>Each patient <span class="math notranslate nohighlight">\(p\)</span> then progresses through the states of the workflow, according to the applicable transitions and conditions. The patient stops their journey when either of the following conditions are met:</p>
+<ul class="simple">
+<li><p>The patient reaches a state <span class="math notranslate nohighlight">\(s\)</span> where <span class="math notranslate nohighlight">\(\tau_s = \text{end}\)</span>; OR</p></li>
+<li><p>The simulation is terminated prematurely after a set number of timesteps have occurred</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../usage/quick.html" class="btn btn-neutral float-right" title="Quick Start" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Michael Wornow.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

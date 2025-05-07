@@ -1,0 +1,286 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Concept Guide &mdash; APLUS ML  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=ae483e34" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Config YAML Templates" href="templates.html" />
+    <link rel="prev" title="Tutorial (HCM)" href="tutorial_hcm.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            APLUS ML
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">🚦 Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/background.html">Background</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">📚 User Guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quick.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_hello.html">Tutorial (Hello World)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_pad.html">Tutorial (PAD)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_hcm.html">Tutorial (HCM)</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Concept Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#simulation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Simulation</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#patient"><code class="xref py py-class docutils literal notranslate"><span class="pre">Patient</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#transition"><code class="xref py py-class docutils literal notranslate"><span class="pre">Transition</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#state"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#utility"><code class="xref py py-class docutils literal notranslate"><span class="pre">Utility</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#temporal-and-resource-modeling">Temporal and Resource Modeling</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="templates.html">Config YAML Templates</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">📖 API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/config.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">APLUS ML</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Concept Guide</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/usage/concepts.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="concept-guide">
+<h1>Concept Guide<a class="headerlink" href="#concept-guide" title="Link to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<p>This page describes the core models used by APLUS – namely, <a class="reference internal" href="../api/api.html#aplusml.sim.Simulation" title="aplusml.sim.Simulation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Simulation</span></code></a>, <a class="reference internal" href="../api/api.html#aplusml.models.Patient" title="aplusml.models.Patient"><code class="xref py py-class docutils literal notranslate"><span class="pre">Patient</span></code></a>, <a class="reference internal" href="../api/api.html#aplusml.models.Transition" title="aplusml.models.Transition"><code class="xref py py-class docutils literal notranslate"><span class="pre">Transition</span></code></a>, <a class="reference internal" href="../api/api.html#aplusml.models.State" title="aplusml.models.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a>, and <a class="reference internal" href="../api/api.html#aplusml.models.Utility" title="aplusml.models.Utility"><code class="xref py py-class docutils literal notranslate"><span class="pre">Utility</span></code></a>.</p>
+<section id="simulation">
+<h2><a class="reference internal" href="../api/api.html#aplusml.sim.Simulation" title="aplusml.sim.Simulation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Simulation</span></code></a><a class="headerlink" href="#simulation" title="Link to this heading"></a></h2>
+<p>For full documentation, see <a class="reference internal" href="../api/api.html#aplusml.sim.Simulation" title="aplusml.sim.Simulation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Simulation</span></code></a>.</p>
+<p>The <a class="reference internal" href="../api/api.html#aplusml.sim.Simulation" title="aplusml.sim.Simulation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Simulation</span></code></a> class handles all the details of running a simulation. There are four basic methods to know:</p>
+<ol class="arabic simple">
+<li><p><strong>Initialize Simulation</strong> – <a class="reference internal" href="../api/api.html#aplusml.sim.Simulation.create_from_yaml" title="aplusml.sim.Simulation.create_from_yaml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_from_yaml()</span></code></a> or <a class="reference internal" href="../api/api.html#aplusml.sim.Simulation.create_from_config" title="aplusml.sim.Simulation.create_from_config"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_from_config()</span></code></a></p></li>
+<li><p><strong>Initialize Patients</strong> – <a class="reference internal" href="../api/api.html#aplusml.sim.Simulation.create_patients_for_simulation" title="aplusml.sim.Simulation.create_patients_for_simulation"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_patients_for_simulation()</span></code></a></p></li>
+<li><p><strong>Run Simulation</strong> – <a class="reference internal" href="../api/api.html#aplusml.sim.Simulation.run" title="aplusml.sim.Simulation.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run()</span></code></a></p></li>
+<li><p><strong>Visualize Workflow</strong> – <a class="reference internal" href="../api/api.html#aplusml.sim.Simulation.draw_workflow_diagram" title="aplusml.sim.Simulation.draw_workflow_diagram"><code class="xref py py-meth docutils literal notranslate"><span class="pre">draw_workflow_diagram()</span></code></a></p></li>
+</ol>
+<ol class="arabic simple">
+<li><p><strong>Initialize Simulation</strong> – <a class="reference internal" href="../api/api.html#aplusml.sim.Simulation.create_from_yaml" title="aplusml.sim.Simulation.create_from_yaml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_from_yaml()</span></code></a> or <a class="reference internal" href="../api/api.html#aplusml.sim.Simulation.create_from_config" title="aplusml.sim.Simulation.create_from_config"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_from_config()</span></code></a> – Create the <a class="reference internal" href="../api/api.html#aplusml.sim.Simulation" title="aplusml.sim.Simulation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Simulation</span></code></a> object from a YAML configuration file and a CSV file containing patient properties.</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">import</span> <span class="nn">aplusml</span>
+<span class="linenos">2</span><span class="n">simulation</span> <span class="o">=</span> <span class="n">aplusml</span><span class="o">.</span><span class="n">Simulation</span><span class="o">.</span><span class="n">create_from_yaml</span><span class="p">(</span><span class="n">PATH_TO_CONFIG_YAML</span><span class="p">,</span> <span class="n">PATH_TO_PATIENT_PROPERTIES</span><span class="p">)</span>
+<span class="linenos">3</span><span class="c1"># or</span>
+<span class="linenos">4</span><span class="n">simulation</span> <span class="o">=</span> <span class="n">aplusml</span><span class="o">.</span><span class="n">Simulation</span><span class="o">.</span><span class="n">create_from_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>From the config, the <a class="reference internal" href="../api/api.html#aplusml.sim.Simulation" title="aplusml.sim.Simulation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Simulation</span></code></a> loads the following attributes:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">metadata</span></code> (Dict): Configuration metadata for the simulation. A dictionary of strings.</p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">variables</span></code> (Dict[str, Dict]): Variables used in the simulation. A dictionary of variables, keyed by ID.</p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">states</span></code> (Dict[str, State]): States in the workflow. A dictionary of states, keyed by ID.</p></li>
+</ul>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><p><strong>Initialize Patients</strong> – <a class="reference internal" href="../api/api.html#aplusml.sim.Simulation.create_patients_for_simulation" title="aplusml.sim.Simulation.create_patients_for_simulation"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_patients_for_simulation()</span></code></a> – Create a list of <code class="xref py py-class docutils literal notranslate"><span class="pre">Patient</span></code> objects.</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">aplusml</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="c1"># Create dummy patients</span>
+<span class="linenos"> 4</span><span class="n">patients</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">aplusml</span><span class="o">.</span><span class="n">Patient</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+<span class="linenos"> 5</span>  <span class="n">aplusml</span><span class="o">.</span><span class="n">Patient</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span>
+<span class="linenos"> 6</span>      <span class="mi">0</span><span class="p">,</span> <span class="c1"># Unique ID</span>
+<span class="linenos"> 7</span>      <span class="mi">0</span><span class="p">,</span> <span class="c1"># Start timestep</span>
+<span class="linenos"> 8</span>  <span class="p">),</span>
+<span class="linenos"> 9</span>  <span class="n">aplusml</span><span class="o">.</span><span class="n">Patient</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span>
+<span class="linenos">10</span>      <span class="mi">1</span><span class="p">,</span> <span class="c1"># Unique ID</span>
+<span class="linenos">11</span>      <span class="mi">0</span><span class="p">,</span> <span class="c1"># Start timestep</span>
+<span class="linenos">12</span>  <span class="p">),</span>
+<span class="linenos">13</span>  <span class="n">aplusml</span><span class="o">.</span><span class="n">Patient</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span>
+<span class="linenos">14</span>      <span class="mi">2</span><span class="p">,</span> <span class="c1"># Unique ID</span>
+<span class="linenos">15</span>      <span class="mi">1</span><span class="p">,</span> <span class="c1"># Start timestep</span>
+<span class="linenos">16</span>  <span class="p">),</span>
+<span class="linenos">17</span><span class="p">]</span>
+<span class="linenos">18</span>
+<span class="linenos">19</span><span class="c1"># Initialize patients for simulation.</span>
+<span class="linenos">20</span><span class="c1"># This creates a deep copy of each object in the `patients` array using pickle, sorts them by ID, and then initializes their properties</span>
+<span class="linenos">21</span><span class="n">patients</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">aplusml</span><span class="o">.</span><span class="n">Patient</span><span class="p">]</span> <span class="o">=</span> <span class="n">simulation</span><span class="o">.</span><span class="n">create_patients_for_simulation</span><span class="p">(</span><span class="n">patients</span><span class="p">,</span> <span class="n">random_seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p><strong>Run Simulation</strong> – <a class="reference internal" href="../api/api.html#aplusml.sim.Simulation.run" title="aplusml.sim.Simulation.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run()</span></code></a> – Run a list of patients through the workflow.</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="c1"># Run the simulation</span>
+<span class="linenos">2</span><span class="n">patients</span> <span class="o">=</span> <span class="n">simulation</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">patients</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>During the simulation, the following attributes will be automatically tracked:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">variable_history</span></code> (Dict[List[Tuple[int, Any]]]): History of variable values over time. A dictionary of lists of tuples, where each tuple contains a timestep and a dictionary of variable values.</p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">current_timestep</span></code> (int): Current simulation timestep.</p></li>
+</ul>
+</div></blockquote>
+<ol class="arabic simple" start="4">
+<li><p><strong>Visualize Workflow</strong> – <a class="reference internal" href="../api/api.html#aplusml.sim.Simulation.draw_workflow_diagram" title="aplusml.sim.Simulation.draw_workflow_diagram"><code class="xref py py-meth docutils literal notranslate"><span class="pre">draw_workflow_diagram()</span></code></a> – Display the workflow as a graphviz diagram.</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="c1"># Draws workflow diagram. This will save the diagram to &#39;./output.png&#39; and print it to your terminal.</span>
+<span class="linenos">2</span><span class="n">simulation</span><span class="o">.</span><span class="n">draw_workflow_diagram</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span><span class="mi">30</span><span class="p">),</span> <span class="n">path_to_file</span><span class="o">=</span><span class="s1">&#39;./output.png&#39;</span><span class="p">,</span> <span class="n">is_display</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="patient">
+<h2><a class="reference internal" href="../api/api.html#aplusml.models.Patient" title="aplusml.models.Patient"><code class="xref py py-class docutils literal notranslate"><span class="pre">Patient</span></code></a><a class="headerlink" href="#patient" title="Link to this heading"></a></h2>
+<p>For full documentation, see <a class="reference internal" href="../api/api.html#aplusml.models.Patient" title="aplusml.models.Patient"><code class="xref py py-class docutils literal notranslate"><span class="pre">Patient</span></code></a>.</p>
+<p>This class represents a single patient in the simulation. It contains the following attributes:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">id</span></code> (str): The unique ID of the patient.</p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">start_timestep</span></code> (int): The timestep at which the patient enters the workflow.</p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">properties</span></code> (Dict[str, Any]): A dictionary of properties for the patient.</p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">history</span></code> (List[History]): A list of history objects, which track the patient’s history through the workflow.</p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">current_state</span></code> (str): The ID of the current state that the patient is in.</p></li>
+</ul>
+</div></blockquote>
+<p>The most useful method is the <code class="xref py py-meth docutils literal notranslate"><span class="pre">get_sum_utilities()</span></code> method, which returns the sum of the utilities achieved by the patient over the course of the entire simulation.
+Each unique utility unit (e.g. “QALYs”, “$”, etc.) will get its own key in the returned dictionary.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="c1"># Get the sum of the utilities achieved by the patient over the course of the entire simulation</span>
+<span class="linenos">2</span><span class="n">sum_utilities</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">patient</span><span class="o">.</span><span class="n">get_sum_utilities</span><span class="p">(</span><span class="n">simulation</span><span class="p">)</span>
+<span class="linenos">3</span><span class="nb">print</span><span class="p">(</span><span class="n">sum_utilities</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The most useful attribute is the <code class="xref py py-attr docutils literal notranslate"><span class="pre">history</span></code> attribute. It contains a list of <a class="reference internal" href="../api/api.html#aplusml.models.History" title="aplusml.models.History"><code class="xref py py-class docutils literal notranslate"><span class="pre">History</span></code></a> objects. This allows you to trace the patient’s entire journey through the workflow.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="c1"># Print the patient&#39;s history</span>
+<span class="linenos">2</span><span class="nb">print</span><span class="p">(</span><span class="n">patient</span><span class="o">.</span><span class="n">history</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="transition">
+<h2><a class="reference internal" href="../api/api.html#aplusml.models.Transition" title="aplusml.models.Transition"><code class="xref py py-class docutils literal notranslate"><span class="pre">Transition</span></code></a><a class="headerlink" href="#transition" title="Link to this heading"></a></h2>
+<p>For full documentation, see <a class="reference internal" href="../api/api.html#aplusml.models.Transition" title="aplusml.models.Transition"><code class="xref py py-class docutils literal notranslate"><span class="pre">Transition</span></code></a>.</p>
+<p>Patients move between states through <strong>transitions</strong>. There are three types of transitions:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Deterministic</strong> – A single, predefined transition per state.</p></li>
+<li><p><strong>Probabilistic</strong> – Transitions occur with specified probabilities (e.g., 30% “high-risk”, 70% “low-risk”).</p></li>
+<li><p><strong>Conditional</strong> – Transitions based on Boolean expressions evaluating patient-level or system-level conditions (e.g., a gene therapy succeeding only for patients with a specific mutation).</p></li>
+</ul>
+</div></blockquote>
+<p>You do not need to interact with this class directly.</p>
+</section>
+<section id="state">
+<h2><a class="reference internal" href="../api/api.html#aplusml.models.State" title="aplusml.models.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a><a class="headerlink" href="#state" title="Link to this heading"></a></h2>
+<p>For full documentation, see <a class="reference internal" href="../api/api.html#aplusml.models.State" title="aplusml.models.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a>.</p>
+<p>States are the building blocks of the workflow. Each state has a unique ID, a label, a type, a duration, and a list of transitions.</p>
+<p>You do not need to interact with this class directly.</p>
+</section>
+<section id="utility">
+<h2><a class="reference internal" href="../api/api.html#aplusml.models.Utility" title="aplusml.models.Utility"><code class="xref py py-class docutils literal notranslate"><span class="pre">Utility</span></code></a><a class="headerlink" href="#utility" title="Link to this heading"></a></h2>
+<p>For full documentation, see <a class="reference internal" href="../api/api.html#aplusml.models.Utility" title="aplusml.models.Utility"><code class="xref py py-class docutils literal notranslate"><span class="pre">Utility</span></code></a>.</p>
+<p>APLUS supports tracking multiple utility measures to evaluate workflow effectiveness:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Time-based</strong> (e.g., patient length-of-stay)</p></li>
+<li><p><strong>Clinical</strong> (e.g., patient outcomes)</p></li>
+<li><p><strong>Financial</strong> (e.g., cost impact)</p></li>
+<li><p><strong>Resource-related</strong> (e.g., staff utilization)</p></li>
+</ul>
+</div></blockquote>
+<p>Utilities can be conditioned on expressions, allowing individual-level utility analyses based on patient properties.</p>
+<p>You do not need to interact with this class directly.</p>
+</section>
+<section id="temporal-and-resource-modeling">
+<h2>Temporal and Resource Modeling<a class="headerlink" href="#temporal-and-resource-modeling" title="Link to this heading"></a></h2>
+<p><strong>Time Duration:</strong> Each state and transition can have an associated <strong>time duration</strong>, defining the number of simulation time steps before progression. Example:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>A hospital workflow where post-surgery patients stay in a “rest” state before daily evaluations.</p></li>
+</ul>
+</div></blockquote>
+<p><strong>Resource Constraints:</strong> Transitions can alter <strong>system-level resources</strong> via <strong>resource deltas</strong>, simulating real-world capacity limits. Example:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>A transition directing a patient to an MRI scan may decrease <strong>MRI capacity by 1</strong>.</p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tutorial_hcm.html" class="btn btn-neutral float-left" title="Tutorial (HCM)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="templates.html" class="btn btn-neutral float-right" title="Config YAML Templates" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Michael Wornow.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

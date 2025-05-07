@@ -1,0 +1,863 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorial (HCM) &mdash; APLUS ML  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=ae483e34" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Concept Guide" href="concepts.html" />
+    <link rel="prev" title="Tutorial (PAD)" href="tutorial_pad.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            APLUS ML
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">🚦 Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/background.html">Background</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">📚 User Guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quick.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_hello.html">Tutorial (Hello World)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_pad.html">Tutorial (PAD)</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial (HCM)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#clinical-motivation">🏥 Clinical Motivation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ml-models">🤖 ML Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#workflows">👩‍⚕️ Workflows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#creating-the-aplus-config">🔧 Creating the APLUS Config</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#current-workflow">1. Current Workflow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#random-workflow">2. Random Workflow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#optimistic-workflow">3. Optimistic Workflow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ai-guided-workflow">4. AI-guided Workflow</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#run-simulation">📊 Run Simulation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">Concept Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="templates.html">Config YAML Templates</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">📖 API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/config.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">APLUS ML</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Tutorial (HCM)</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/usage/tutorial_hcm.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="tutorial-hcm">
+<h1>Tutorial (HCM)<a class="headerlink" href="#tutorial-hcm" title="Link to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<p>In this section, we use APLUS to evaluate a Hypertrophic Cardiomyopathy (HCM) workflow.</p>
+<p>The full <code class="docutils literal notranslate"><span class="pre">.ipynb</span></code> notebook for this tutorial can be found <a class="reference external" href="https://github.com/som-shahlab/aplusml/blob/main/tutorials/hcm.ipynb">at this link</a>.</p>
+<section id="clinical-motivation">
+<h2>🏥 Clinical Motivation<a class="headerlink" href="#clinical-motivation" title="Link to this heading"></a></h2>
+<p>The goal of this project is to evaluate the clinical, resource utilization, financial, and ethical impact of possible deployment of a Hypertrophic Cardiomyopathy (HCM) ML detection model.</p>
+</section>
+<section id="ml-models">
+<h2>🤖 ML Models<a class="headerlink" href="#ml-models" title="Link to this heading"></a></h2>
+<p>We consider an ML model that combines ECG and Echo screening to detect HCM.</p>
+</section>
+<section id="workflows">
+<h2>👩‍⚕️ Workflows<a class="headerlink" href="#workflows" title="Link to this heading"></a></h2>
+<p>We were given four possible HCM workflows to consider.</p>
+<p>We also considered two baseline workflows. The first is the <strong>optimistic</strong> workflow, where all patients are referred to the specialist without any sort of screening or capacity constraints.</p>
+<a class="reference internal image-reference" href="../_images/hcm_optimistic.png"><img alt="Optimistic HCM workflow" src="../_images/hcm_optimistic.png" style="width: 700px;" />
+</a>
+<p>The second is the <strong>random</strong> workflow, where patient’s are randomly referred to the specialist.</p>
+<a class="reference internal image-reference" href="../_images/hcm_random.png"><img alt="Random HCM workflow" src="../_images/hcm_random.png" style="width: 700px;" />
+</a>
+<p>First, we considered the <strong>current state</strong> of HCM care, where patients are referred to the specialist by a primary care physician.</p>
+<a class="reference internal image-reference" href="../_images/hcm_current_state.png"><img alt="Current HCM workflow" src="../_images/hcm_current_state.png" style="width: 700px;" />
+</a>
+<p>Next, we considered an <strong>AI-guided</strong> workflow, where the patient’s EHR is reviewed by an AI to determine if they are a candidate for HCM workup.</p>
+<a class="reference internal image-reference" href="../_images/hcm_ai.png"><img alt="AI-guided HCM workflow" src="../_images/hcm_ai.png" style="width: 700px;" />
+</a>
+</section>
+<section id="creating-the-aplus-config">
+<h2>🔧 Creating the APLUS Config<a class="headerlink" href="#creating-the-aplus-config" title="Link to this heading"></a></h2>
+<p>Let’s now create our config files, one for each workflow.</p>
+<p>We’ll start with the <strong>optimistic</strong> workflow, then the <strong>random</strong> workflow, then the <strong>current state</strong> workflow, and finally the <strong>AI-guided</strong> workflow.</p>
+<p>For each workflow, we’ll start by defining all of the steps in the workflow as states in our YAML file. We’ll then add any variables needed for the workflow, then show the full config file at the bottom.</p>
+<section id="current-workflow">
+<h3>1. Current Workflow<a class="headerlink" href="#current-workflow" title="Link to this heading"></a></h3>
+<p>For reference, here is the <strong>current state</strong> workflow that we’re trying to replicate in APLUS:</p>
+<a class="reference internal image-reference" href="../_images/hcm_optimistic.png"><img alt="Current HCM workflow" src="../_images/hcm_optimistic.png" style="width: 700px;" />
+</a>
+<p>We’ll start by defining all of the steps in the workflow as states in our YAML file.</p>
+<p>Our first state is called “All screenable patients” (in green), which is just our <cite>start</cite> state. Let’s add this state to our YAML file.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">states</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">start</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">start</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Start&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prescreen_patients</span>
+</pre></div>
+</div>
+<p>It will immediately transition to the “Clinically screened patients” state, which performs a clinical screening of the patient’s EHR.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">states</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># ... existing states ...</span>
+<span class="w">  </span><span class="nt">prescreen_patients</span><span class="p">:</span><span class="w"> </span><span class="c1"># Clinical pre-screened patients</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Clinical</span><span class="nv"> </span><span class="s">screened</span><span class="nv"> </span><span class="s">patients&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">screen_patients</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">(has_hcm and (clinical_result &lt;=  clinical_sensitivity)) or (not has_hcm and (clinical_result &gt;= clinical_specificity))</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">undiagnosed</span>
+</pre></div>
+</div>
+<p>These patients will either be sent to the “Not Diagnosed Patients” state (if they do not have HCM), or will be sent to the a queue that randomly selects patients to be screened by the HCM clinic.</p>
+<p>Note that <code class="docutils literal notranslate"><span class="pre">has_hcm</span></code> is a variable of type <strong>property</strong> that we’ll need to set for each patient in our simulation. It will be <code class="docutils literal notranslate"><span class="pre">TRUE</span></code> if the patient has HCM, and <code class="docutils literal notranslate"><span class="pre">FALSE</span></code> otherwise.
+Similarly, <code class="docutils literal notranslate"><span class="pre">clinical_result</span></code> is another variable of type <strong>property</strong> that will be set uniformly for each patient to a random number between 0 and 1, representing the result of the clinical screening.
+Finally, <code class="docutils literal notranslate"><span class="pre">clinical_sensitivity</span></code> and <code class="docutils literal notranslate"><span class="pre">clinical_specificity</span></code> are <strong>scalar</strong> variables that will be set to the sensitivity and specificity of the clinical screening, respectively. These are fixed constants that are shared across all patients.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">states</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># ... existing states ...</span>
+<span class="w">  </span><span class="nt">screen_patients</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Screened</span><span class="nv"> </span><span class="s">patients&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">visit_hcm_clinic</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hcm_clinic_capacity &gt; 0</span>
+<span class="w">        </span><span class="nt">resource_deltas</span><span class="p">:</span><span class="w"> </span><span class="c1"># Decrement the capacity of the HCM clinic when a patient is seen</span>
+<span class="w">          </span><span class="nt">hcm_clinic_capacity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-1</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">undiagnosed</span>
+</pre></div>
+</div>
+<p>This state will arbitrarily send the first <cite>hcm_clinic_capacity</cite> patients to the HCM clinic, and the rest to the “Not Diagnosed Patients” state.</p>
+<p>We will define the <cite>hcm_clinic_capacity</cite> variable later as a <strong>resource</strong> that is decremented each time a patient is seen at the HCM clinic, and refreshed at the end of each day.</p>
+<p>For patients that make it to the HCM clinic, they are split into two groups: Diagnosed and Not Diagnosed.</p>
+<p>We’ll assume that this split is done perfectly by the HCM clinic, i.e. all patients with HCM (as marked by a patient-level property <cite>has_hcm</cite>) are diagnosed and all patients without HCM are undiagnosed.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">states</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># ... existing states ...</span>
+<span class="w">  </span><span class="nt">visit_hcm_clinic</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Patients</span><span class="nv"> </span><span class="s">worked</span><span class="nv"> </span><span class="s">up</span><span class="nv"> </span><span class="s">at</span><span class="nv"> </span><span class="s">HCM</span><span class="nv"> </span><span class="s">clinic&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">diagnosed</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">has_hcm</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">undiagnosed</span>
+</pre></div>
+</div>
+<p>Next, we create states for the diagnosed / undiagnosed patients.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">states</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># ... existing states ...</span>
+<span class="w">  </span><span class="nt">diagnosed</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Diagnosed&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">untreated</span>
+<span class="w">  </span><span class="nt">undiagnosed</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Undiagnosed&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">untreated</span>
+</pre></div>
+</div>
+<p>Finally, we create end states for each of the four possible outcomes (True Positive, False Positive, True Negative, False Negative) and assign utility values to each.</p>
+<dl class="simple">
+<dt>Our main utility is the 5-yr risk of HCM-related death for each patient. We’ll assume the following mortality rates:</dt><dd><ul class="simple">
+<li><p>True Positives: Annual mortality = 0.5%</p></li>
+<li><p>Delayed True Positives (for <strong>AI-guided</strong> workflow): Annual mortality = 5% the first year, 0.5% thereafter</p></li>
+<li><p>False Negatives: Annual mortality = 5%</p></li>
+<li><p>True Negatives: Annual mortality = 0%</p></li>
+<li><p>False Positives: Annual mortality = 0%</p></li>
+</ul>
+</dd>
+</dl>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">states</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># ... existing states ...</span>
+<span class="w">  </span><span class="nt">true_positive</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">end</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;True</span><span class="nv"> </span><span class="s">Positive&quot;</span>
+<span class="w">    </span><span class="nt">utilities</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.995**5</span><span class="w"> </span><span class="c1"># 0.5% annual ortality for 5 years</span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">five_year_life_expectancy</span>
+<span class="w">  </span><span class="nt">false_positive</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">end</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;False</span><span class="nv"> </span><span class="s">Positive&quot;</span>
+<span class="w">    </span><span class="nt">utilities</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">five_year_life_expectancy</span>
+<span class="w">  </span><span class="nt">true_negative</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">end</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;True</span><span class="nv"> </span><span class="s">Negative&quot;</span>
+<span class="w">    </span><span class="nt">utilities</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">five_year_life_expectancy</span>
+<span class="w">  </span><span class="nt">false_negative</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">end</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;False</span><span class="nv"> </span><span class="s">Negative&quot;</span>
+<span class="w">    </span><span class="nt">utilities</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.95**5</span><span class="w"> </span><span class="c1"># 5% annual mortality for 5 years</span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">five_year_life_expectancy</span>
+</pre></div>
+</div>
+<p>Let’s finish this config by adding relevant variables to the config.</p>
+<p>We’ll assume the HCM clinic can see 2 patients per day, and that the clinical screening has 95% sensitivity and specificity.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">variables</span><span class="p">:</span>
+
+<span class="nt">variables</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># Patient properties</span>
+<span class="w">  </span><span class="nt">has_hcm</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">property</span><span class="w"> </span><span class="c1"># Boolean property that is true if the patient has HCM</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span><span class="w"> </span><span class="c1"># this will be overwritten by our Python script</span>
+<span class="w">  </span><span class="nt">clinical_result</span><span class="p">:</span><span class="w"> </span><span class="c1"># Used for determining if the patient is positive for clinical screening</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">property</span>
+<span class="w">    </span><span class="nt">distribution</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uniform</span>
+<span class="w">    </span><span class="nt">start</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">    </span><span class="nt">end</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">  </span><span class="c1"># Fixed constants</span>
+<span class="w">  </span><span class="nt">clinical_sensitivity</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.95</span><span class="w"> </span><span class="c1"># Sensitivity of clinical screening (&#39;s&#39; in the diagram)</span>
+<span class="w">  </span><span class="nt">clinical_specificity</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.95</span><span class="w"> </span><span class="c1"># Specificity of clinical screening (&#39;r&#39; in the diagram)</span>
+<span class="w">  </span><span class="c1"># Resources</span>
+<span class="w">  </span><span class="nt">hcm_clinic_capacity</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">resource</span>
+<span class="w">    </span><span class="nt">init_amount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">    </span><span class="nt">max_amount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"> </span><span class="c1"># HCM clinic can only see 2 patients per day (&#39;C&#39; in the diagram)</span>
+<span class="w">    </span><span class="nt">refill_amount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">    </span><span class="nt">refill_duration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"> </span><span class="c1"># Resets every day</span>
+</pre></div>
+</div>
+<p>Our final config is shown below.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;HCM</span><span class="nv"> </span><span class="s">(Base</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">random</span><span class="nv"> </span><span class="s">/</span><span class="nv"> </span><span class="s">current</span><span class="nv"> </span><span class="s">/</span><span class="nv"> </span><span class="s">optimistic)&quot;</span>
+
+<span class="nt">variables</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># Patient properties</span>
+<span class="w">  </span><span class="nt">has_hcm</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">property</span><span class="w"> </span><span class="c1"># Boolean property that is true if the patient has HCM</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span><span class="w"> </span><span class="c1"># this will be overwritten</span>
+<span class="w">  </span><span class="nt">clinical_result</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">property</span>
+<span class="w">    </span><span class="nt">distribution</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uniform</span>
+<span class="w">    </span><span class="nt">start</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">    </span><span class="nt">end</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">  </span><span class="c1"># Fixed constants</span>
+<span class="w">  </span><span class="nt">clinical_sensitivity</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.95</span><span class="w"> </span><span class="c1"># Sensitivity of clinical screening (&#39;s&#39; in the diagram)</span>
+<span class="w">  </span><span class="nt">clinical_specificity</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.95</span><span class="w"> </span><span class="c1"># Specificity of clinical screening (&#39;r&#39; in the diagram)</span>
+<span class="w">  </span><span class="c1"># Resources</span>
+<span class="w">  </span><span class="nt">hcm_clinic_capacity</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">resource</span>
+<span class="w">    </span><span class="nt">init_amount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">    </span><span class="nt">max_amount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"> </span><span class="c1"># HCM clinic can only see 2 patients per day (&#39;C&#39; in the diagram)</span>
+<span class="w">    </span><span class="nt">refill_amount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">    </span><span class="nt">refill_duration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"> </span><span class="c1"># Resets every day</span>
+
+<span class="nt">states</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">start</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">start</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Start&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prescreen_patients</span>
+<span class="w">  </span><span class="nt">prescreen_patients</span><span class="p">:</span><span class="w"> </span><span class="c1"># Clinical pre-screening</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Clinical</span><span class="nv"> </span><span class="s">screening&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">screen_patients</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">(has_hcm and (clinical_result &lt;=  clinical_sensitivity)) or (not has_hcm and (clinical_result &gt;= clinical_specificity))</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">undiagnosed</span>
+<span class="w">  </span><span class="nt">screen_patients</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Screened</span><span class="nv"> </span><span class="s">patients&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">visit_hcm_clinic</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hcm_clinic_capacity &gt; 0</span>
+<span class="w">        </span><span class="nt">resource_deltas</span><span class="p">:</span><span class="w"> </span><span class="c1"># Decrement the capacity of the HCM clinic when a patient is seen</span>
+<span class="w">          </span><span class="nt">hcm_clinic_capacity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-1</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">undiagnosed</span>
+<span class="w">  </span><span class="nt">visit_hcm_clinic</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Patients</span><span class="nv"> </span><span class="s">worked</span><span class="nv"> </span><span class="s">up</span><span class="nv"> </span><span class="s">at</span><span class="nv"> </span><span class="s">HCM</span><span class="nv"> </span><span class="s">clinic&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">diagnosed</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">has_hcm</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">undiagnosed</span>
+<span class="w">  </span><span class="nt">diagnosed</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Diagnosed&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true_positive</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">has_hcm</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false_positive</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not has_hcm</span>
+<span class="w">  </span><span class="nt">undiagnosed</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Undiagnosed&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true_negative</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not has_hcm</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false_negative</span>
+<span class="w">  </span><span class="nt">true_positive</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">end</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;True</span><span class="nv"> </span><span class="s">Positive&quot;</span>
+<span class="w">    </span><span class="nt">utilities</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.995**5</span><span class="w"> </span><span class="c1"># 0.5% annual ortality for 5 years</span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">five_year_life_expectancy</span>
+<span class="w">  </span><span class="nt">false_positive</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">end</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;False</span><span class="nv"> </span><span class="s">Positive&quot;</span>
+<span class="w">    </span><span class="nt">utilities</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">five_year_life_expectancy</span>
+<span class="w">  </span><span class="nt">true_negative</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">end</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;True</span><span class="nv"> </span><span class="s">Negative&quot;</span>
+<span class="w">    </span><span class="nt">utilities</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">five_year_life_expectancy</span>
+<span class="w">  </span><span class="nt">false_negative</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">end</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;False</span><span class="nv"> </span><span class="s">Negative&quot;</span>
+<span class="w">    </span><span class="nt">utilities</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.95**5</span><span class="w"> </span><span class="c1"># 5% annual mortality for 5 years</span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">five_year_life_expectancy</span>
+</pre></div>
+</div>
+</section>
+<section id="random-workflow">
+<h3>2. Random Workflow<a class="headerlink" href="#random-workflow" title="Link to this heading"></a></h3>
+<p>For reference, here is the <strong>random</strong> workflow that we’re trying to replicate in APLUS:</p>
+<a class="reference internal image-reference" href="../_images/hcm_random.png"><img alt="Random HCM workflow" src="../_images/hcm_random.png" style="width: 700px;" />
+</a>
+<p>This workflow is identical to the <strong>current state</strong> workflow, with these minor adjustments:</p>
+<ol class="arabic simple">
+<li><p>Change the <code class="docutils literal notranslate"><span class="pre">start</span></code> state to transition to the <code class="docutils literal notranslate"><span class="pre">screen_patients</span></code> state</p></li>
+<li><p>Delete the <code class="docutils literal notranslate"><span class="pre">prescreen_patients</span></code> state</p></li>
+</ol>
+</section>
+<section id="optimistic-workflow">
+<h3>3. Optimistic Workflow<a class="headerlink" href="#optimistic-workflow" title="Link to this heading"></a></h3>
+<p>For reference, here is the <strong>optimistic</strong> workflow that we’re trying to replicate in APLUS:</p>
+<a class="reference internal image-reference" href="../_images/hcm_optimistic.png"><img alt="Optimistic HCM workflow" src="../_images/hcm_optimistic.png" style="width: 700px;" />
+</a>
+<p>This workflow is identical to the <strong>current state</strong> workflow, with these minor adjustments:</p>
+<ol class="arabic simple">
+<li><p>Change the <code class="docutils literal notranslate"><span class="pre">start</span></code> state to transition to the <code class="docutils literal notranslate"><span class="pre">visit_hcm_clinic</span></code> state</p></li>
+<li><p>Delete the <code class="docutils literal notranslate"><span class="pre">prescreen_patients</span></code> states</p></li>
+<li><p>Delete the <code class="docutils literal notranslate"><span class="pre">screen_patients</span></code> states</p></li>
+</ol>
+</section>
+<section id="ai-guided-workflow">
+<h3>4. AI-guided Workflow<a class="headerlink" href="#ai-guided-workflow" title="Link to this heading"></a></h3>
+<p>Finally, we’re going to replicate the <strong>AI-guided</strong> workflow (shown below) in APLUS:</p>
+<a class="reference internal image-reference" href="../_images/hcm_ai.png"><img alt="AI-guided HCM workflow" src="../_images/hcm_ai.png" style="width: 700px;" />
+</a>
+<p>Let’s start by definining our <cite>start</cite> state, which will transition to the <cite>ecg_screening</cite> state.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">states</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">start</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">start</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Start&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ecg_screening</span>
+</pre></div>
+</div>
+<p>Now, let’s add the <code class="docutils literal notranslate"><span class="pre">ecg_screening</span></code> state, which will transition to the <code class="docutils literal notranslate"><span class="pre">echo_screening</span></code> state.
+Both of these states have a sensitivity and specificity, which we’ll later define as <strong>scalar</strong> variables.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">states</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># ... existing states ...</span>
+<span class="w">  </span><span class="nt">ecg_screening</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;ECG</span><span class="nv"> </span><span class="s">screening&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">echo_screening</span>
+<span class="w">        </span><span class="c1"># The patient is marked as POSITIVE for ECG screen if...</span>
+<span class="w">        </span><span class="c1">#   Has HCM + ECG result is &lt;= the sensitivity of the ECG screening, or</span>
+<span class="w">        </span><span class="c1">#   Does not have HCM + ECG result is &gt;= the specificity of the ECG screening</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">(has_hcm and (ecg_result &lt;= ecg_sensitivity)) or (not has_hcm and (ecg_result &gt;= ecg_specificity))</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">undiagnosed</span>
+<span class="w">  </span><span class="nt">echo_screening</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Echo</span><span class="nv"> </span><span class="s">screening&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hcm_triage</span>
+<span class="w">        </span><span class="c1"># The patient is marked as POSITIVE for Echo screen if...</span>
+<span class="w">        </span><span class="c1">#   Has HCM + Echo result is &lt;= the sensitivity of the Echo screening, or</span>
+<span class="w">        </span><span class="c1">#   Does not have HCM + Echo result is &gt;= the specificity of the Echo screening</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">(has_hcm and (echo_result &lt;= echo_sensitivity)) or (not has_hcm and (echo_result &gt;= echo_specificity))</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">undiagnosed</span>
+</pre></div>
+</div>
+<p>If the patient is flagged as POSITIVE for either of these screens, they will be sent to the <cite>hcm_triage</cite> state.
+This state will either…</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Send the patient to the <cite>visit_hcm_clinic</cite> state if the HCM clinic has capacity (i.e. <cite>hcm_clinic_capacity &gt; 0</cite>), or</p></li>
+<li><p>Send the patient to the <cite>hcm_flex_waitlist</cite> state</p></li>
+</ul>
+</div></blockquote>
+<p>If the patient does go to the HCM clinic, we’ll decrement the <cite>hcm_clinic_capacity</cite> resource by 1.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">states</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># ... existing states ...</span>
+<span class="w">  </span><span class="nt">hcm_triage</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;HCM</span><span class="nv"> </span><span class="s">triage&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">visit_hcm_clinic</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hcm_clinic_capacity &gt; 0</span>
+<span class="w">        </span><span class="nt">resource_deltas</span><span class="p">:</span><span class="w"> </span><span class="c1"># Decrement the capacity of the HCM clinic when a patient is seen</span>
+<span class="w">          </span><span class="nt">hcm_clinic_capacity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-1</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hcm_flex_waitlist</span>
+</pre></div>
+</div>
+<p>If the patient makes it to the HCM clinic, they will be split into two groups: Diagnosed and Not Diagnosed. We assume the HCM clinic can perfectly diagnose patients.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">states</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># ... existing states ...</span>
+<span class="w">  </span><span class="nt">visit_hcm_clinic</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Patients</span><span class="nv"> </span><span class="s">worked</span><span class="nv"> </span><span class="s">up</span><span class="nv"> </span><span class="s">at</span><span class="nv"> </span><span class="s">HCM</span><span class="nv"> </span><span class="s">clinic&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">diagnosed</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">has_hcm</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">undiagnosed</span>
+</pre></div>
+</div>
+<p>If the HCM clinic was initially full, the patient will be sent to the <code class="docutils literal notranslate"><span class="pre">hcm_flex_waitlist</span></code> state.
+We will then either…</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Send the patient to the <code class="docutils literal notranslate"><span class="pre">visit_hcm_clinic_delayed</span></code> state if the HCM clinic has capacity (i.e. <code class="docutils literal notranslate"><span class="pre">hcm_delayed_clinic_capacity</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>), or</p></li>
+<li><p>Send the patient to the <code class="docutils literal notranslate"><span class="pre">undiagnosed</span></code> state</p></li>
+</ul>
+</div></blockquote>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">states</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># ... existing states ...</span>
+<span class="w">  </span><span class="nt">hcm_flex_waitlist</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Patients</span><span class="nv"> </span><span class="s">not</span><span class="nv"> </span><span class="s">worked</span><span class="nv"> </span><span class="s">up</span><span class="nv"> </span><span class="s">at</span><span class="nv"> </span><span class="s">HCM</span><span class="nv"> </span><span class="s">clinic</span><span class="nv"> </span><span class="s">with</span><span class="nv"> </span><span class="s">minimal</span><span class="nv"> </span><span class="s">delay&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">visit_hcm_clinic_delayed</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hcm_delayed_clinic_capacity &gt; 0</span>
+<span class="w">        </span><span class="nt">resource_deltas</span><span class="p">:</span><span class="w"> </span><span class="c1"># Decrement the capacity of the HCM clinic when a patient is seen</span>
+<span class="w">          </span><span class="nt">hcm_delayed_clinic_capacity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-1</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">undiagnosed</span>
+<span class="w">  </span><span class="nt">visit_hcm_clinic_delayed</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Patients</span><span class="nv"> </span><span class="s">worked</span><span class="nv"> </span><span class="s">up</span><span class="nv"> </span><span class="s">at</span><span class="nv"> </span><span class="s">HCM</span><span class="nv"> </span><span class="s">clinic</span><span class="nv"> </span><span class="s">(delay</span><span class="nv"> </span><span class="s">up</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">1</span><span class="nv"> </span><span class="s">year)&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">diagnosed_delayed</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">has_hcm</span><span class="w"> </span><span class="c1"># Assume perfect split between diagnosed and undiagnosed</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">undiagnosed</span>
+</pre></div>
+</div>
+<p>If the patient is diagnosed immediately, they will be sent to the <code class="docutils literal notranslate"><span class="pre">diagnosed</span></code> state. If they end up in the <code class="docutils literal notranslate"><span class="pre">visit_hcm_clinic_delayed</span></code> state and have to wait up to 1 year to be diagnosed, they will be sent to the <code class="docutils literal notranslate"><span class="pre">diagnosed_delayed</span></code> state.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">states</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># ... existing states ...</span>
+<span class="w">  </span><span class="nt">diagnosed_delayed</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Diagnosed</span><span class="nv"> </span><span class="s">(delay</span><span class="nv"> </span><span class="s">up</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">1</span><span class="nv"> </span><span class="s">year)&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true_positive_delayed</span>
+<span class="w">  </span><span class="nt">diagnosed</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Diagnosed&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true_positive</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">has_hcm</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false_positive</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not has_hcm</span>
+<span class="w">  </span><span class="nt">undiagnosed</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Undiagnosed&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true_negative</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not has_hcm</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false_negative</span>
+</pre></div>
+</div>
+<p>Finally, we copy the same utility states as from the <strong>current state</strong> workflow, but add a new <code class="docutils literal notranslate"><span class="pre">true_positive_delayed</span></code> state that will be used for patients who are diagnosed after a delay of up to 1 year.
+These patients will have an immediate mortality risk of 5% the first year, and 0.5% thereafter.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">states</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># ... existing states ...</span>
+<span class="w">  </span><span class="nt">true_positive_delayed</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">end</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;True</span><span class="nv"> </span><span class="s">Positive</span><span class="nv"> </span><span class="s">(delayed)&quot;</span>
+<span class="w">    </span><span class="nt">utilities</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.95 * 0.995**4</span><span class="w"> </span><span class="c1"># 0.5% annual mortality for first year, 5% annual mortality for 4 years</span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">five_year_life_expectancy</span>
+<span class="w">  </span><span class="nt">true_positive</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">end</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;True</span><span class="nv"> </span><span class="s">Positive&quot;</span>
+<span class="w">    </span><span class="nt">utilities</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.995**5</span><span class="w"> </span><span class="c1"># 0.5% annual ortality for 5 years</span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">five_year_life_expectancy</span>
+<span class="w">  </span><span class="nt">false_positive</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">end</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;False</span><span class="nv"> </span><span class="s">Positive&quot;</span>
+<span class="w">    </span><span class="nt">utilities</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">five_year_life_expectancy</span>
+<span class="w">  </span><span class="nt">true_negative</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">end</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;True</span><span class="nv"> </span><span class="s">Negative&quot;</span>
+<span class="w">    </span><span class="nt">utilities</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">five_year_life_expectancy</span>
+<span class="w">  </span><span class="nt">false_negative</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">end</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;False</span><span class="nv"> </span><span class="s">Negative&quot;</span>
+<span class="w">    </span><span class="nt">utilities</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.95**5</span><span class="w"> </span><span class="c1"># 5% annual mortality for 5 years</span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">five_year_life_expectancy</span>
+</pre></div>
+</div>
+<p>Now, let’s add the variables that we’ll need to run this workflow.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">variables</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># Patient properties</span>
+<span class="w">  </span><span class="nt">has_hcm</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">property</span><span class="w"> </span><span class="c1"># Boolean property that is true if the patient has HCM</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span><span class="w"> </span><span class="c1"># this will be overwritten</span>
+<span class="w">  </span><span class="nt">ecg_result</span><span class="p">:</span><span class="w"> </span><span class="c1"># Used for determining if the patient is positive for ECG screening</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">property</span>
+<span class="w">    </span><span class="nt">distribution</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uniform</span>
+<span class="w">    </span><span class="nt">start</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">    </span><span class="nt">end</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">  </span><span class="nt">echo_result</span><span class="p">:</span><span class="w"> </span><span class="c1"># Used for determining if the patient is positive for Echo screening</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">property</span>
+<span class="w">    </span><span class="nt">distribution</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uniform</span>
+<span class="w">    </span><span class="nt">start</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">    </span><span class="nt">end</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">  </span><span class="c1"># Fixed constants</span>
+<span class="w">  </span><span class="nt">ecg_sensitivity</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.95</span><span class="w"> </span><span class="c1"># Sensitivity of ECG screening (&#39;g&#39; in the diagram)</span>
+<span class="w">  </span><span class="nt">ecg_specificity</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.95</span><span class="w"> </span><span class="c1"># Specificity of ECG screening (&#39;f&#39; in the diagram)</span>
+<span class="w">  </span><span class="nt">echo_sensitivity</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.95</span><span class="w"> </span><span class="c1"># Sensitivity of Echo screening (&#39;h&#39; in the diagram)</span>
+<span class="w">  </span><span class="nt">echo_specificity</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.95</span><span class="w"> </span><span class="c1"># Specificity of Echo screening (&#39;j&#39; in the diagram)</span>
+<span class="w">  </span><span class="c1"># Resources</span>
+<span class="w">  </span><span class="nt">hcm_clinic_capacity</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">resource</span>
+<span class="w">    </span><span class="nt">init_amount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">    </span><span class="nt">max_amount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"> </span><span class="c1"># HCM clinic can only see 2 patients per day (&#39;C&#39; in the diagram)</span>
+<span class="w">    </span><span class="nt">refill_amount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">    </span><span class="nt">refill_duration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"> </span><span class="c1"># Resets every day</span>
+<span class="w">  </span><span class="nt">hcm_delayed_clinic_capacity</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">resource</span>
+<span class="w">    </span><span class="nt">init_amount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
+<span class="w">    </span><span class="nt">max_amount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span><span class="w"> </span><span class="c1"># HCM clinic can only see 100 patients in a year with delay after failing initial HCM triage, aka flex capacity (&#39;F&#39; in the diagram)</span>
+<span class="w">    </span><span class="nt">refill_amount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
+<span class="w">    </span><span class="nt">refill_duration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">365</span><span class="w"> </span><span class="c1"># Resets every year</span>
+</pre></div>
+</div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">variables</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># Patient properties</span>
+<span class="w">  </span><span class="nt">has_hcm</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">property</span><span class="w"> </span><span class="c1"># Boolean property that is true if the patient has HCM</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span><span class="w"> </span><span class="c1"># this will be overwritten</span>
+<span class="w">  </span><span class="nt">ecg_result</span><span class="p">:</span><span class="w"> </span><span class="c1"># Used for determining if the patient is positive for ECG screening</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">property</span>
+<span class="w">    </span><span class="nt">distribution</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uniform</span>
+<span class="w">    </span><span class="nt">start</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">    </span><span class="nt">end</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">  </span><span class="nt">echo_result</span><span class="p">:</span><span class="w"> </span><span class="c1"># Used for determining if the patient is positive for Echo screening</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">property</span>
+<span class="w">    </span><span class="nt">distribution</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uniform</span>
+<span class="w">    </span><span class="nt">start</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">    </span><span class="nt">end</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">  </span><span class="c1"># Fixed constants</span>
+<span class="w">  </span><span class="nt">ecg_sensitivity</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.95</span><span class="w"> </span><span class="c1"># Sensitivity of ECG screening (&#39;g&#39; in the diagram)</span>
+<span class="w">  </span><span class="nt">ecg_specificity</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.95</span><span class="w"> </span><span class="c1"># Specificity of ECG screening (&#39;f&#39; in the diagram)</span>
+<span class="w">  </span><span class="nt">echo_sensitivity</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.95</span><span class="w"> </span><span class="c1"># Sensitivity of Echo screening (&#39;h&#39; in the diagram)</span>
+<span class="w">  </span><span class="nt">echo_specificity</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.95</span><span class="w"> </span><span class="c1"># Specificity of Echo screening (&#39;j&#39; in the diagram)</span>
+<span class="w">  </span><span class="c1"># Resources</span>
+<span class="w">  </span><span class="nt">hcm_clinic_capacity</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">resource</span>
+<span class="w">    </span><span class="nt">init_amount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">    </span><span class="nt">max_amount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"> </span><span class="c1"># HCM clinic can only see 2 patients per day (&#39;C&#39; in the diagram)</span>
+<span class="w">    </span><span class="nt">refill_amount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">    </span><span class="nt">refill_duration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"> </span><span class="c1"># Resets every day</span>
+<span class="w">  </span><span class="nt">hcm_delayed_clinic_capacity</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">resource</span>
+<span class="w">    </span><span class="nt">init_amount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
+<span class="w">    </span><span class="nt">max_amount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span><span class="w"> </span><span class="c1"># HCM clinic can only see 100 patients in a year with delay after failing initial HCM triage, aka flex capacity (&#39;F&#39; in the diagram)</span>
+<span class="w">    </span><span class="nt">refill_amount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
+<span class="w">    </span><span class="nt">refill_duration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">365</span><span class="w"> </span><span class="c1"># Resets every year</span>
+</pre></div>
+</div>
+<p>Putting it all together, we get the following config for the <strong>AI-guided</strong> workflow:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;HCM</span><span class="nv"> </span><span class="s">(AI-Guided)&quot;</span>
+
+<span class="nt">variables</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># Patient properties</span>
+<span class="w">  </span><span class="nt">has_hcm</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">property</span><span class="w"> </span><span class="c1"># Boolean property that is true if the patient has HCM</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span><span class="w"> </span><span class="c1"># this will be overwritten</span>
+<span class="w">  </span><span class="nt">ecg_result</span><span class="p">:</span><span class="w"> </span><span class="c1"># Used for determining if the patient is positive for ECG screening</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">property</span>
+<span class="w">    </span><span class="nt">distribution</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uniform</span>
+<span class="w">    </span><span class="nt">start</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">    </span><span class="nt">end</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">  </span><span class="nt">echo_result</span><span class="p">:</span><span class="w"> </span><span class="c1"># Used for determining if the patient is positive for Echo screening</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">property</span>
+<span class="w">    </span><span class="nt">distribution</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uniform</span>
+<span class="w">    </span><span class="nt">start</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">    </span><span class="nt">end</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">  </span><span class="c1"># Fixed constants</span>
+<span class="w">  </span><span class="nt">ecg_sensitivity</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.95</span><span class="w"> </span><span class="c1"># Sensitivity of ECG screening (&#39;g&#39; in the diagram)</span>
+<span class="w">  </span><span class="nt">ecg_specificity</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.95</span><span class="w"> </span><span class="c1"># Specificity of ECG screening (&#39;f&#39; in the diagram)</span>
+<span class="w">  </span><span class="nt">echo_sensitivity</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.95</span><span class="w"> </span><span class="c1"># Sensitivity of Echo screening (&#39;h&#39; in the diagram)</span>
+<span class="w">  </span><span class="nt">echo_specificity</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.95</span><span class="w"> </span><span class="c1"># Specificity of Echo screening (&#39;j&#39; in the diagram)</span>
+<span class="w">  </span><span class="c1"># Resources</span>
+<span class="w">  </span><span class="nt">hcm_clinic_capacity</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">resource</span>
+<span class="w">    </span><span class="nt">init_amount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">    </span><span class="nt">max_amount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"> </span><span class="c1"># HCM clinic can only see 2 patients per day (&#39;C&#39; in the diagram)</span>
+<span class="w">    </span><span class="nt">refill_amount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">    </span><span class="nt">refill_duration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"> </span><span class="c1"># Resets every day</span>
+<span class="w">  </span><span class="nt">hcm_delayed_clinic_capacity</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">resource</span>
+<span class="w">    </span><span class="nt">init_amount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
+<span class="w">    </span><span class="nt">max_amount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span><span class="w"> </span><span class="c1"># HCM clinic can only see 100 patients in a year with delay after failing initial HCM triage, aka flex capacity (&#39;F&#39; in the diagram)</span>
+<span class="w">    </span><span class="nt">refill_amount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
+<span class="w">    </span><span class="nt">refill_duration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">365</span><span class="w"> </span><span class="c1"># Resets every year</span>
+
+<span class="nt">states</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">start</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">start</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Start&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ecg_screening</span>
+<span class="w">  </span><span class="nt">ecg_screening</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;ECG</span><span class="nv"> </span><span class="s">screening&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">echo_screening</span>
+<span class="w">        </span><span class="c1"># The patient is marked as POSITIVE for ECG screen if...</span>
+<span class="w">        </span><span class="c1">#   Has HCM + ECG result is &lt;= the sensitivity of the ECG screening, or</span>
+<span class="w">        </span><span class="c1">#   Does not have HCM + ECG result is &gt;= the specificity of the ECG screening</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">(has_hcm and (ecg_result &lt;= ecg_sensitivity)) or (not has_hcm and (ecg_result &gt;= ecg_specificity))</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">undiagnosed</span>
+<span class="w">  </span><span class="nt">echo_screening</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Echo</span><span class="nv"> </span><span class="s">screening&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hcm_triage</span>
+<span class="w">        </span><span class="c1"># The patient is marked as POSITIVE for Echo screen if...</span>
+<span class="w">        </span><span class="c1">#   Has HCM + Echo result is &lt;= the sensitivity of the Echo screening, or</span>
+<span class="w">        </span><span class="c1">#   Does not have HCM + Echo result is &gt;= the specificity of the Echo screening</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">(has_hcm and (echo_result &lt;= echo_sensitivity)) or (not has_hcm and (echo_result &gt;= echo_specificity))</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">undiagnosed</span>
+<span class="w">  </span><span class="nt">hcm_triage</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;HCM</span><span class="nv"> </span><span class="s">triage&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">visit_hcm_clinic</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hcm_clinic_capacity &gt; 0</span>
+<span class="w">        </span><span class="nt">resource_deltas</span><span class="p">:</span><span class="w"> </span><span class="c1"># Decrement the capacity of the HCM clinic when a patient is seen</span>
+<span class="w">          </span><span class="nt">hcm_clinic_capacity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-1</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hcm_flex_waitlist</span>
+<span class="w">  </span><span class="nt">visit_hcm_clinic</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Patients</span><span class="nv"> </span><span class="s">worked</span><span class="nv"> </span><span class="s">up</span><span class="nv"> </span><span class="s">at</span><span class="nv"> </span><span class="s">HCM</span><span class="nv"> </span><span class="s">clinic&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">diagnosed</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">has_hcm</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">undiagnosed</span>
+<span class="w">  </span><span class="nt">hcm_flex_waitlist</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Patients</span><span class="nv"> </span><span class="s">not</span><span class="nv"> </span><span class="s">worked</span><span class="nv"> </span><span class="s">up</span><span class="nv"> </span><span class="s">at</span><span class="nv"> </span><span class="s">HCM</span><span class="nv"> </span><span class="s">clinic</span><span class="nv"> </span><span class="s">with</span><span class="nv"> </span><span class="s">minimal</span><span class="nv"> </span><span class="s">delay&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">visit_hcm_clinic_delayed</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hcm_delayed_clinic_capacity &gt; 0</span>
+<span class="w">        </span><span class="nt">resource_deltas</span><span class="p">:</span><span class="w"> </span><span class="c1"># Decrement the capacity of the HCM clinic when a patient is seen</span>
+<span class="w">          </span><span class="nt">hcm_delayed_clinic_capacity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-1</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">undiagnosed</span>
+<span class="w">  </span><span class="nt">visit_hcm_clinic_delayed</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Patients</span><span class="nv"> </span><span class="s">worked</span><span class="nv"> </span><span class="s">up</span><span class="nv"> </span><span class="s">at</span><span class="nv"> </span><span class="s">HCM</span><span class="nv"> </span><span class="s">clinic</span><span class="nv"> </span><span class="s">(delay</span><span class="nv"> </span><span class="s">up</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">1</span><span class="nv"> </span><span class="s">year)&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">diagnosed_delayed</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">has_hcm</span><span class="w"> </span><span class="c1"># Assume perfect split between diagnosed and undiagnosed</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">undiagnosed</span>
+<span class="w">  </span><span class="nt">diagnosed_delayed</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Diagnosed</span><span class="nv"> </span><span class="s">(delay</span><span class="nv"> </span><span class="s">up</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">1</span><span class="nv"> </span><span class="s">year)&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true_positive_delayed</span>
+<span class="w">  </span><span class="nt">diagnosed</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Diagnosed&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true_positive</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">has_hcm</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false_positive</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not has_hcm</span>
+<span class="w">  </span><span class="nt">undiagnosed</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Undiagnosed&quot;</span>
+<span class="w">    </span><span class="nt">transitions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true_negative</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not has_hcm</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false_negative</span>
+<span class="w">  </span><span class="nt">true_positive_delayed</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">end</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;True</span><span class="nv"> </span><span class="s">Positive</span><span class="nv"> </span><span class="s">(delayed)&quot;</span>
+<span class="w">    </span><span class="nt">utilities</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.95 * 0.995**4</span><span class="w"> </span><span class="c1"># 0.5% annual mortality for first year, 5% annual mortality for 4 years</span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">five_year_life_expectancy</span>
+<span class="w">  </span><span class="nt">true_positive</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">end</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;True</span><span class="nv"> </span><span class="s">Positive&quot;</span>
+<span class="w">    </span><span class="nt">utilities</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.995**5</span><span class="w"> </span><span class="c1"># 0.5% annual ortality for 5 years</span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">five_year_life_expectancy</span>
+<span class="w">  </span><span class="nt">false_positive</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">end</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;False</span><span class="nv"> </span><span class="s">Positive&quot;</span>
+<span class="w">    </span><span class="nt">utilities</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">five_year_life_expectancy</span>
+<span class="w">  </span><span class="nt">true_negative</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">end</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;True</span><span class="nv"> </span><span class="s">Negative&quot;</span>
+<span class="w">    </span><span class="nt">utilities</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">five_year_life_expectancy</span>
+<span class="w">  </span><span class="nt">false_negative</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">end</span>
+<span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;False</span><span class="nv"> </span><span class="s">Negative&quot;</span>
+<span class="w">    </span><span class="nt">utilities</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.95**5</span><span class="w"> </span><span class="c1"># 5% annual mortality for 5 years</span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">five_year_life_expectancy</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="run-simulation">
+<h2>📊 Run Simulation<a class="headerlink" href="#run-simulation" title="Link to this heading"></a></h2>
+<p>Now, let’s run the simulation! A full example can be <a class="reference external" href="https://github.com/som-shahlab/aplusml/blob/main/tutorials/hcm.ipynb">found in the notebook here</a>.</p>
+<p>First, we need to generate patients to feed through our workflows.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Simulation parameters</span>
+<span class="n">NUM_DAYS</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">365</span>
+<span class="n">MEAN_PATIENTS_PER_DAY</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">150_000</span> <span class="o">//</span> <span class="mi">365</span>
+<span class="n">HCM_PREVALENCE</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">200</span>
+<span class="n">HCM_CLINIC_CAPACITY</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
+
+<span class="c1"># Sample # of patients per day</span>
+<span class="n">num_admits_per_day</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">poisson</span><span class="p">(</span><span class="n">lam</span><span class="o">=</span><span class="n">MEAN_PATIENTS_PER_DAY</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">NUM_DAYS</span><span class="p">)</span>
+
+<span class="c1"># Random indexes for resource prioritization</span>
+<span class="n">screen_idxs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">MEAN_PATIENTS_PER_DAY</span> <span class="o">*</span> <span class="n">NUM_DAYS</span> <span class="o">*</span> <span class="mi">10</span><span class="p">))</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">screen_idxs</span><span class="p">)</span>
+<span class="n">delayed_screen_idxs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">MEAN_PATIENTS_PER_DAY</span> <span class="o">*</span> <span class="n">NUM_DAYS</span> <span class="o">*</span> <span class="mi">10</span><span class="p">))</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">delayed_screen_idxs</span><span class="p">)</span>
+
+<span class="c1"># Generate patients for each day</span>
+<span class="n">patients</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Patient</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">timestep</span><span class="p">,</span> <span class="n">n_patients</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">num_admits_per_day</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_patients</span><span class="p">):</span>
+        <span class="c1"># Generate patient properties</span>
+        <span class="n">properties</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;has_hcm&#39;</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">HCM_PREVALENCE</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">patients</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Patient</span><span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">patients</span><span class="p">),</span> <span class="c1"># ID</span>
+            <span class="n">timestep</span><span class="p">,</span> <span class="c1"># Start timestep</span>
+            <span class="n">properties</span><span class="o">=</span><span class="n">properties</span><span class="p">,</span>
+        <span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;# of patients: &quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">patients</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;# of days: &quot;</span><span class="p">,</span> <span class="n">NUM_DAYS</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Mean # of patients per day: &quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">num_admits_per_day</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;HCM prevalence: &quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">p</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;has_hcm&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">patients</span><span class="p">]),</span> <span class="s2">&quot;(expected prevalence =&quot;</span><span class="p">,</span> <span class="n">HCM_PREVALENCE</span><span class="p">,</span> <span class="s2">&quot;)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Second, we initialize the simulation.</p>
+<p>We’ll do the <strong>AI-guided</strong> workflow in this tutorial, but the other workflows are very similar and can be found <a class="reference external" href="https://github.com/som-shahlab/aplusml/blob/main/tutorials/hcm.ipynb">in the notebook at this link</a>.</p>
+<p>Note that we set <code class="docutils literal notranslate"><span class="pre">is_overwrite_existing_properties=False</span></code> because we already manually defined the properties (e.g. <code class="docutils literal notranslate"><span class="pre">has_hcm</span></code>) for our patients.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load AI-guided workflow</span>
+<span class="n">ai_simulation</span> <span class="o">=</span> <span class="n">aplusml</span><span class="o">.</span><span class="n">Simulation</span><span class="o">.</span><span class="n">create_from_yaml</span><span class="p">(</span><span class="n">PATH_TO_AI_YAML</span><span class="p">)</span>
+<span class="c1"># Initialize patients</span>
+<span class="n">patients</span> <span class="o">=</span> <span class="n">ai_simulation</span><span class="o">.</span><span class="n">create_patients_for_simulation</span><span class="p">(</span><span class="n">patients</span><span class="p">,</span> <span class="n">random_seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">is_overwrite_existing_properties</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Third, we run the simulation on our patients.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run simulation</span>
+<span class="n">ai_patients</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Patient</span><span class="p">]</span> <span class="o">=</span> <span class="n">ai_simulation</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">patients</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Finally, we can calculate how many deaths within the 5-yr horizon occurred in our simulation.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">UTILITY_UNIT</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;five_year_life_expectancy&#39;</span>
+<span class="n">ai_sum_utilities</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span> <span class="n">p</span><span class="o">.</span><span class="n">get_sum_utilities</span><span class="p">(</span><span class="n">ai_simulation</span><span class="p">)[</span><span class="n">UTILITY_UNIT</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">ai_patients</span> <span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Predicted deaths within 5-yrs in AI-guided workflow:  </span><span class="si">{</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ai_patients</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">ai_sum_utilities</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To see the full notebook with the other HCM workflows, please <a class="reference external" href="https://github.com/som-shahlab/aplusml/blob/main/tutorials/hcm.ipynb">visit this link</a>.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tutorial_pad.html" class="btn btn-neutral float-left" title="Tutorial (PAD)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="concepts.html" class="btn btn-neutral float-right" title="Concept Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Michael Wornow.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

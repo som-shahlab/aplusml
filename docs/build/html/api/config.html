@@ -1,0 +1,333 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Configuration &mdash; APLUS ML  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=ae483e34" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="API Reference" href="api.html" />
+    <link rel="prev" title="Config YAML Templates" href="../usage/templates.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            APLUS ML
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">🚦 Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/background.html">Background</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">📚 User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../usage/quick.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/tutorial_hello.html">Tutorial (Hello World)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/tutorial_pad.html">Tutorial (PAD)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/tutorial_hcm.html">Tutorial (HCM)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/concepts.html">Concept Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/templates.html">Config YAML Templates</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">📖 API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#pythonic-config-object">1. Pythonic Config object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#workflow-yaml-patient-properties-csv">2. Workflow YAML + Patient Properties CSV</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#workflow-yaml">🔧 Workflow YAML</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#patient-properties-csv">📄 Patient Properties CSV</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">APLUS ML</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Configuration</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/config.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="configuration">
+<h1>Configuration<a class="headerlink" href="#configuration" title="Link to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<p>APLUS simulations can be specified in two ways – via the <code class="xref py py-class docutils literal notranslate"><span class="pre">Config</span></code> object or via a <strong>(1) Workflow YAML</strong> and <strong>(2) Patient Properties CSV</strong>.</p>
+<section id="pythonic-config-object">
+<h2>1. Pythonic Config object<a class="headerlink" href="#pythonic-config-object" title="Link to this heading"></a></h2>
+<p>Documentation for the <code class="xref py py-class docutils literal notranslate"><span class="pre">Config</span></code> object is available <a class="reference internal" href="api.html"><span class="doc">API Reference</span></a></p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text"><cite>script.py</cite></span><a class="headerlink" href="#id1" title="Link to this code"></a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">aplusml</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="c1"># Create Config object</span>
+<span class="linenos"> 4</span><span class="n">config</span> <span class="o">=</span> <span class="n">aplusml</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">Config</span><span class="p">(</span>
+<span class="linenos"> 5</span>  <span class="n">metadata</span> <span class="o">=</span> <span class="n">aplusml</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">ConfigMetadata</span><span class="p">(</span>
+<span class="linenos"> 6</span>    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;My Simulation&#39;</span><span class="p">,</span>
+<span class="linenos"> 7</span>  <span class="p">),</span>
+<span class="linenos"> 8</span>  <span class="n">variables</span> <span class="o">=</span> <span class="p">{</span>
+<span class="linenos"> 9</span>    <span class="s1">&#39;variable_id&#39;</span><span class="p">:</span> <span class="n">aplusml</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">ConfigVariable</span><span class="p">(</span>
+<span class="linenos">10</span>      <span class="nb">type</span> <span class="o">=</span> <span class="s1">&#39;scalar&#39;</span><span class="p">,</span>
+<span class="linenos">11</span>      <span class="n">value</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<span class="linenos">12</span>    <span class="p">),</span>
+<span class="linenos">13</span>  <span class="p">},</span>
+<span class="linenos">14</span>  <span class="n">states</span> <span class="o">=</span> <span class="p">{</span>
+<span class="linenos">15</span>    <span class="s1">&#39;start&#39;</span> <span class="p">:</span> <span class="n">aplusml</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">ConfigState</span><span class="p">(</span>
+<span class="linenos">16</span>      <span class="nb">type</span> <span class="o">=</span> <span class="s1">&#39;start&#39;</span><span class="p">,</span>
+<span class="linenos">17</span>      <span class="n">transitions</span> <span class="o">=</span> <span class="p">[</span>
+<span class="linenos">18</span>        <span class="n">aplusml</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">ConfigTransition</span><span class="p">(</span>
+<span class="linenos">19</span>          <span class="n">dest</span> <span class="o">=</span> <span class="s1">&#39;end&#39;</span><span class="p">,</span>
+<span class="linenos">20</span>        <span class="p">),</span>
+<span class="linenos">21</span>      <span class="p">],</span>
+<span class="linenos">22</span>    <span class="p">),</span>
+<span class="linenos">23</span>    <span class="s1">&#39;end&#39;</span> <span class="p">:</span> <span class="n">aplusml</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">ConfigState</span><span class="p">(</span>
+<span class="linenos">24</span>      <span class="nb">type</span> <span class="o">=</span> <span class="s1">&#39;end&#39;</span><span class="p">,</span>
+<span class="linenos">25</span>    <span class="p">),</span>
+<span class="linenos">26</span>  <span class="p">},</span>
+<span class="linenos">27</span><span class="p">)</span>
+<span class="linenos">28</span>
+<span class="linenos">29</span><span class="c1"># Create Simulation object</span>
+<span class="linenos">30</span><span class="n">simulation</span> <span class="o">=</span> <span class="n">aplusml</span><span class="o">.</span><span class="n">Simulation</span><span class="o">.</span><span class="n">create_from_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="workflow-yaml-patient-properties-csv">
+<h2>2. Workflow YAML + Patient Properties CSV<a class="headerlink" href="#workflow-yaml-patient-properties-csv" title="Link to this heading"></a></h2>
+<p>For improved readability, an APLUS simulation can also be specified via a <strong>(1) Workflow YAML</strong> and <strong>(2) Patient Properties CSV</strong>.</p>
+<ol class="arabic simple">
+<li><p><strong>Workflow YAML</strong> specifies the states, transitions, utilities, resources, and other parameters of your workflow.</p></li>
+<li><p><strong>(Optional) Patient Properties CSV</strong> contains individual-level properties for each patient that will be run through your workflow.</p></li>
+</ol>
+<p>This is equivalent to the Pythonic Config object (i.e. it gets converted to a <cite>:class:aplusml.config.Config</cite> object under the hood).</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text"><cite>script.py</cite></span><a class="headerlink" href="#id2" title="Link to this code"></a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">import</span> <span class="nn">aplusml</span>
+<span class="linenos">2</span>
+<span class="linenos">3</span><span class="n">PATH_TO_CONFIG_YAML</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;config.yaml&#39;</span>
+<span class="linenos">4</span><span class="n">PATH_TO_PATIENT_PROPERTIES</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;patient_properties.csv&#39;</span>
+<span class="linenos">5</span>
+<span class="linenos">6</span><span class="c1"># Create Simulation object</span>
+<span class="linenos">7</span><span class="n">simulation</span> <span class="o">=</span> <span class="n">aplusml</span><span class="o">.</span><span class="n">Simulation</span><span class="o">.</span><span class="n">create_from_yaml</span><span class="p">(</span><span class="n">PATH_TO_CONFIG_YAML</span><span class="p">,</span> <span class="n">PATH_TO_PATIENT_PROPERTIES</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<section id="workflow-yaml">
+<h3>🔧 Workflow YAML<a class="headerlink" href="#workflow-yaml" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><em>Format:</em> YAML</p></li>
+<li><p><em>Purpose:</em> Specifies the states, transitions, utilities, resources, and other parameters of your workflow</p></li>
+<li><p><em>Schema:</em> Listed below</p></li>
+</ul>
+<p>The YAML must be formatted as follows:</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text"><cite>config.yaml</cite></span><a class="headerlink" href="#id3" title="Link to this code"></a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nt">metadata</span><span class="p">:</span>
+<span class="linenos"> 2</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Optional[str]</span><span class="w">  </span><span class="c1"># Name of the simulation</span>
+<span class="linenos"> 3</span><span class="w">  </span><span class="nt">path_to_properties</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Optional[str]</span><span class="w">  </span><span class="c1"># Path to CSV file where each row is a patient, each column is a property. Note: Only properties explicitly enumerated in the &#39;variables&#39; section will be imported</span>
+<span class="linenos"> 4</span><span class="w">  </span><span class="nt">properties_col_for_patient_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Optional[str]</span><span class="w">  </span><span class="c1"># Column name in the CSV that contains unique patient IDs.</span>
+<span class="linenos"> 5</span><span class="w">  </span><span class="nt">patient_sort_preference_property</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Optional[dict]</span><span class="w">  </span><span class="c1"># Determines priority order for resource allocation.</span>
+<span class="linenos"> 6</span><span class="w">    </span><span class="nt">variable</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span><span class="w">  </span><span class="c1"># Name of a property (must be defined in `variables`) that will be used to sort patients when prioritizing allocation of a finite resource</span>
+<span class="linenos"> 7</span><span class="w">    </span><span class="nt">is_ascending</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bool</span><span class="w">  </span><span class="c1"># True = ascending order, False = descending.</span>
+<span class="linenos"> 8</span>
+<span class="linenos"> 9</span><span class="nt">variables</span><span class="p">:</span><span class="w">  </span><span class="c1"># Dictionary of variables, each with a unique key.</span>
+<span class="linenos">10</span><span class="w">  </span><span class="p p-Indicator">[</span><span class="nv">key</span><span class="p p-Indicator">]:</span><span class="w"> </span><span class="c1"># `key` is the ID of the variable. It must be unique.</span>
+<span class="linenos">11</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Enum(scalar, resource, property, simulation)</span><span class="w">  </span><span class="c1"># Type of variable. Default: &quot;scalar&quot;.</span>
+<span class="linenos">12</span>
+<span class="linenos">13</span><span class="w">    </span><span class="c1"># If type == &#39;scalar&#39;</span>
+<span class="linenos">14</span><span class="w">    </span><span class="c1">#   This is a scalar value that is shared across all patients.</span>
+<span class="linenos">15</span><span class="w">    </span><span class="c1">#   It can be used to model things like the sensitivity of a screening test, the prevalence of a disease, etc.</span>
+<span class="linenos">16</span><span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Union[int, float, bool, str, list, dict, set]</span><span class="w">  </span><span class="c1"># Scalar value. Use &#39;!!set&#39; tag for sets.</span>
+<span class="linenos">17</span>
+<span class="linenos">18</span><span class="w">    </span><span class="c1"># If type == &#39;resource&#39;</span>
+<span class="linenos">19</span><span class="w">    </span><span class="c1">#   This is a finite resource that is shared across all patients.</span>
+<span class="linenos">20</span><span class="w">    </span><span class="c1">#   It can be decremented, incremented, and reset by the simulation.</span>
+<span class="linenos">21</span><span class="w">    </span><span class="c1">#   It can be used to model things like hospital beds, lab capacity, etc.</span>
+<span class="linenos">22</span><span class="w">    </span><span class="nt">init_amount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">int</span><span class="w">  </span><span class="c1"># Initial amount of the resource.</span>
+<span class="linenos">23</span><span class="w">    </span><span class="nt">max_amount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">int</span><span class="w">  </span><span class="c1"># Maximum amount of resource allowed.</span>
+<span class="linenos">24</span><span class="w">    </span><span class="nt">refill_amount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">int</span><span class="w">  </span><span class="c1"># Amount added per refill.</span>
+<span class="linenos">25</span><span class="w">    </span><span class="nt">refill_duration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">int</span><span class="w">  </span><span class="c1"># Time interval between refills.</span>
+<span class="linenos">26</span>
+<span class="linenos">27</span><span class="w">    </span><span class="c1"># If type == &#39;property&#39;</span>
+<span class="linenos">28</span><span class="w">    </span><span class="c1">#   This is a property that is UNIQUE to each patient (i.e. each patient may have a different value for this property).</span>
+<span class="linenos">29</span><span class="w">    </span><span class="c1">#   It can be used to model things like the age of a patient, the gender of a patient, etc.</span>
+<span class="linenos">30</span><span class="w">    </span><span class="c1">## Either load from file...</span>
+<span class="linenos">31</span><span class="w">    </span><span class="nt">column</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span><span class="w">  </span><span class="c1"># If loaded from a CSV file, specify the column name (e.g. &#39;y&#39; or &#39;y_hat_dl&#39;). Each row of the CSV will be a patient, and the value of this property for each patient will be the value of the column in the CSV file.</span>
+<span class="linenos">32</span><span class="w">    </span><span class="c1">## or constant...</span>
+<span class="linenos">33</span><span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Any</span><span class="w">  </span><span class="c1"># If constant, specify value.</span>
+<span class="linenos">34</span><span class="w">    </span><span class="c1">## or randomly sample...</span>
+<span class="linenos">35</span><span class="w">    </span><span class="nt">distribution</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Enum(bernoulli, exponential, binomial, normal, poisson, uniform)</span><span class="w">  </span><span class="c1"># If randomly sampled.</span>
+<span class="linenos">36</span><span class="w">    </span><span class="nt">mean</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Optional[float]</span><span class="w">  </span><span class="c1"># Mean value for distribution.</span>
+<span class="linenos">37</span><span class="w">    </span><span class="nt">std</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Optional[float]</span><span class="w">  </span><span class="c1"># Standard deviation.</span>
+<span class="linenos">38</span><span class="w">    </span><span class="nt">start</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Optional[float]</span><span class="w">  </span><span class="c1"># Minimum value.</span>
+<span class="linenos">39</span><span class="w">    </span><span class="nt">end</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Optional[float]</span><span class="w">  </span><span class="c1"># Maximum value.</span>
+<span class="linenos">40</span>
+<span class="linenos">41</span><span class="nt">states</span><span class="p">:</span><span class="w">  </span><span class="c1"># Dictionary of states, each with a unique key.</span>
+<span class="linenos">42</span><span class="w">  </span><span class="p p-Indicator">[</span><span class="nv">key</span><span class="p p-Indicator">]:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span><span class="w"> </span><span class="c1"># `key` is the ID of the state. It must be unique.</span>
+<span class="linenos">43</span><span class="w">    </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Optional[str]</span><span class="w">  </span><span class="c1"># Human-readable label for the state. Default: value of `key`.</span>
+<span class="linenos">44</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Optional[Enum(start, end, intermediate)]</span><span class="w">  </span><span class="c1"># Whether the state is a start, end, or intermediate state within the workflow. Default: &quot;intermediate&quot;.</span>
+<span class="linenos">45</span><span class="w">    </span><span class="nt">duration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Optional[float]</span><span class="w">  </span><span class="c1"># Number of timesteps to wait before transitions are evaluated. Default: 0.0.</span>
+<span class="linenos">46</span>
+<span class="linenos">47</span><span class="w">    </span><span class="nt">utilities</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Optional[Union[str, float, bool, list[dict]]]</span><span class="w">  </span><span class="c1"># If string, it&#39;s evaluated as a Python expression. Default: 0.0.</span>
+<span class="linenos">48</span><span class="w">      </span><span class="c1"># If list[dict], then multiple utilities can be defined. Note: These &#39;if&#39; statements are not mutually exclusive (i.e. if multiple conditions evaluate to TRUE, then they will simply be summed together)</span>
+<span class="linenos">49</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Optional[Union[float, str]]</span><span class="w">  </span><span class="c1"># If string, it&#39;s evaluated as a Python expression.</span>
+<span class="linenos">50</span><span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Optional[Union[str, bool]]</span><span class="w">  </span><span class="c1"># A Python expression. If it evaluates to TRUE, then the `value` for this utility is set to this `value`.</span>
+<span class="linenos">51</span><span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Optional[str]</span><span class="w">  </span><span class="c1"># Measurement unit.</span>
+<span class="linenos">52</span>
+<span class="linenos">53</span><span class="w">    </span><span class="nt">resource_deltas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Optional[Dict[str, float]]</span><span class="w">  </span><span class="c1"># Changes to resource levels from entering this state. Default: {}.</span>
+<span class="linenos">54</span><span class="w">      </span><span class="p p-Indicator">[</span><span class="nv">key</span><span class="p p-Indicator">]:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span><span class="w"> </span><span class="c1"># `key` is the name of a resource defined in `variables`.</span>
+<span class="linenos">55</span><span class="w">        </span><span class="p p-Indicator">[</span><span class="nv">value</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="c1"># Required. How much to change each resource level AS SOON AS this state is hit</span>
+<span class="linenos">56</span>
+<span class="linenos">57</span><span class="w">    </span><span class="nt">transitions</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Optional[List[Dict]]</span><span class="w">  </span><span class="c1"># List of possible state transitions.</span>
+<span class="linenos">58</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span><span class="w">  </span><span class="c1"># Required. ID of the destination state.</span>
+<span class="linenos">59</span><span class="w">        </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Optional[str]</span><span class="w"> </span><span class="c1"># Default: &quot;&quot;.</span>
+<span class="linenos">60</span>
+<span class="linenos">61</span><span class="w">        </span><span class="c1"># Transition conditions</span>
+<span class="linenos">62</span><span class="w">        </span><span class="c1">## Can either have...</span>
+<span class="linenos">63</span><span class="w">        </span><span class="c1">## - All transitions have an &#39;if&#39; condition (where if the last transition doesn&#39;t have an &#39;if&#39;, it defaults to always TRUE)</span>
+<span class="linenos">64</span><span class="w">        </span><span class="c1">## - All transitions have a &#39;prob&#39; condition (where if the last transition doesn&#39;t have a &#39;prob&#39;, it defaults to = 1 - (sum of other probs))</span>
+<span class="linenos">65</span><span class="w">        </span><span class="c1">## - The first set of transitions have an &#39;if&#39; condition, but the second set have a &#39;prob&#39;</span>
+<span class="linenos">66</span><span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Optional[Union[str, bool]]</span><span class="w">  </span><span class="c1"># Conditional expression. If string, it&#39;s evaluated as a Python expression. Must come before &#39;prob&#39; (if mixed). Must always be at least one TRUE condition across all transitions for this state (unless mixed with &#39;prob&#39;). `if` conditionals will be evaluated in order and break on first TRUE. If the last `if` doesn&#39;t have a condition, then it defaults to TRUE.</span>
+<span class="linenos">67</span><span class="w">        </span><span class="nt">prob</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Optional[float]</span><span class="w">  </span><span class="c1"># Probability of transition. If string, it&#39;s evaluated as a Python expression. Must come after &#39;if&#39; (if mixed). If mixed, then &#39;prob&#39; is conditional probability given all &#39;if&#39; are FALSE. Must sum to 1 across all &#39;prob&#39; transitions for this state. If the last `prob` doesn&#39;t have a condition, then it defaults to = 1 - (sum of other probs).</span>
+<span class="linenos">68</span>
+<span class="linenos">69</span><span class="w">        </span><span class="nt">duration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Optional[float]</span><span class="w">  </span><span class="c1"># Number of timesteps to wait before transitions are evaluated. Default: 0.0.</span>
+<span class="linenos">70</span>
+<span class="linenos">71</span><span class="w">        </span><span class="nt">utilities</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Optional[Union[str, float, bool, list[dict]]]</span><span class="w">  </span><span class="c1"># Same specification as the utilities for states.</span>
+<span class="linenos">72</span>
+<span class="linenos">73</span><span class="w">        </span><span class="nt">resource_deltas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Optional[Dict[str, float]]</span><span class="w"> </span><span class="c1"># Changes to resource levels from taking this transition. Default: {}.</span>
+<span class="linenos">74</span><span class="w">          </span><span class="p p-Indicator">[</span><span class="nv">key</span><span class="p p-Indicator">]:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span><span class="w"> </span><span class="c1"># `key` is the name of a resource defined in `variables`.</span>
+<span class="linenos">75</span><span class="w">            </span><span class="p p-Indicator">[</span><span class="nv">value</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="c1"># How much to change each resource level AS SOON AS this transition is taken</span>
+</pre></div>
+</div>
+</div>
+<p><strong>NOTE:</strong> APLUS makes the following simulation-level variables available to the user. To use them, you must include them in the <code class="docutils literal notranslate"><span class="pre">variables</span></code> section of the YAML file:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">sim_current_timestep</span></code>: The current timestep of the simulation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">time_left_in_sim</span></code>: The number of timesteps remaining in the simulation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">time_already_in_sim</span></code>: The number of timesteps that have passed in the simulation.</p></li>
+</ul>
+<p>e.g.</p>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text"><cite>config.yaml</cite></span><a class="headerlink" href="#id4" title="Link to this code"></a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">variables</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">sim_current_timestep</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">simulation</span>
+<span class="w">  </span><span class="nt">time_left_in_sim</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">simulation</span>
+<span class="w">  </span><span class="nt">time_already_in_sim</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">simulation</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="patient-properties-csv">
+<h3>📄 Patient Properties CSV<a class="headerlink" href="#patient-properties-csv" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><em>Format:</em> CSV</p></li>
+<li><p><em>Purpose:</em> Contains individual-level properties for each patient that will be run through your workflow</p></li>
+<li><p><em>Schema:</em> Listed below</p></li>
+</ul>
+<p>The CSV must be formatted as follows:</p>
+<p>Each row is a unique patient, and each column is a property. Properties can be anything – e.g. demographic information, model predictions, clinical measurements, etc.</p>
+<p>Example properties include:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">id</span></code>: The unique identifier for the patient.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">age</span></code>: The age of the patient.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gender</span></code>: The gender of the patient.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">y</span></code>: The ground truth label for the patient.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">y_hat</span></code>: The predicted label for the patient.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">random_resource_priority</span></code>: A random number that we will use to sort patients when prioritizing them to access a finite resource.</p></li>
+</ul>
+<p>Here is an excerpt from an example properties CSV file:</p>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text"><cite>patient_properties.csv</cite></span><a class="headerlink" href="#id5" title="Link to this code"></a></div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span> id,y,y_hat_dl,y_hat_rf,y_hat_lr,abi_test_pred,random_resource_priority
+ 1,0,0.95,0.9,0.85,0.9,0.1
+ 2,1,0.85,0.8,0.75,0.8,0.2
+ 3,0,0.75,0.7,0.65,0.7,0.3
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../usage/templates.html" class="btn btn-neutral float-left" title="Config YAML Templates" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api.html" class="btn btn-neutral float-right" title="API Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Michael Wornow.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

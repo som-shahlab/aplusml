@@ -1,0 +1,213 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>aplusml.draw &mdash; APLUS ML  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=ae483e34" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            APLUS ML
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">🚦 Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/background.html">Background</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">📚 User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/quick.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/tutorial_hello.html">Tutorial (Hello World)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/tutorial_pad.html">Tutorial (PAD)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/tutorial_hcm.html">Tutorial (HCM)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/concepts.html">Concept Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/templates.html">Config YAML Templates</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">📖 API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/config.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">APLUS ML</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">aplusml.draw</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for aplusml.draw</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Functions for drawing graphs using graphviz.</span>
+
+<span class="sd">This module provides utilities for creating and formatting graphviz diagrams</span>
+<span class="sd">of workflows, including HTML table generation and text escaping.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+
+<div class="viewcode-block" id="_html_escape">
+<a class="viewcode-back" href="../../api/api.html#aplusml.draw._html_escape">[docs]</a>
+<span class="k">def</span> <span class="nf">_html_escape</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Escape HTML special characters for use in HTML tables in graphviz.</span>
+
+<span class="sd">    Replaces special characters with their HTML entity equivalents to ensure</span>
+<span class="sd">    proper rendering in graphviz HTML-like labels.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        text (str): The input text to escape.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: The escaped text with the following replacements:</span>
+<span class="sd">        </span>
+<span class="sd">            - ``&amp;`` → ``&amp;amp;``</span>
+<span class="sd">            - ``&lt;`` → ``&amp;lt;``</span>
+<span class="sd">            - ``&gt;`` → ``&amp;gt;``</span>
+<span class="sd">            - ``Newline`` → ``&lt;br align=&quot;left&quot;/&gt;``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&amp;&#39;</span><span class="p">,</span> <span class="s1">&#39;&amp;amp;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&lt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&amp;lt;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&amp;gt;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;br align=&quot;left&quot;/&gt;&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="create_node_label">
+<a class="viewcode-back" href="../../api/api.html#aplusml.draw.create_node_label">[docs]</a>
+<span class="k">def</span> <span class="nf">create_node_label</span><span class="p">(</span><span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">utilities</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">resource_deltas</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">is_edge</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates an HTML-formatted label string for use in graphviz diagrams, containing</span>
+<span class="sd">    information about the node&#39;s title, duration, utilities, and resource changes.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        title (str): Title of the node.</span>
+<span class="sd">        duration (float): Duration of the node.</span>
+<span class="sd">        utilities (list): List of utilities associated with the node.</span>
+<span class="sd">        resource_deltas (dict): Dictionary of resource deltas associated with the node.</span>
+<span class="sd">        is_edge (bool, optional): Whether the node represents an edge. Defaults to ``False``.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        str: An HTML-formatted string containing the node&#39;s label.</span>
+<span class="sd">        </span>
+<span class="sd">    Note:</span>
+<span class="sd">        The returned string uses graphviz&#39;s HTML-like label syntax and includes:</span>
+<span class="sd">        * A title section with optional edge formatting</span>
+<span class="sd">        * Duration information</span>
+<span class="sd">        * List of utilities</span>
+<span class="sd">        * List of resource changes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">edge_table_styles</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;cellborder=&quot;0&quot; cellspacing=&quot;2&quot; cellpadding=&quot;1&quot; border=&quot;0&quot;&#39;</span>
+    <span class="n">node_table_styles</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;cellborder=&quot;0&quot; cellspacing=&quot;2&quot; cellpadding=&quot;1&quot; border=&quot;1&quot; style=&quot;rounded&quot;&#39;</span>
+    <span class="c1"># Table content</span>
+    <span class="n">dur</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_html_escape</span><span class="p">(</span><span class="s1">&#39;+&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">duration</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">duration</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span> <span class="k">if</span> <span class="n">duration</span> <span class="k">else</span> <span class="s1">&#39;--&#39;</span><span class="p">))</span>
+    <span class="n">utils</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;&lt;br align=&quot;left&quot;/&gt;&#39;</span> <span class="o">+</span> <span class="s1">&#39;&lt;br align=&quot;left&quot;/&gt;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span> <span class="nb">str</span><span class="p">(</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;) &#39;</span> <span class="o">+</span> <span class="n">_html_escape</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">utilities</span><span class="p">)</span> <span class="p">]))</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">utilities</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="s1">&#39;--&#39;</span> 
+    <span class="n">resources</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;&lt;br align=&quot;left&quot;/&gt;&#39;</span> <span class="o">+</span> <span class="s1">&#39;&lt;br align=&quot;left&quot;/&gt;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span> <span class="nb">str</span><span class="p">(</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;) &#39;</span> <span class="o">+</span> <span class="n">_html_escape</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;+&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}{</span><span class="nb">round</span><span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">resource_deltas</span><span class="o">.</span><span class="n">items</span><span class="p">())</span> <span class="p">]))</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">resource_deltas</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="s1">&#39;--&#39;</span>
+    <span class="n">id_str</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="p">((</span><span class="s1">&#39;&lt;tr&gt;&#39;</span>
+                        <span class="s1">&#39;&lt;td align=&quot;left&quot;&gt;&#39;</span>
+                            <span class="sa">f</span><span class="s1">&#39;ID: </span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s1">&#39;</span>
+                        <span class="s1">&#39;&lt;/td&gt;&#39;</span>
+                    <span class="s1">&#39;&lt;/tr&gt;&#39;</span><span class="p">)</span> 
+                <span class="k">if</span> <span class="nb">id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="s1">&#39;&lt;&lt;table &#39;</span> <span class="o">+</span> <span class="p">(</span><span class="n">edge_table_styles</span> <span class="k">if</span> <span class="n">is_edge</span> <span class="k">else</span> <span class="n">node_table_styles</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;&gt;&#39;</span>
+                <span class="s1">&#39;&lt;tr&gt;&lt;td height=&quot;2&quot;&gt;&lt;/td&gt;&lt;/tr&gt;&#39;</span>
+                <span class="s1">&#39;&lt;tr&gt;&#39;</span>
+                    <span class="s1">&#39;&lt;td align=&quot;center&quot; border=&quot;1&quot; sides=&quot;B&quot;&gt;&#39;</span>
+                        <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="s2">&quot;&lt;b&gt;&lt;i&gt;&quot;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">is_edge</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s2">&quot;&lt;b&gt;&quot;</span><span class="si">}</span><span class="s1">&#39;</span>
+                        <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">_html_escape</span><span class="p">(</span><span class="n">title</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+                        <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="s2">&quot;&lt;/i&gt;&lt;/b&gt;&quot;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">is_edge</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s2">&quot;&lt;/b&gt;&quot;</span><span class="si">}</span><span class="s1">&#39;</span>
+                    <span class="s1">&#39;&lt;/td&gt;&#39;</span>
+                <span class="s1">&#39;&lt;/tr&gt;&#39;</span>
+                <span class="s1">&#39;&lt;tr&gt;&lt;td height=&quot;5&quot;&gt;&lt;/td&gt;&lt;/tr&gt;&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">id_str</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="s1">&#39;&lt;tr&gt;&#39;</span>
+                    <span class="s1">&#39;&lt;td align=&quot;left&quot;&gt;&#39;</span>
+                        <span class="sa">f</span><span class="s1">&#39;Duration: </span><span class="si">{</span><span class="n">dur</span><span class="si">}</span><span class="s1">&#39;</span>
+                    <span class="s1">&#39;&lt;/td&gt;&#39;</span>
+                <span class="s1">&#39;&lt;/tr&gt;&#39;</span>
+                <span class="s1">&#39;&lt;tr&gt;&#39;</span>
+                    <span class="s1">&#39;&lt;td align=&quot;left&quot;&gt;&#39;</span>
+                        <span class="sa">f</span><span class="s1">&#39;Utilities: </span><span class="si">{</span><span class="n">utils</span><span class="si">}</span><span class="s1">&#39;</span>
+                    <span class="s1">&#39;&lt;/td&gt;&#39;</span>
+                <span class="s1">&#39;&lt;/tr&gt;&#39;</span>
+                <span class="s1">&#39;&lt;tr&gt;&#39;</span>
+                    <span class="s1">&#39;&lt;td align=&quot;left&quot;&gt;&#39;</span>
+                        <span class="sa">f</span><span class="s1">&#39;Resources: </span><span class="si">{</span><span class="n">resources</span><span class="si">}</span><span class="s1">&#39;</span>
+                    <span class="s1">&#39;&lt;/td&gt;&#39;</span>
+                <span class="s1">&#39;&lt;/tr&gt;&#39;</span>
+            <span class="s1">&#39;&lt;/table&gt;&gt;&#39;</span>
+    <span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Michael Wornow.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

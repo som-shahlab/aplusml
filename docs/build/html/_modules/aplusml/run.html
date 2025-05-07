@@ -1,0 +1,321 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>aplusml.run &mdash; APLUS ML  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=ae483e34" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            APLUS ML
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">🚦 Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/background.html">Background</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">📚 User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/quick.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/tutorial_hello.html">Tutorial (Hello World)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/tutorial_pad.html">Tutorial (PAD)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/tutorial_hcm.html">Tutorial (HCM)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/concepts.html">Concept Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/templates.html">Config YAML Templates</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">📖 API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/config.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">APLUS ML</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">aplusml.run</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for aplusml.run</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Wrapper functions around `sim.py` to help run/track multiple simulations</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">mpire</span> <span class="kn">import</span> <span class="n">WorkerPool</span>
+<span class="kn">import</span> <span class="nn">aplusml.sim</span> <span class="k">as</span> <span class="nn">sim</span>
+
+<div class="viewcode-block" id="test_diff_thresholds">
+<a class="viewcode-back" href="../../api/api.html#aplusml.run.test_diff_thresholds">[docs]</a>
+<span class="k">def</span> <span class="nf">test_diff_thresholds</span><span class="p">(</span><span class="n">simulation</span><span class="p">:</span> <span class="n">sim</span><span class="o">.</span><span class="n">Simulation</span><span class="p">,</span> 
+                         <span class="n">all_patients</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">sim</span><span class="o">.</span><span class="n">Patient</span><span class="p">],</span> 
+                         <span class="n">thresholds</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+                         <span class="n">utility_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                         <span class="n">positive_outcome_state_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span> <span class="s1">&#39;positive_end_state&#39;</span><span class="p">,</span> <span class="p">],</span>
+                         <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Tests different model threshold values to find optimal cutoff point for binary predictions.</span>
+
+<span class="sd">    For each threshold value, runs the simulation and calculates utility metrics. The simulation must </span>
+<span class="sd">    contain a ``model_threshold`` variable that is used to binarize probabilistic predictions.</span>
+<span class="sd">    After testing all thresholds, sets the simulation and patients to use the threshold that </span>
+<span class="sd">    maximizes mean utility.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        simulation (sim.Simulation): Simulation object containing workflow definition</span>
+<span class="sd">        all_patients (list[sim.Patient]): List of patients to simulate through workflow</span>
+<span class="sd">        thresholds (list[float]): List of threshold values to test (between 0 and 1)</span>
+<span class="sd">        utility_unit (str, optional): Name of utility unit to optimize (e.g. ``&#39;qaly&#39;``, ``&#39;usd&#39;``). Defaults to ``&#39;&#39;``.</span>
+<span class="sd">        positive_outcome_state_ids (list[str], optional): State IDs that represent positive outcomes </span>
+<span class="sd">            (treatment administered). Used to calculate work per timestep. Defaults to ``[&#39;positive_end_state&#39;]``.</span>
+<span class="sd">        **kwargs: Additional arguments passed to ``simulation.run()``</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        pd.DataFrame: Results for each threshold tested with columns</span>
+<span class="sd">        </span>
+<span class="sd">            - ``threshold``: Threshold value tested</span>
+<span class="sd">            - ``mean_utility``: Mean utility achieved across all patients</span>
+<span class="sd">            - ``std_utility``: Standard deviation of utilities</span>
+<span class="sd">            - ``sem_utility``: Standard error of mean utility</span>
+<span class="sd">            - ``mean_work_per_timestep``: Average number of positive outcomes per timestep</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        AssertionError: If ``model_threshold`` variable is not defined in ``simulation.variables``</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">assert</span> <span class="s1">&#39;model_threshold&#39;</span> <span class="ow">in</span> <span class="n">simulation</span><span class="o">.</span><span class="n">variables</span><span class="p">,</span> <span class="s2">&quot;ERROR - The key &#39;model_threshold&#39; must exist in &#39;simulation.variables&#39; but is currently missing&quot;</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">thresholds</span><span class="p">:</span>
+        <span class="n">simulation</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;model_threshold&#39;</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="n">all_patients</span> <span class="o">=</span> <span class="n">simulation</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">all_patients</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">utilities</span> <span class="o">=</span> <span class="p">[</span> <span class="n">p</span><span class="o">.</span><span class="n">get_sum_utilities</span><span class="p">(</span><span class="n">simulation</span><span class="p">)[</span><span class="n">utility_unit</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">all_patients</span> <span class="p">]</span>
+        <span class="n">mean_work_per_timestep</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">all_patients</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">state_id</span> <span class="ow">in</span> <span class="n">positive_outcome_state_ids</span> <span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">simulation</span><span class="o">.</span><span class="n">current_timestep</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+            <span class="s1">&#39;threshold&#39;</span> <span class="p">:</span> <span class="n">x</span><span class="p">,</span>
+            <span class="s1">&#39;mean_utility&#39;</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">utilities</span><span class="p">),</span>
+            <span class="s1">&#39;std_utility&#39;</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">utilities</span><span class="p">),</span>
+            <span class="s1">&#39;sem_utility&#39;</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">utilities</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">all_patients</span><span class="p">)),</span>
+            <span class="s1">&#39;mean_work_per_timestep&#39;</span> <span class="p">:</span> <span class="n">mean_work_per_timestep</span><span class="p">,</span>
+        <span class="p">})</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
+    <span class="c1"># Best model threshold</span>
+    <span class="n">max_threshold</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;threshold&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;mean_utility&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">argmax</span><span class="p">()]</span>
+    <span class="n">simulation</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;model_threshold&#39;</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_threshold</span>
+    <span class="c1"># Set patients to correspond to best utility</span>
+    <span class="n">all_patients</span> <span class="o">=</span> <span class="n">simulation</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">all_patients</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+<span class="k">def</span> <span class="nf">_run_test</span><span class="p">(</span><span class="n">simulation</span><span class="p">:</span> <span class="n">sim</span><span class="o">.</span><span class="n">Simulation</span><span class="p">,</span>
+                <span class="n">all_patients</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">sim</span><span class="o">.</span><span class="n">Patient</span><span class="p">],</span>
+                <span class="n">func_run_test</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">],</span>
+                <span class="n">func_match_patient_to_property_column</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
+                <span class="n">is_refresh_patients</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+                <span class="n">l</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                <span class="n">k2v</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+                <span class="n">is_log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper function that runs a single simulation test with specified parameters.</span>
+
+<span class="sd">    This function is designed to be used by ``run_test()`` for both serial and parallel processing.</span>
+<span class="sd">    </span>
+<span class="sd">    It handles:</span>
+<span class="sd">    </span>
+<span class="sd">        1. Creating a deep copy of the simulation to avoid state conflicts</span>
+<span class="sd">        2. Updating simulation variables based on test settings</span>
+<span class="sd">        3. Optionally refreshing patient properties</span>
+<span class="sd">        4. Running either a custom test function or basic simulation</span>
+<span class="sd">        5. Collecting and formatting results</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        simulation (sim.Simulation): Base simulation object to copy and modify</span>
+<span class="sd">        all_patients (list[sim.Patient]): List of patients to simulate</span>
+<span class="sd">        func_run_test (Optional[Callable]): Custom function to run simulation test, typically test_diff_thresholds.</span>
+<span class="sd">            If ``None``, runs basic simulation and sums utilities.</span>
+<span class="sd">        func_match_patient_to_property_column (Callable): Function to match patients to properties in CSV.</span>
+<span class="sd">            Takes ``(patient_id, random_idx, df, column)`` as arguments.</span>
+<span class="sd">        is_refresh_patients (bool): If ``True``, recreates patient objects with new properties</span>
+<span class="sd">        l (str): Label for this test run</span>
+<span class="sd">        k2v (dict): Dictionary mapping variable names to new values for this test</span>
+<span class="sd">        is_log (bool, optional): If ``True``, prints run progress. Defaults to ``False``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        pd.DataFrame: Results dataframe. If using ``func_run_test``, matches that function&#39;s output</span>
+<span class="sd">            with added ``label`` column. Otherwise, contains summed utilities and ``label``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">is_log</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Run: </span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">simulation</span><span class="p">:</span> <span class="n">sim</span><span class="o">.</span><span class="n">Simulation</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">simulation</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">k2v</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">simulation</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+    <span class="k">if</span> <span class="n">is_refresh_patients</span><span class="p">:</span>
+        <span class="n">all_patients</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">create_patients_for_simulation</span><span class="p">(</span><span class="n">simulation</span><span class="p">,</span> <span class="n">all_patients</span><span class="p">,</span> <span class="n">func_match_patient_to_property_column</span><span class="p">,</span> <span class="n">random_seed</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">func_run_test</span><span class="p">:</span>
+        <span class="n">_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">=</span> <span class="n">func_run_test</span><span class="p">(</span><span class="n">simulation</span><span class="p">,</span> <span class="n">all_patients</span><span class="p">,</span> <span class="n">l</span><span class="p">)</span>
+        <span class="n">_df</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">l</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">all_patients</span> <span class="o">=</span> <span class="n">simulation</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">all_patients</span><span class="p">)</span>
+        <span class="n">_df</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">all_patients</span><span class="p">:</span>
+            <span class="n">_u</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">get_sum_utilities</span><span class="p">(</span><span class="n">simulation</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">_u</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">_df</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">+=</span> <span class="n">val</span>
+        <span class="n">_df</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">l</span>
+        <span class="n">_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">_df</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">_df</span>
+
+<div class="viewcode-block" id="run_test">
+<a class="viewcode-back" href="../../api/api.html#aplusml.run.run_test">[docs]</a>
+<span class="k">def</span> <span class="nf">run_test</span><span class="p">(</span><span class="n">simulation</span><span class="p">:</span> <span class="n">sim</span><span class="o">.</span><span class="n">Simulation</span><span class="p">,</span> 
+             <span class="n">all_patients</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">sim</span><span class="o">.</span><span class="n">Patient</span><span class="p">],</span>
+             <span class="n">labels</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> 
+             <span class="n">keys2values</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">dict</span><span class="p">]],</span>
+             <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+             <span class="n">func_run_test</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+             <span class="n">func_match_patient_to_property_column</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+             <span class="n">is_refresh_patients</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+             <span class="n">is_use_multi_processing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Runs multiple simulation tests with different variable settings.</span>
+
+<span class="sd">    This is the main entry point for running simulation experiments. It supports:</span>
+
+<span class="sd">        1. Testing multiple configurations in parallel or serial</span>
+<span class="sd">        2. Custom test functions (e.g. threshold testing)</span>
+<span class="sd">        3. Patient property refreshing between runs</span>
+<span class="sd">        4. Appending results to existing dataframes</span>
+<span class="sd">        5. Multiprocessing for improved performance</span>
+
+<span class="sd">    The function pairs each label with its corresponding variable settings from ``keys2values``</span>
+<span class="sd">    and runs the simulation with those settings. Results from all runs are combined into</span>
+<span class="sd">    a single dataframe.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        simulation (sim.Simulation): Base simulation object</span>
+<span class="sd">        all_patients (list[sim.Patient]): List of patients to simulate</span>
+<span class="sd">        labels (list): Names for each test configuration</span>
+<span class="sd">        keys2values (list[dict[dict]]): List of variable settings to test. Each dict maps</span>
+<span class="sd">            variable names to new values/settings for that test run.</span>
+<span class="sd">        df (pd.DataFrame, optional): Existing results to append to. Defaults to None.</span>
+<span class="sd">        func_run_test (Callable, optional): Custom function to run each test. Typically</span>
+<span class="sd">            test_diff_thresholds. If ``None``, runs basic simulation. Defaults to ``None``.</span>
+<span class="sd">        func_match_patient_to_property_column (Callable, optional): Function to match patients</span>
+<span class="sd">            to properties in CSV. Required if refreshing patients. Defaults to ``None``.</span>
+<span class="sd">        is_refresh_patients (bool, optional): If ``True``, recreates patients with new properties</span>
+<span class="sd">            between runs. Defaults to ``False``.</span>
+<span class="sd">        is_use_multi_processing (bool, optional): If ``True``, runs tests in parallel using</span>
+<span class="sd">            available CPU cores. Defaults to ``False``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        pd.DataFrame: Combined results from all test runs. Format depends on ``func_run_test``,</span>
+<span class="sd">            but always includes a ``label`` column identifying the test configuration.</span>
+
+<span class="sd">    References:</span>
+<span class="sd">        For usage examples, see:</span>
+<span class="sd">        - :doc:`/usage/tutorial_pad`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="n">df</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">is_use_multi_processing</span><span class="p">:</span>
+        <span class="n">n_jobs</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Processes:&#39;</span><span class="p">,</span> <span class="n">n_jobs</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">WorkerPool</span><span class="p">(</span><span class="n">n_jobs</span><span class="p">,</span> <span class="n">use_dill</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">_run_test</span><span class="p">,</span> <span class="p">[(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">simulation</span><span class="p">),</span>
+                                                <span class="n">all_patients</span><span class="p">,</span>
+                                                <span class="n">func_run_test</span><span class="p">,</span>
+                                                <span class="n">func_match_patient_to_property_column</span><span class="p">,</span>
+                                                <span class="n">is_refresh_patients</span><span class="p">,</span>
+                                                <span class="n">l</span><span class="p">,</span> <span class="n">k2v</span><span class="p">)</span> <span class="k">for</span> <span class="n">l</span><span class="p">,</span> <span class="n">k2v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">keys2values</span><span class="p">)</span> <span class="p">])</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">results</span> <span class="o">+</span> <span class="p">[</span><span class="n">df</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">l</span><span class="p">,</span> <span class="n">k2v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">keys2values</span><span class="p">):</span>
+            <span class="n">_df</span> <span class="o">=</span> <span class="n">_run_test</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">simulation</span><span class="p">),</span>
+                            <span class="n">all_patients</span><span class="p">,</span>
+                            <span class="n">func_run_test</span><span class="p">,</span>
+                            <span class="n">is_refresh_patients</span><span class="p">,</span>
+                            <span class="n">func_match_patient_to_property_column</span><span class="p">,</span>
+                            <span class="n">l</span><span class="p">,</span> <span class="n">k2v</span><span class="p">)</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">df</span><span class="p">,</span> <span class="n">_df</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="k">pass</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Michael Wornow.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
