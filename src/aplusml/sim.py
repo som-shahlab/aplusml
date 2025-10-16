@@ -998,9 +998,10 @@ class Simulation(object):
         for v_id, v in variables.items():
             simulation.variables[v_id] = {
                 'type' : v.get('type', 'scalar'),
-                'value' : v.get('value', None),
                 **v,
             }
+            if v.get('value') is not None:
+                simulation.variables[v_id]['value'] = v.get('value')
         #
         # States
         states = yaml.get('states', {})
